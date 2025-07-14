@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html class="dark">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supplier Database</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .loader { border: 4px solid #4a5568; border-top: 4px solid #4f46e5; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    #sticky-header, #search-controls { transition: all 0.3s ease-in-out; }
+    #sticky-header.shrunk #header-logo { height: 48px; }
+    #sticky-header.shrunk #header-title { font-size: 1.5rem; margin-bottom: 0; }
+    #sticky-header.shrunk #header-subtitle { opacity: 0; height: 0; visibility: hidden; }
+    #sticky-header.shrunk { padding-bottom: 1rem; }
+    #search-controls.shrunk { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    #search-controls.shrunk .search-label, #search-controls.shrunk #bulk-search-section { display: none; }
+    .skeleton-card { background-color: #1f2937; border-radius: 0.5rem; overflow: hidden; border: 1px solid #374151; }
+    .skeleton-image { background-color: #374151; height: 12rem; }
+    .skeleton-text { background-color: #374151; height: 1rem; margin-bottom: 0.5rem; border-radius: 0.25rem; }
+    @keyframes pulse { 50% { opacity: .5; } }
+    .skeleton-card, .skeleton-image, .skeleton-text { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    .result-card { opacity: 0; transform: translateY(20px); animation: card-fade-in 0.5s forwards; }
+    @keyframes card-fade-in { to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+  <div style="background-image: url('https://i.imgur.com/lxVZPgf.png'); background-size: cover; background-position: center; background-attachment: fixed; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1;"></div>
+  <div id="bg-overlay" style="background-color: rgba(17, 24, 39, 0.85); position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1;"></div>
+
+  <div class="absolute top-4 right-6 text-xs text-gray-400 z-20">Created and Powered by 🔥Dom B.🔥</div>
+
+  <div class="container mx-auto p-4 md:p-8 relative">
+    <div id="sticky-header" class="mb-8 text-center">
+      <img id="header-logo" src="https://i.imgur.com/5aUGEV3.png" alt="Brand Logo" style="height: 80px; margin: 0 auto 1rem auto; transition: height 0.3s ease-in-out;"/>
+      <h1 id="header-title" class="text-3xl md:text-4xl font-bold text-gray-100" style="transition: font-size 0.3s ease-in-out;">Supplier Database</h1>
+      <p id="header-subtitle" class="text-gray-300 mt-1" style="transition: opacity 0.3s, height 0.3s; height: 1.5rem; opacity: 1;">Instantly search or browse items from all suppliers.</p>
+    </div>
+
+    <div id="search-controls" class="bg-gray-800/70 backdrop-blur-sm p-6 rounded-xl shadow-lg mb-8 sticky top-4 z-10 border border-gray-700">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+        <div class="md:col-span-2">
+          <label for="search-input" class="search-label block text-sm font-medium text-gray-300 mb-1">Search Term</label>
+          <div class="relative">
+             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+             </div>
+             <input type="text" id="search-input" placeholder="Enter UPC, Item Name, etc." class="block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2.5 pl-10">
+          </div>
+        </div>
+        <div>
+          <label for="search-type" class="search-label block text-sm font-medium text-gray-300 mb-1">Search By</label>
+          <select id="search-type" class="block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2.5">
+            <option value="upc" selected>UPC</option>
+            <option value="itemName_lowercase">Item Name</option>
+            <option value="brand">Brand</option>
+            <option value="sku">SKU</option>
+          </select>
+        </div>
+        <div class="md:col-span-2 flex items-center space-x-3">
+          <button id="search-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors">Search</button>
+          <button id="browse-all-btn" class="w-full inline-flex justify-center rounded-md border border-gray-600 bg-gray-700 py-2.5 px-4 text-sm font-medium text-gray-200 shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors">Browse All</button>
+        </div>
+      </div>
+       <div id="bulk-search-section" class="mt-4 pt-4 border-t border-gray-700">
+          <label class="search-label block text-sm font-medium text-gray-300">Bulk UPC Search</label>
+          <textarea id="upc-list-input" rows="4" class="mt-1 block w-full rounded-md border-gray-600 bg-gray-700 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2" placeholder="Paste a list of UPCs, one per line (up to 100)"></textarea>
+          <button id="search-list-btn" class="mt-2 w-full inline-flex justify-center rounded-md border border-transparent bg-teal-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-colors">Search UPC List</button>
+      </div>
+    </div>
+    
+    <div id="controls-bar" class="mb-4 flex justify-end items-center gap-4 hidden">
+       <button id="filter-suppliers-btn" type="button" class="inline-flex items-center px-4 py-2 border border-sky-500 text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700 focus:z-10 focus:outline-none focus:ring-1 focus:ring-sky-500">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM13 16a1 1 0 102 0v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L13 10.414V16z" /></svg>
+          Filter Suppliers
+       </button>
+       <button id="export-csv-btn" type="button" class="inline-flex items-center px-4 py-2 border border-green-600 text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:z-10 focus:outline-none focus:ring-1 focus:ring-green-500">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+          Export as CSV
+        </button>
+    </div>
+
+    <div id="loader-container" class="hidden"></div>
+    <div id="export-loader" class="flex justify-center items-center py-20 hidden">
+        <div class="loader"></div>
+        <p class="ml-4 text-gray-400">Generating your export file...</p>
+    </div>
+    <div id="error-display" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
+      <strong class="font-bold">Error:</strong>
+      <span id="error-message" class="block sm:inline">Something went wrong.</span>
+    </div>
+
+    <div id="results-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
+    
+    <div id="no-results" class="text-center py-16 text-gray-500">
+      <div class="inline-block bg-gray-800 p-6 rounded-full">
+        <svg class="h-16 w-16 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+      </div>
+      <h3 id="no-results-title" class="text-xl font-semibold mt-4 text-gray-300">Ready to Search</h3>
+      <p id="no-results-subtitle" class="text-gray-400">Use the search bar above to find an item.</p>
+    </div>
+
+    <div id="pagination-container" class="mt-10 flex justify-center items-center space-x-2"></div>
+  </div>
+
+  <div id="item-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300 ease-in-out">
+    <div id="modal-overlay" class="absolute inset-0 bg-gray-900/75 transition-opacity duration-300 ease-in-out"></div>
+    <div id="modal-content" class="bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col relative border border-gray-700 transform transition-all duration-300 ease-in-out opacity-0 scale-95">
+        <button id="modal-close-btn" class="absolute top-3 right-3 text-gray-400 hover:text-white z-10">
+            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+        <div id="modal-loader" class="flex justify-center items-center p-10">
+            <div class="loader"></div>
+        </div>
+        <div id="modal-body" class="hidden overflow-y-auto">
+            <!-- Content will be populated by JavaScript -->
+        </div>
+    </div>
+  </div>
+
+  <div id="image-lightbox" class="fixed inset-0 z-[60] bg-black/80 hidden items-center justify-center">
+      <button id="lightbox-close-btn" class="absolute top-6 right-8 text-white text-5xl font-bold">&times;</button>
+      <img id="lightbox-img" src="" class="max-w-[90vw] max-h-[90vh] object-contain">
+  </div>
+
+  <!-- Supplier Filter Modal -->
+  <div id="supplier-filter-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+    <div id="supplier-modal-overlay" class="absolute inset-0 bg-gray-900/75"></div>
+    <div class="bg-gray-800 rounded-lg shadow-xl w-full max-w-md max-h-[90vh] flex flex-col relative border border-gray-700">
+        <div class="flex justify-between items-center p-4 border-b border-gray-700">
+            <h3 class="text-lg font-medium text-white">Filter Suppliers</h3>
+            <button id="supplier-modal-close-btn" class="text-gray-400 hover:text-white">
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+        </div>
+        <div id="supplier-list-container" class="p-4 overflow-y-auto">
+            <!-- Supplier checkboxes will be populated here -->
+        </div>
+        <div class="p-4 mt-auto border-t border-gray-700 flex justify-between">
+            <div>
+                <button id="select-all-suppliers-btn" class="px-4 py-2 text-sm rounded-md bg-gray-600 hover:bg-gray-500">Select All</button>
+                <button id="deselect-all-suppliers-btn" class="px-4 py-2 text-sm rounded-md bg-gray-600 hover:bg-gray-500 ml-2">Deselect All</button>
+            </div>
+            <button id="apply-supplier-filter-btn" class="px-4 py-2 text-sm rounded-md bg-indigo-600 hover:bg-indigo-700 font-semibold">Apply Filter</button>
+        </div>
+    </div>
+  </div>
+
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    // --- Firebase Configuration ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyDHhEnfIz2evfEH-Vfpujqnu_MrE57p7v4",
+      authDomain: "supplier-database-45001.firebaseapp.com",
+      projectId: "supplier-database-45001",
+      storageBucket: "supplier-database-45001.appspot.com",
+      messagingSenderId: "977359606390",
+      appId: "1:977359606390:web:03be683a1e7c7d71bc4557"
+    };
+
+    // --- Initialize Firebase ---
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const productsCollection = db.collection("products");
+
+    // --- Global State ---
+    let lastVisibleDoc = null;
+    let firstVisibleDoc = null;
+    let currentPage = 1;
+    let currentQueryConstraints = [];
+    let currentSearchType = 'browse';
+    const ITEMS_PER_PAGE = 100;
+    let allSuppliers = new Set();
+    let excludedSuppliers = new Set();
+    let lastFetchedDocs = [];
+
+    // --- UI Elements ---
+    const searchInput = document.getElementById('search-input');
+    const searchTypeSelect = document.getElementById('search-type');
+    const searchBtn = document.getElementById('search-btn');
+    const browseAllBtn = document.getElementById('browse-all-btn');
+    const upcListInput = document.getElementById('upc-list-input');
+    const searchListBtn = document.getElementById('search-list-btn');
+    const loaderContainer = document.getElementById('loader-container');
+    const exportLoader = document.getElementById('export-loader');
+    const resultsContainer = document.getElementById('results-container');
+    const paginationContainer = document.getElementById('pagination-container');
+    const noResultsDiv = document.getElementById('no-results');
+    const errorDisplay = document.getElementById('error-display');
+    const errorMessage = document.getElementById('error-message');
+    const searchControls = document.getElementById('search-controls');
+    const stickyHeader = document.getElementById('sticky-header');
+    const controlsBar = document.getElementById('controls-bar');
+    const exportCsvBtn = document.getElementById('export-csv-btn');
+    const filterSuppliersBtn = document.getElementById('filter-suppliers-btn');
+    const supplierFilterModal = document.getElementById('supplier-filter-modal');
+    const supplierModalOverlay = document.getElementById('supplier-modal-overlay');
+    const supplierModalCloseBtn = document.getElementById('supplier-modal-close-btn');
+    const supplierListContainer = document.getElementById('supplier-list-container');
+    const selectAllSuppliersBtn = document.getElementById('select-all-suppliers-btn');
+    const deselectAllSuppliersBtn = document.getElementById('deselect-all-suppliers-btn');
+    const applySupplierFilterBtn = document.getElementById('apply-supplier-filter-btn');
+    const itemModal = document.getElementById('item-modal');
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalContent = document.getElementById('modal-content');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const modalLoader = document.getElementById('modal-loader');
+    const modalBody = document.getElementById('modal-body');
+    const imageLightbox = document.getElementById('image-lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxCloseBtn = document.getElementById('lightbox-close-btn');
+
+    async function fetchData(queryConstraints = [], direction = 'next') {
+      showLoader();
+      currentQueryConstraints = queryConstraints;
+
+      let query = productsCollection.orderBy('sku').limit(ITEMS_PER_PAGE);
+      queryConstraints.forEach(constraint => {
+        query = query.where(constraint.field, constraint.op, constraint.value);
+      });
+
+      if (direction === 'next' && lastVisibleDoc) {
+        query = query.startAfter(lastVisibleDoc);
+      } else if (direction === 'prev' && firstVisibleDoc) {
+        query = query.endBefore(firstVisibleDoc).limitToLast(ITEMS_PER_PAGE);
+      }
+      
+      try {
+        const snapshot = await query.get();
+        hideLoader();
+        if (snapshot.empty) {
+          showNoResults();
+          return;
+        }
+        
+        lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1];
+        firstVisibleDoc = snapshot.docs[0];
+        lastFetchedDocs = snapshot.docs.map(doc => doc.data());
+
+        if (allSuppliers.size === 0) {
+            populateAllSuppliersList(lastFetchedDocs);
+        }
+        
+        renderFilteredResults(lastFetchedDocs);
+
+      } catch (err) {
+        console.error("Firestore query failed:", err);
+        showError({ message: "Could not fetch data from the database. " + err.message });
+      }
+    }
+
+    function renderFilteredResults(docs) {
+        const processedItems = docs.map(item => {
+            const filteredSuppliers = item.suppliers.filter(sup => !excludedSuppliers.has(sup.name));
+            
+            const newLowestPrice = filteredSuppliers.reduce((min, sup) => {
+                const price = parseFloat(sup.price);
+                return !isNaN(price) && price > 0 && price < min ? price : min;
+            }, Infinity);
+
+            return {
+                ...item,
+                suppliers: filteredSuppliers,
+                lowestPrice: newLowestPrice === Infinity ? -1 : newLowestPrice
+            };
+        });
+
+        resultsContainer.innerHTML = '';
+        processedItems.forEach((item, index) => {
+            resultsContainer.appendChild(createItemCard(item, index));
+        });
+
+        noResultsDiv.style.display = 'none';
+        controlsBar.style.display = 'flex';
+        renderPagination();
+    }
+
+    function handleSearch() {
+        currentSearchType = 'search';
+        const searchTerm = searchInput.value.trim();
+        const searchType = searchTypeSelect.value;
+        if (!searchTerm) {
+            alert("Please enter a search term.");
+            return;
+        }
+        currentPage = 1;
+        lastVisibleDoc = null;
+        firstVisibleDoc = null;
+        let constraints = [];
+        if (searchType === 'itemName_lowercase') {
+            constraints.push({ field: 'itemName_lowercase', op: '>=', value: searchTerm.toLowerCase() });
+            constraints.push({ field: 'itemName_lowercase', op: '<=', value: searchTerm.toLowerCase() + '\uf8ff' });
+        } else {
+            constraints.push({ field: searchType, op: '==', value: searchTerm });
+        }
+        fetchData(constraints);
+    }
+    
+    async function handleBulkSearch() {
+        currentSearchType = 'bulk';
+        const upcList = [...new Set(upcListInput.value.split(/[\n,]/).map(upc => upc.trim()).filter(upc => upc))];
+        if (upcList.length === 0) {
+            alert("Please paste a list of UPCs.");
+            return;
+        }
+        if (upcList.length > 100) {
+            alert("Bulk search is limited to 100 UPCs at a time.");
+            return;
+        }
+
+        showLoader();
+        try {
+            const allDocs = await fetchAllBulkDocs(upcList);
+            hideLoader();
+            resultsContainer.innerHTML = '';
+            paginationContainer.innerHTML = '';
+
+            if (allDocs.length === 0) {
+                showNoResults();
+                return;
+            }
+            lastFetchedDocs = allDocs;
+            renderFilteredResults(lastFetchedDocs);
+
+        } catch (err) {
+            console.error("Firestore bulk query failed:", err);
+            showError({ message: "Could not fetch data for bulk search. " + err.message });
+        }
+    }
+
+    async function fetchAllBulkDocs(upcList) {
+        const chunks = [];
+        for (let i = 0; i < upcList.length; i += 10) {
+            chunks.push(upcList.slice(i, i + 10));
+        }
+        const queryPromises = chunks.map(chunk => 
+            productsCollection.where('upc', 'in', chunk).get()
+        );
+        const querySnapshots = await Promise.all(queryPromises);
+        const allDocs = [];
+        querySnapshots.forEach(snapshot => {
+            snapshot.forEach(doc => allDocs.push(doc.data()));
+        });
+        return allDocs.sort((a, b) => a.sku.localeCompare(b.sku));
+    }
+
+    function handleBrowseAll() {
+        currentSearchType = 'browse';
+        currentPage = 1;
+        lastVisibleDoc = null;
+        firstVisibleDoc = null;
+        fetchData([]);
+    }
+
+    async function handleExport() {
+        exportLoader.classList.remove('hidden');
+        let docsToExport = [];
+
+        try {
+            if (currentSearchType === 'bulk') {
+                const upcList = [...new Set(upcListInput.value.split(/[\n,]/).map(upc => upc.trim()).filter(upc => upc))];
+                if (upcList.length > 0) {
+                    docsToExport = await fetchAllBulkDocs(upcList);
+                }
+            } else {
+                let query = productsCollection.orderBy('sku');
+                currentQueryConstraints.forEach(constraint => {
+                    query = query.where(constraint.field, constraint.op, constraint.value);
+                });
+                const snapshot = await query.get();
+                snapshot.forEach(doc => docsToExport.push(doc.data()));
+            }
+
+            if (docsToExport.length === 0) {
+                alert("No data to export.");
+                exportLoader.classList.add('hidden');
+                return;
+            }
+            
+            const filteredForExport = docsToExport.map(item => {
+                const filteredSuppliers = item.suppliers.filter(sup => !excludedSuppliers.has(sup.name));
+                return {...item, suppliers: filteredSuppliers};
+            });
+
+            generateComplexCsv(filteredForExport);
+
+        } catch (err) {
+            console.error("Export failed:", err);
+            showError({ message: "Could not fetch data for export. " + err.message });
+        } finally {
+            exportLoader.classList.add('hidden');
+        }
+    }
+
+    function generateComplexCsv(items) {
+        const maxSuppliers = items.reduce((max, item) => Math.max(max, item.suppliers.length), 0);
+        const baseHeaders = ["SKU", "UPC", "Item Name", "Brand", "Size", "Type", "Gender", "Description"];
+        let csvHeaders = [...baseHeaders];
+        for (let i = 1; i <= maxSuppliers; i++) {
+            csvHeaders.push(`Supplier ${i} Name`, `Supplier ${i} Price`, `Supplier ${i} Inventory`);
+        }
+        const rows = items.map(item => {
+            const row = [
+                item.sku, `="${item.upc}"`, item.itemName, item.brand,
+                item.size, item.type, item.gender, item.description
+            ];
+            const sortedSuppliers = item.suppliers.sort((a, b) => (parseFloat(a.price) || Infinity) - (parseFloat(b.price) || Infinity));
+            sortedSuppliers.forEach(sup => {
+                row.push(sup.name, sup.price, sup.inventory);
+            });
+            return row;
+        });
+        const escapeCell = (cell) => {
+            const strCell = String(cell === null || cell === undefined ? "" : cell);
+            if (strCell.includes(',') || strCell.includes('"') || strCell.includes('\n')) {
+                return `"${strCell.replace(/"/g, '""')}"`;
+            }
+            return strCell;
+        };
+        let csvContent = [
+            csvHeaders.map(escapeCell).join(','),
+            ...rows.map(row => row.map(escapeCell).join(','))
+        ].join('\r\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "supplier_report.csv");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function createItemCard(item, index) {
+        var card = document.createElement('div');
+        card.className = 'bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col cursor-pointer border border-gray-700 hover:border-indigo-500 result-card';
+        card.dataset.sku = item.sku;
+        card.style.animationDelay = (index * 50) + 'ms';
+        var placeholderImg = 'https://i.imgur.com/IUBzxFv.jpeg';
+        var imageWrapper = document.createElement('div');
+        imageWrapper.className = 'w-full h-48 bg-white flex items-center justify-center';
+        var imgElement = document.createElement('img');
+        imgElement.className = 'w-full h-full object-contain';
+        imgElement.alt = item.itemName;
+        if (item.imageUrl && String(item.imageUrl).trim() !== "") {
+            imgElement.src = item.imageUrl;
+            imgElement.onerror = function() { this.src = placeholderImg; };
+        } else {
+            imgElement.src = placeholderImg;
+        }
+        imageWrapper.appendChild(imgElement);
+        card.appendChild(imageWrapper);
+        var contentDiv = document.createElement('div');
+        contentDiv.className = 'p-4 flex-grow flex flex-col';
+        var infoHtml = '<h3 class="text-lg font-semibold text-white truncate" title="' + item.itemName + '">' + item.itemName + '</h3>';
+        if(item.upc && String(item.upc).trim() !== "") {
+            infoHtml += '<p class="text-xs text-gray-500 mb-1">UPC: ' + item.upc + '</p>';
+        }
+        if(item.brand && String(item.brand).trim() !== "") {
+            infoHtml += '<p class="text-sm text-gray-400 mb-1">Brand: ' + item.brand + '</p>';
+        }
+        if(item.size && String(item.size).trim() !== "") {
+            infoHtml += '<p class="text-sm text-gray-400 mb-2">Size: ' + item.size + '</p>';
+        }
+        var suppliersHtml = '<div class="mt-auto pt-2 border-t border-gray-700">';
+        if (item.suppliers && item.suppliers.length > 0) {
+            const lowestPriceValue = item.lowestPrice > 0 ? item.lowestPrice : Infinity;
+            
+            const sortedSuppliers = [...item.suppliers].sort((a, b) => {
+                const priceA = parseFloat(a.price) || Infinity;
+                const priceB = parseFloat(b.price) || Infinity;
+                return priceA - priceB;
+            });
+
+            sortedSuppliers.forEach(supplier => {
+                const price = parseFloat(supplier.price);
+                const priceText = !isNaN(price) ? '$' + price.toFixed(2) : 'N/A';
+                const isLowest = (price === lowestPriceValue && price < Infinity);
+                const pClass = isLowest ? 'text-green-400 font-bold' : 'text-gray-300';
+                suppliersHtml += `<p class="text-sm ${pClass}">${supplier.name}: ${priceText}</p>`;
+            });
+        } else {
+            suppliersHtml += '<p class="text-sm text-gray-400">No suppliers available.</p>';
+        }
+        suppliersHtml += '</div>';
+        contentDiv.innerHTML = infoHtml + suppliersHtml;
+        card.appendChild(contentDiv);
+        return card;
+    }
+
+    function showLoader() {
+        loaderContainer.innerHTML = '';
+        for(let i = 0; i < 15; i++) {
+            const skeleton = document.createElement('div');
+            skeleton.className = 'skeleton-card';
+            skeleton.innerHTML = '<div class="skeleton-image"></div><div class="p-4"><div class="skeleton-text w-3/4"></div><div class="skeleton-text w-1/2"></div></div>';
+            loaderContainer.appendChild(skeleton);
+        }
+        loaderContainer.style.display = 'grid';
+        resultsContainer.innerHTML = '';
+        noResultsDiv.style.display = 'none';
+        errorDisplay.classList.add('hidden');
+        controlsBar.style.display = 'none';
+    }
+    function hideLoader() { loaderContainer.style.display = 'none'; }
+    function showNoResults() {
+        resultsContainer.innerHTML = '';
+        noResultsDiv.style.display = 'block';
+        controlsBar.style.display = 'none';
+    }
+    function showError(error) {
+        hideLoader();
+        errorMessage.textContent = error.message || "An unknown error occurred.";
+        errorDisplay.classList.remove('hidden');
+    }
+    function renderPagination() {
+        paginationContainer.innerHTML = '';
+        const prevBtn = document.createElement('button');
+        prevBtn.innerHTML = '&laquo; Prev';
+        prevBtn.className = 'px-3 py-1 rounded-md text-sm font-medium bg-gray-700 text-gray-200 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed';
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.onclick = () => {
+            currentPage--;
+            fetchData(currentQueryConstraints, 'prev');
+        };
+        const pageInfo = document.createElement('span');
+        pageInfo.className = 'px-3 py-1 text-sm text-gray-400';
+        pageInfo.textContent = 'Page ' + currentPage;
+        const nextBtn = document.createElement('button');
+        nextBtn.innerHTML = 'Next &raquo;';
+        nextBtn.className = 'px-3 py-1 rounded-md text-sm font-medium bg-gray-700 text-gray-200 hover:bg-gray-600';
+        nextBtn.onclick = () => {
+            currentPage++;
+            fetchData(currentQueryConstraints, 'next');
+        };
+        paginationContainer.appendChild(prevBtn);
+        paginationContainer.appendChild(pageInfo);
+        paginationContainer.appendChild(nextBtn);
+    }
+    
+    function populateAllSuppliersList(docs) {
+        docs.forEach(item => {
+            if(item.suppliers) {
+                item.suppliers.forEach(sup => allSuppliers.add(sup.name));
+            }
+        });
+    }
+
+    function populateSupplierFilterModal() {
+        supplierListContainer.innerHTML = '';
+        const sortedSuppliers = Array.from(allSuppliers).sort();
+        sortedSuppliers.forEach(name => {
+            const div = document.createElement('div');
+            div.className = 'flex items-center mb-2';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = `supplier-cb-${name}`;
+            checkbox.value = name;
+            checkbox.checked = !excludedSuppliers.has(name);
+            checkbox.className = 'h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500';
+            const label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.textContent = name;
+            label.className = 'ml-3 block text-sm font-medium text-gray-300';
+            div.appendChild(checkbox);
+            div.appendChild(label);
+            supplierListContainer.appendChild(div);
+        });
+    }
+
+    // --- Event Listeners ---
+    searchBtn.addEventListener('click', handleSearch);
+    browseAllBtn.addEventListener('click', handleBrowseAll);
+    searchListBtn.addEventListener('click', handleBulkSearch);
+    exportCsvBtn.addEventListener('click', handleExport);
+    searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') searchBtn.click(); });
+    
+    filterSuppliersBtn.addEventListener('click', () => {
+        populateSupplierFilterModal();
+        supplierFilterModal.classList.remove('hidden');
+    });
+
+    supplierModalCloseBtn.addEventListener('click', () => supplierFilterModal.classList.add('hidden'));
+    supplierModalOverlay.addEventListener('click', () => supplierFilterModal.classList.add('hidden'));
+
+    selectAllSuppliersBtn.addEventListener('click', () => {
+        supplierListContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+    });
+
+    deselectAllSuppliersBtn.addEventListener('click', () => {
+        supplierListContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+    });
+
+    applySupplierFilterBtn.addEventListener('click', () => {
+        excludedSuppliers.clear();
+        supplierListContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            if (!cb.checked) {
+                excludedSuppliers.add(cb.value);
+            }
+        });
+        supplierFilterModal.classList.add('hidden');
+        renderFilteredResults(lastFetchedDocs); // Re-render the currently displayed results with the new filter
+    });
+
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 50) {
+          stickyHeader.classList.add('shrunk');
+          searchControls.classList.add('shrunk');
+      } else {
+          stickyHeader.classList.remove('shrunk');
+          searchControls.classList.remove('shrunk');
+      }
+    });
+
+    // Initial Load
+    document.addEventListener('DOMContentLoaded', handleBrowseAll);
+
+    // --- Item Modal Logic ---
+
+    /**
+     * Finds the item data and displays the modal when a result card is clicked.
+     */
+    function handleItemClick(event) {
+      const card = event.target.closest('.result-card');
+      if (!card) return;
+
+      const sku = card.dataset.sku;
+      const itemData = lastFetchedDocs.find(doc => doc.sku === sku);
+
+      if (itemData) {
+        itemModal.classList.remove('hidden');
+        modalLoader.classList.remove('hidden');
+        modalBody.classList.add('hidden');
+        
+        populateItemModal(itemData);
+        
+        setTimeout(() => {
+            itemModal.classList.remove('opacity-0');
+            modalContent.classList.remove('opacity-0', 'scale-95');
+            modalLoader.classList.add('hidden');
+            modalBody.classList.remove('hidden');
+        }, 10);
+      }
+    }
+
+    /**
+     * Generates the HTML for the item detail modal and populates it.
+     */
+    function populateItemModal(item) {
+        const placeholderImg = 'https://i.imgur.com/IUBzxFv.jpeg';
+        const imageUrl = (item.imageUrl && String(item.imageUrl).trim() !== "") ? item.imageUrl : placeholderImg;
+
+        const sortedSuppliers = [...item.suppliers].sort((a, b) => {
+            const priceA = parseFloat(a.price) || Infinity;
+            const priceB = parseFloat(b.price) || Infinity;
+            return priceA - priceB;
+        });
+
+        let suppliersHtml = '';
+        if (sortedSuppliers.length > 0) {
+            suppliersHtml = sortedSuppliers.map(supplier => {
+                const price = parseFloat(supplier.price);
+                const priceText = !isNaN(price) ? `$${price.toFixed(2)}` : 'N/A';
+                const inventoryText = supplier.inventory || 'N/A';
+                return `
+                    <tr class="border-b border-gray-700 hover:bg-gray-700/50">
+                        <td class="p-3 text-sm text-gray-300">${supplier.name}</td>
+                        <td class="p-3 text-sm text-center font-mono ${!isNaN(price) ? 'text-green-400' : 'text-gray-400'}">${priceText}</td>
+                        <td class="p-3 text-sm text-center font-mono text-gray-400">${inventoryText}</td>
+                    </tr>
+                `;
+            }).join('');
+        } else {
+            suppliersHtml = '<tr><td colspan="3" class="p-3 text-center text-gray-500">No supplier information available.</td></tr>';
+        }
+
+        modalBody.innerHTML = `
+          <!-- Top section for details and image -->
+          <div class="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Left Column: Image -->
+            <div class="md:col-span-1">
+                <div class="aspect-square bg-white rounded-lg flex items-center justify-center p-2 shadow-md">
+                    <img id="modal-item-image" src="${imageUrl}" 
+                         alt="${item.itemName}" 
+                         class="max-w-full max-h-full object-contain cursor-pointer hover:opacity-90 transition-opacity"
+                         onerror="this.src='${placeholderImg}'">
+                </div>
+                <p class="text-xs text-center text-gray-500 mt-2">Click image to enlarge</p>
+            </div>
+
+            <!-- Right Column: Details -->
+            <div class="md:col-span-2">
+                <h2 class="text-2xl font-bold text-white">${item.itemName || 'N/A'}</h2>
+                <p class="text-md text-gray-400 mb-4">by ${item.brand || 'Unknown Brand'}</p>
+                
+                <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mb-4">
+                    <p><strong class="font-semibold text-gray-300">SKU:</strong> <span class="text-gray-400 font-mono">${item.sku || 'N/A'}</span></p>
+                    <p><strong class="font-semibold text-gray-300">UPC:</strong> <span class="text-gray-400 font-mono">${item.upc || 'N/A'}</span></p>
+                    <p><strong class="font-semibold text-gray-300">Size:</strong> <span class="text-gray-400">${item.size || 'N/A'}</span></p>
+                    <p><strong class="font-semibold text-gray-300">Type:</strong> <span class="text-gray-400">${item.type || 'N/A'}</span></p>
+                    <p><strong class="font-semibold text-gray-300">Gender:</strong> <span class="text-gray-400">${item.gender || 'N/A'}</span></p>
+                </div>
+
+                <p class="text-sm text-gray-400">${item.description || 'No description provided.'}</p>
+            </div>
+          </div>
+
+          <!-- Bottom section for suppliers table -->
+          <div class="px-4 sm:px-6 pb-4 sm:pb-6 mt-4">
+            <h3 class="text-lg font-semibold text-white mb-2">Supplier Stock & Pricing</h3>
+            <div class="border border-gray-700 rounded-lg overflow-hidden">
+                <table class="w-full">
+                    <thead class="bg-gray-900/50">
+                        <tr>
+                            <th class="p-3 text-sm font-semibold text-left text-gray-300">Supplier</th>
+                            <th class="p-3 text-sm font-semibold text-center text-gray-300">Price</th>
+                            <th class="p-3 text-sm font-semibold text-center text-gray-300">Inventory</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-gray-800">
+                        ${suppliersHtml}
+                    </tbody>
+                </table>
+            </div>
+          </div>
+        `;
+        
+        document.getElementById('modal-item-image').addEventListener('click', () => {
+            lightboxImg.src = imageUrl;
+            imageLightbox.classList.remove('hidden');
+            imageLightbox.classList.add('flex');
+        });
+    }
+    
+    /**
+     * Closes the item detail modal with a transition.
+     */
+    function closeModal() {
+        itemModal.classList.add('opacity-0');
+        modalContent.classList.add('opacity-0', 'scale-95');
+        setTimeout(() => {
+            itemModal.classList.add('hidden');
+        }, 300); // Duration of the transition
+    }
+
+    // --- Add Event Listeners for Modal ---
+    resultsContainer.addEventListener('click', handleItemClick);
+    modalCloseBtn.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', closeModal);
+    lightboxCloseBtn.addEventListener('click', () => {
+        imageLightbox.classList.add('hidden');
+        imageLightbox.classList.remove('flex');
+    });
+  </script>
+</body>
+</html>
