@@ -214,6 +214,36 @@
                     <li><code>upc</code> (optional) - Filter results for a single product by its UPC.</li>
                 </ul>
 
+                <h3 class="text-xl font-semibold text-white mt-6 mb-2">Response Format</h3>
+                <p>All successful requests will return a JSON object with <code>meta</code> and <code>data</code> keys.</p>
+                <pre class="code-block">{
+    "meta": {
+        "total": 1287,
+        "current_page": 1,
+        "total_pages": 6,
+        "per_page": 250,
+        "rate_limit_remaining": 299
+    },
+    "data": [
+        {
+            "sku": "12345",
+            "upc": "012345678901",
+            "itemName": "Example Perfume",
+            "brand": "Designer Brand",
+            "size": "100ml",
+            "asin": "B08X44T43G",
+            "msrp": 95.00,
+            "supplier_1_name": "Main Distributor",
+            "supplier_1_price": 75.99,
+            "supplier_1_inventory": 150,
+            "supplier_2_name": "Secondary Wholesaler",
+            "supplier_2_price": 78.50,
+            "supplier_2_inventory": 45
+        },
+        ...
+    ]
+}</pre>
+
                 <h3 class="text-xl font-semibold text-white mt-6 mb-2">Rate Limits</h3>
                 <p>You may call this endpoint up to 300 times per 24-hour period per token. Additional requests will receive a <code>429 Too Many Requests</code> error.</p>
 
@@ -226,24 +256,68 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
 
         <!-- API Key Tab -->
         <div id="api-key-tab-content" class="tab-content hidden">
-            <div class="bg-gray-800/70 p-8 rounded-lg border border-gray-700 max-w-2xl mx-auto">
+            <div class="bg-gray-800/70 p-8 rounded-lg border border-gray-700 max-w-3xl mx-auto">
                 <h2 class="text-2xl font-bold text-white mb-4">Manage Your API Key</h2>
                 <p class="text-gray-400 mb-6">Use this key to authenticate your API requests. Treat it like a password and do not share it publicly.</p>
                 
-                <div id="api-key-display-area" class="hidden">
-                    <label class="block text-sm font-medium text-gray-300">Your API Key</label>
-                    <div class="mt-1 flex rounded-md shadow-sm">
-                        <input type="text" id="api-key-input" readonly class="block w-full rounded-none rounded-l-md border-gray-600 bg-gray-900 text-gray-400 font-mono p-2.5">
-                        <button id="copy-api-key-btn" class="inline-flex items-center rounded-r-md border border-l-0 border-gray-600 bg-gray-700 px-4 text-sm font-medium text-gray-300 hover:bg-gray-600">Copy</button>
+                <div id="api-key-loader" class="text-center"><div class="loader inline-block"></div></div>
+                
+                <div id="api-key-content" class="hidden">
+                    <div id="api-key-display-area" class="hidden">
+                        <label class="block text-sm font-medium text-gray-300">Your API Key</label>
+                        <div class="mt-1 relative flex items-center">
+                            <input type="password" id="api-key-input" readonly class="block w-full rounded-md border-gray-600 bg-gray-900 text-gray-400 font-mono p-2.5 pr-10">
+                            <button id="toggle-api-key-visibility" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white">
+                                <!-- Eye Icon SVG -->
+                                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                  <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                                </svg>
+                                <!-- Eye Off Icon SVG (hidden by default) -->
+                                <svg id="eye-off-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2 2 0 012.828 2.828l1.515 1.515A4 4 0 0014 10a4 4 0 10-5.432-3.432z" clip-rule="evenodd" />
+                                  <path d="M10 17a9.953 9.953 0 01-4.542-1.074l-1.78-1.781a1 1 0 011.414-1.414l1.697 1.697A8.018 8.018 0 0110 15c4.478 0 8.268-2.943 9.542-7a10.014 10.014 0 01-1.542-3.31l-1.473-1.473a1 1 0 011.414-1.414l-14-14a1 1 0 01-1.414 1.414l1.78 1.781A9.953 9.953 0 0010 17z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <button id="copy-api-key-btn" class="mt-2 text-sm text-indigo-400 hover:text-indigo-300">Copy Key</button>
+                        <p id="copy-feedback" class="text-green-400 text-sm mt-2 hidden">Copied!</p>
+                        
+                        <div class="mt-6 border-t border-gray-700 pt-6">
+                            <p class="text-sm text-yellow-400 bg-yellow-900/30 p-3 rounded-lg"><strong class="font-semibold">Warning:</strong> If you generate a new key, your old key will be immediately revoked. Ensure you update any applications using the old key.</p>
+                            <button id="revoke-and-generate-btn" class="mt-4 w-full inline-flex justify-center rounded-md border border-transparent bg-red-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-red-700">Revoke and Generate New Key</button>
+                        </div>
                     </div>
-                    <p id="copy-feedback" class="text-green-400 text-sm mt-2 hidden">Copied!</p>
+
+                    <div id="generate-key-area" class="hidden">
+                        <p class="text-center text-gray-400 mb-4">You have not generated an API key yet.</p>
+                        <button id="generate-api-key-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700">Generate API Key</button>
+                    </div>
+                </div>
+                
+                <div class="mt-8 border-t border-gray-700 pt-6">
+                    <h3 class="text-lg font-semibold text-white mb-2">Usage (Last 24 Hours)</h3>
+                    <div class="w-full bg-gray-700 rounded-full h-2.5">
+                      <div id="api-usage-bar" class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
+                    </div>
+                    <p id="api-usage-text" class="text-right text-sm text-gray-400 mt-1">0 / 300 calls</p>
+
+                    <h3 class="text-lg font-semibold text-white mt-6 mb-2">Recent API Calls</h3>
+                    <div class="border border-gray-700 rounded-lg overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-gray-900/50">
+                                <tr>
+                                    <th class="p-3 text-sm font-semibold text-left text-gray-300">Timestamp</th>
+                                    <th class="p-3 text-sm font-semibold text-left text-gray-300">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-calls-tbody" class="bg-gray-800">
+                                <!-- Rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
-                <div id="generate-key-area">
-                    <p class="text-center text-gray-400 mb-4">You have not generated an API key yet.</p>
-                    <button id="generate-api-key-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700">Generate API Key</button>
-                </div>
-                 <div id="api-key-loader" class="text-center hidden"><div class="loader inline-block"></div></div>
             </div>
         </div>
       </div>
@@ -312,6 +386,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     const productsCollection = db.collection("products");
     const invitedUsersCollection = db.collection("invitedUsers");
     const apiKeysCollection = db.collection("apiKeys");
+    const apiLogsCollection = db.collection("apiLogs"); // For usage tracking
 
     // --- UI Elements ---
     const authContainer = document.getElementById('auth-container');
@@ -332,6 +407,14 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     const copyApiKeyBtn = document.getElementById('copy-api-key-btn');
     const copyFeedback = document.getElementById('copy-feedback');
     const apiKeyLoader = document.getElementById('api-key-loader');
+    const apiKeyContent = document.getElementById('api-key-content');
+    const toggleApiKeyVisibilityBtn = document.getElementById('toggle-api-key-visibility');
+    const eyeIcon = document.getElementById('eye-icon');
+    const eyeOffIcon = document.getElementById('eye-off-icon');
+    const revokeAndGenerateBtn = document.getElementById('revoke-and-generate-btn');
+    const apiUsageBar = document.getElementById('api-usage-bar');
+    const apiUsageText = document.getElementById('api-usage-text');
+    const recentCallsTbody = document.getElementById('recent-calls-tbody');
     
     // --- Authentication Logic ---
     auth.onAuthStateChanged(user => {
@@ -340,7 +423,8 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
         mainAppContainer.classList.remove('hidden');
         userEmailDisplay.textContent = user.email;
         handleBrowseAll();
-        loadApiKey(); // Load API key when user logs in
+        loadApiKey(); 
+        loadApiUsage();
       } else {
         authContainer.classList.remove('hidden');
         mainAppContainer.classList.add('hidden');
@@ -415,7 +499,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     // --- API Key Management ---
     function generateRandomKey() {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let result = 'sk_'; // Prefix to identify it as a secret key
+        let result = 'sk_';
         for (let i = 0; i < 32; i++) {
             result += chars.charAt(Math.floor(Math.random() * chars.length));
         }
@@ -427,8 +511,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
         if (!user) return;
 
         apiKeyLoader.classList.remove('hidden');
-        apiKeyDisplayArea.classList.add('hidden');
-        generateKeyArea.classList.add('hidden');
+        apiKeyContent.classList.add('hidden');
 
         try {
             const docRef = apiKeysCollection.doc(user.uid);
@@ -437,38 +520,90 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
             if (docSnap.exists) {
                 apiKeyInput.value = docSnap.data().key;
                 apiKeyDisplayArea.classList.remove('hidden');
+                generateKeyArea.classList.add('hidden');
             } else {
+                apiKeyDisplayArea.classList.add('hidden');
                 generateKeyArea.classList.remove('hidden');
             }
         } catch (error) {
             console.error("Error loading API key:", error);
         } finally {
             apiKeyLoader.classList.add('hidden');
+            apiKeyContent.classList.remove('hidden');
+        }
+    }
+    
+    async function loadApiUsage() {
+        const user = auth.currentUser;
+        if (!user) return;
+        
+        // This function depends on your Cloud Run API logging calls to an `apiLogs` collection.
+        // The log documents should contain a `userId` field and a `timestamp` field.
+        const twentyFourHoursAgo = firebase.firestore.Timestamp.fromMillis(Date.now() - 24 * 60 * 60 * 1000);
+        
+        try {
+            const querySnapshot = await apiLogsCollection
+                .where("userId", "==", user.uid)
+                .where("timestamp", ">=", twentyFourHoursAgo)
+                .get();
+
+            const usageCount = querySnapshot.size;
+            const usagePercentage = (usageCount / 300) * 100;
+            
+            apiUsageText.textContent = `${usageCount} / 300 calls`;
+            apiUsageBar.style.width = `${usagePercentage}%`;
+            
+            // Display recent calls
+            recentCallsTbody.innerHTML = '';
+            let count = 0;
+            querySnapshot.docs.sort((a, b) => b.data().timestamp - a.data().timestamp).forEach(doc => {
+                if (count++ < 10) { // Show last 10
+                    const log = doc.data();
+                    const date = log.timestamp.toDate();
+                    const row = `
+                        <tr class="border-b border-gray-700">
+                            <td class="p-3 text-sm text-gray-400">${date.toLocaleString()}</td>
+                            <td class="p-3 text-sm text-green-400">Success</td>
+                        </tr>
+                    `;
+                    recentCallsTbody.innerHTML += row;
+                }
+            });
+            if (count === 0) {
+                recentCallsTbody.innerHTML = '<tr><td colspan="2" class="p-3 text-center text-gray-500">No API calls in the last 24 hours.</td></tr>';
+            }
+
+        } catch (error) {
+            console.error("Error loading API usage:", error);
+            recentCallsTbody.innerHTML = '<tr><td colspan="2" class="p-3 text-center text-red-400">Could not load usage data.</td></tr>';
         }
     }
 
-    generateApiKeyBtn.addEventListener('click', async () => {
+    async function handleGenerateKey() {
         const user = auth.currentUser;
         if (!user) return;
 
         const newKey = generateRandomKey();
         apiKeyLoader.classList.remove('hidden');
-        generateKeyArea.classList.add('hidden');
+        apiKeyContent.classList.add('hidden');
 
         try {
-            // The document ID is the user's UID to ensure they can only have one.
             await apiKeysCollection.doc(user.uid).set({
                 key: newKey,
-                userId: user.uid, // Store the UID for reference
+                userId: user.uid,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-            await loadApiKey(); // Reload to display the new key
+            await loadApiKey();
         } catch (error) {
             console.error("Error generating API key:", error);
-            generateKeyArea.classList.remove('hidden');
+            apiKeyContent.classList.remove('hidden');
+        } finally {
             apiKeyLoader.classList.add('hidden');
         }
-    });
+    }
+    
+    generateApiKeyBtn.addEventListener('click', handleGenerateKey);
+    revokeAndGenerateBtn.addEventListener('click', handleGenerateKey);
 
     copyApiKeyBtn.addEventListener('click', () => {
         apiKeyInput.select();
@@ -478,10 +613,15 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
             copyFeedback.classList.add('hidden');
         }, 2000);
     });
+    
+    toggleApiKeyVisibilityBtn.addEventListener('click', () => {
+        const isPassword = apiKeyInput.type === 'password';
+        apiKeyInput.type = isPassword ? 'text' : 'password';
+        eyeIcon.classList.toggle('hidden', isPassword);
+        eyeOffIcon.classList.toggle('hidden', !isPassword);
+    });
 
     // --- Main Application Logic ---
-    // ... (All your existing functions: fetchData, renderFilteredResults, etc.)
-    // ... (This section remains unchanged)
     const searchInput = document.getElementById('search-input');
     const searchTypeSelect = document.getElementById('search-type');
     const searchBtn = document.getElementById('search-btn');
