@@ -331,6 +331,9 @@
 
       try {
         const querySnapshot = await invitedUsersCollection.where("email", "==", normalizedEmail).get();
+        
+        console.log(`Query for invited email found ${querySnapshot.size} documents.`); // Enhanced logging
+
         if (querySnapshot.empty) {
           authErrorDiv.textContent = "Access denied. This email has not been invited.";
           authErrorDiv.classList.remove('hidden');
@@ -353,11 +356,9 @@
     // --- Tab Navigation Logic ---
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
-            // Deactivate all buttons and hide all content
             tabButtons.forEach(btn => btn.classList.remove('active'));
             tabContents.forEach(content => content.classList.add('hidden'));
 
-            // Activate the clicked button and show its content
             button.classList.add('active');
             const targetContentId = button.id.replace('tab-', '') + '-tab-content';
             document.getElementById(targetContentId).classList.remove('hidden');
