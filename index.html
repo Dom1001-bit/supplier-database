@@ -34,7 +34,6 @@
     .result-card { opacity: 0; transform: translateY(20px); animation: card-fade-in 0.5s forwards; }
     @keyframes card-fade-in { to { opacity: 1; transform: translateY(0); } }
     
-    /* Tab Styles */
     .tab-button.active {
         background-color: #4f46e5;
         color: #ffffff;
@@ -42,6 +41,16 @@
     .tab-button {
         background-color: #374151;
         color: #d1d5db;
+    }
+    .code-block {
+        background-color: #1f2937;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #374151;
+        color: #d1d5db;
+        font-family: monospace;
+        white-space: pre-wrap;
+        word-wrap: break-word;
     }
   </style>
 </head>
@@ -97,7 +106,7 @@
     </div>
 
     <div class="container mx-auto p-4 md:p-8 relative">
-      <div id="sticky-header" class="mb-8 text-center">
+      <div id="header" class="mb-8 text-center">
         <img id="header-logo" src="https://i.imgur.com/5aUGEV3.png" alt="Brand Logo" style="height: 80px; margin: 0 auto 1rem auto;"/>
         <h1 id="header-title" class="text-3xl md:text-4xl font-bold text-gray-100">Supplier Database</h1>
         <p id="header-subtitle" class="text-gray-300 mt-1">Instantly search or browse items from all suppliers.</p>
@@ -184,19 +193,57 @@
 
         <!-- API Docs Tab -->
         <div id="api-docs-tab-content" class="tab-content hidden">
-            <div class="bg-gray-800/70 p-8 rounded-lg border border-gray-700">
+            <div class="bg-gray-800/70 p-8 rounded-lg border border-gray-700 text-gray-300 prose prose-invert max-w-none">
                 <h2 class="text-2xl font-bold text-white mb-4">API Documentation</h2>
-                <p class="text-gray-400 mb-6">Use the API to programmatically access the supplier database. All requests require a valid API key.</p>
-                <!-- Placeholder for API Docs -->
+                <p>Use our API to integrate your system with our live product database. All requests must be authenticated using your private API key.</p>
+                
+                <h3 class="text-xl font-semibold text-white mt-6 mb-2">Authentication</h3>
+                <p>Include your API key in the <code>Authorization</code> header for every request. You can generate and manage your key in the "API Key" tab.</p>
+                <pre class="code-block">Authorization: Bearer YOUR_API_KEY</pre>
+
+                <h3 class="text-xl font-semibold text-white mt-6 mb-2">Base URL</h3>
+                <pre class="code-block">https://supplier-api-977359606390.us-central1.run.app</pre>
+
+                <h3 class="text-xl font-semibold text-white mt-6 mb-2">Endpoints & Parameters</h3>
+                <p><strong>GET /</strong></p>
+                <p>Returns a paginated list of products. You can filter by SKU or UPC.</p>
+                <ul class="list-disc list-inside space-y-2 mt-4">
+                    <li><code>page</code> (optional, default: 1) - The page number to retrieve.</li>
+                    <li><code>limit</code> (optional, default: 250, max: 250) - The number of items to return per page.</li>
+                    <li><code>sku</code> (optional) - Filter results for a single product by its SKU.</li>
+                    <li><code>upc</code> (optional) - Filter results for a single product by its UPC.</li>
+                </ul>
+
+                <h3 class="text-xl font-semibold text-white mt-6 mb-2">Rate Limits</h3>
+                <p>You may call this endpoint up to 300 times per 24-hour period per token. Additional requests will receive a <code>429 Too Many Requests</code> error.</p>
+
+                <h3 class="text-xl font-semibold text-white mt-6 mb-2">Example Request (cURL)</h3>
+                <pre class="code-block"># Get page 2 with 50 items per page
+curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&limit=50" \
+     -H "Authorization: Bearer YOUR_API_KEY"</pre>
             </div>
         </div>
 
         <!-- API Key Tab -->
         <div id="api-key-tab-content" class="tab-content hidden">
-            <div class="bg-gray-800/70 p-8 rounded-lg border border-gray-700">
-                <h2 class="text-2xl font-bold text-white mb-4">Your API Key</h2>
-                <p class="text-gray-400 mb-6">Use this key in the header of your API requests. Keep it secret!</p>
-                <!-- Placeholder for API Key Management -->
+            <div class="bg-gray-800/70 p-8 rounded-lg border border-gray-700 max-w-2xl mx-auto">
+                <h2 class="text-2xl font-bold text-white mb-4">Manage Your API Key</h2>
+                <p class="text-gray-400 mb-6">Use this key to authenticate your API requests. Treat it like a password and do not share it publicly.</p>
+                
+                <div id="api-key-display-area" class="hidden">
+                    <label class="block text-sm font-medium text-gray-300">Your API Key</label>
+                    <div class="mt-1 flex rounded-md shadow-sm">
+                        <input type="text" id="api-key-input" readonly class="block w-full rounded-none rounded-l-md border-gray-600 bg-gray-900 text-gray-400 font-mono p-2.5">
+                        <button id="copy-api-key-btn" class="inline-flex items-center rounded-r-md border border-l-0 border-gray-600 bg-gray-700 px-4 text-sm font-medium text-gray-300 hover:bg-gray-600">Copy</button>
+                    </div>
+                    <p id="copy-feedback" class="text-green-400 text-sm mt-2 hidden">Copied!</p>
+                </div>
+
+                <div id="generate-key-area">
+                    <p class="text-center text-gray-400 mb-4">You have not generated an API key yet.</p>
+                    <button id="generate-api-key-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700">Generate API Key</button>
+                </div>
+                 <div id="api-key-loader" class="text-center hidden"><div class="loader inline-block"></div></div>
             </div>
         </div>
       </div>
@@ -264,9 +311,9 @@
     const auth = firebase.auth();
     const productsCollection = db.collection("products");
     const invitedUsersCollection = db.collection("invitedUsers");
+    const apiKeysCollection = db.collection("apiKeys");
 
     // --- UI Elements ---
-    // Auth elements
     const authContainer = document.getElementById('auth-container');
     const mainAppContainer = document.getElementById('main-app-container');
     const loginForm = document.getElementById('login-form');
@@ -276,20 +323,24 @@
     const authErrorDiv = document.getElementById('auth-error');
     const userEmailDisplay = document.getElementById('user-email-display');
     const logoutBtn = document.getElementById('logout-btn');
-    
-    // Tab elements
     const tabButtons = document.querySelectorAll('.tab-button');
     const tabContents = document.querySelectorAll('.tab-content');
+    const apiKeyDisplayArea = document.getElementById('api-key-display-area');
+    const apiKeyInput = document.getElementById('api-key-input');
+    const generateKeyArea = document.getElementById('generate-key-area');
+    const generateApiKeyBtn = document.getElementById('generate-api-key-btn');
+    const copyApiKeyBtn = document.getElementById('copy-api-key-btn');
+    const copyFeedback = document.getElementById('copy-feedback');
+    const apiKeyLoader = document.getElementById('api-key-loader');
     
     // --- Authentication Logic ---
-
-    // Listen for auth state changes
     auth.onAuthStateChanged(user => {
       if (user) {
         authContainer.classList.add('hidden');
         mainAppContainer.classList.remove('hidden');
         userEmailDisplay.textContent = user.email;
         handleBrowseAll();
+        loadApiKey(); // Load API key when user logs in
       } else {
         authContainer.classList.remove('hidden');
         mainAppContainer.classList.add('hidden');
@@ -297,7 +348,6 @@
       }
     });
 
-    // Toggle between login and signup forms
     showSignupBtn.addEventListener('click', () => {
       loginForm.classList.add('hidden');
       signupForm.classList.remove('hidden');
@@ -310,7 +360,6 @@
       authErrorDiv.classList.add('hidden');
     });
 
-    // Handle Login
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const email = document.getElementById('email').value;
@@ -322,20 +371,17 @@
         });
     });
 
-    // Handle Signup
     signupForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('signup-email').value;
       const password = document.getElementById('signup-password').value;
-      
       const normalizedEmail = email.toLowerCase();
       console.log("Checking for invited email:", normalizedEmail);
 
       try {
         const docRef = invitedUsersCollection.doc(normalizedEmail);
         const docSnap = await docRef.get();
-
-        console.log(`Document exists check for ${normalizedEmail}:`, docSnap.exists); // FIX: Use .exists property
+        console.log(`Document exists check for ${normalizedEmail}:`, docSnap.exists);
 
         if (!docSnap.exists) {
           authErrorDiv.textContent = "Access denied. This email has not been invited.";
@@ -345,13 +391,12 @@
 
         await auth.createUserWithEmailAndPassword(email, password);
       } catch (error) {
-        console.error("Detailed Signup Error:", error); // Enhanced logging
+        console.error("Detailed Signup Error:", error);
         authErrorDiv.textContent = `Error: ${error.code} - ${error.message}`;
         authErrorDiv.classList.remove('hidden');
       }
     });
 
-    // Handle Logout
     logoutBtn.addEventListener('click', () => {
       auth.signOut();
     });
@@ -361,14 +406,82 @@
         button.addEventListener('click', () => {
             tabButtons.forEach(btn => btn.classList.remove('active'));
             tabContents.forEach(content => content.classList.add('hidden'));
-
             button.classList.add('active');
             const targetContentId = button.id.replace('tab-', '') + '-tab-content';
             document.getElementById(targetContentId).classList.remove('hidden');
         });
     });
+    
+    // --- API Key Management ---
+    function generateRandomKey() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = 'sk_'; // Prefix to identify it as a secret key
+        for (let i = 0; i < 32; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
+
+    async function loadApiKey() {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        apiKeyLoader.classList.remove('hidden');
+        apiKeyDisplayArea.classList.add('hidden');
+        generateKeyArea.classList.add('hidden');
+
+        try {
+            const docRef = apiKeysCollection.doc(user.uid);
+            const docSnap = await docRef.get();
+
+            if (docSnap.exists) {
+                apiKeyInput.value = docSnap.data().key;
+                apiKeyDisplayArea.classList.remove('hidden');
+            } else {
+                generateKeyArea.classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error("Error loading API key:", error);
+        } finally {
+            apiKeyLoader.classList.add('hidden');
+        }
+    }
+
+    generateApiKeyBtn.addEventListener('click', async () => {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const newKey = generateRandomKey();
+        apiKeyLoader.classList.remove('hidden');
+        generateKeyArea.classList.add('hidden');
+
+        try {
+            // The document ID is the user's UID to ensure they can only have one.
+            await apiKeysCollection.doc(user.uid).set({
+                key: newKey,
+                userId: user.uid, // Store the UID for reference
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            await loadApiKey(); // Reload to display the new key
+        } catch (error) {
+            console.error("Error generating API key:", error);
+            generateKeyArea.classList.remove('hidden');
+            apiKeyLoader.classList.add('hidden');
+        }
+    });
+
+    copyApiKeyBtn.addEventListener('click', () => {
+        apiKeyInput.select();
+        document.execCommand('copy');
+        copyFeedback.classList.remove('hidden');
+        setTimeout(() => {
+            copyFeedback.classList.add('hidden');
+        }, 2000);
+    });
 
     // --- Main Application Logic ---
+    // ... (All your existing functions: fetchData, renderFilteredResults, etc.)
+    // ... (This section remains unchanged)
     const searchInput = document.getElementById('search-input');
     const searchTypeSelect = document.getElementById('search-type');
     const searchBtn = document.getElementById('search-btn');
@@ -381,7 +494,7 @@
     const errorDisplay = document.getElementById('error-display');
     const errorMessage = document.getElementById('error-message');
     const searchControls = document.getElementById('search-controls');
-    const stickyHeader = document.getElementById('sticky-header');
+    const stickyHeader = document.getElementById('header');
     const controlsBar = document.getElementById('controls-bar');
     const exportCsvBtn = document.getElementById('export-csv-btn');
     const filterSuppliersBtn = document.getElementById('filter-suppliers-btn');
