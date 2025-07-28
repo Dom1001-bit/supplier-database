@@ -333,9 +333,9 @@
         const docRef = invitedUsersCollection.doc(normalizedEmail);
         const docSnap = await docRef.get();
 
-        console.log(`Document exists check for ${normalizedEmail}:`, docSnap.exists()); // Enhanced logging
+        console.log(`Document exists check for ${normalizedEmail}:`, docSnap.exists); // FIX: Use .exists property
 
-        if (!docSnap.exists()) {
+        if (!docSnap.exists) {
           authErrorDiv.textContent = "Access denied. This email has not been invited.";
           authErrorDiv.classList.remove('hidden');
           return;
