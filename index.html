@@ -330,11 +330,12 @@
       console.log("Checking for invited email:", normalizedEmail);
 
       try {
-        const querySnapshot = await invitedUsersCollection.where("email", "==", normalizedEmail).get();
-        
-        console.log(`Query for invited email found ${querySnapshot.size} documents.`); // Enhanced logging
+        const docRef = invitedUsersCollection.doc(normalizedEmail);
+        const docSnap = await docRef.get();
 
-        if (querySnapshot.empty) {
+        console.log(`Document exists check for ${normalizedEmail}:`, docSnap.exists()); // Enhanced logging
+
+        if (!docSnap.exists()) {
           authErrorDiv.textContent = "Access denied. This email has not been invited.";
           authErrorDiv.classList.remove('hidden');
           return;
