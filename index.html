@@ -132,8 +132,9 @@
       <h2 id="auth-title" class="text-2xl font-bold text-center mb-2">Member Login</h2>
       <p id="auth-subtitle" class="text-center mb-6">Access the Supplier Database</p>
       
-      <div id="auth-feedback" class="hidden border px-4 py-2 rounded-lg mb-4 text-sm"></div>
+      <div id="auth-message" class="hidden px-4 py-2 rounded-lg mb-4 text-sm"></div>
 
+      <!-- Login Form -->
       <form id="login-form">
         <div class="mb-4">
           <label for="email" class="block text-sm font-medium">Email Address</label>
@@ -143,15 +144,14 @@
           <label for="password" class="block text-sm font-medium">Password</label>
           <input type="password" id="password" required class="mt-1 block w-full rounded-md border-gray-600 bg-gray-700/50 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
         </div>
-        <div class="flex justify-end mb-6">
-            <button type="button" id="show-forgot-password-btn" class="text-sm text-indigo-400 hover:text-indigo-300">Forgot Password?</button>
-        </div>
+        <button type="button" id="show-forgot-password-btn" class="text-xs text-indigo-400 hover:text-indigo-300 text-right w-full mb-4 -mt-2">Forgot Password?</button>
         <div id="auth-buttons">
           <button type="submit" id="login-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors btn-click-effect">Login</button>
           <button type="button" id="show-signup-btn" class="w-full mt-3 text-center text-sm text-indigo-400 hover:text-indigo-300">Don't have an account? Sign Up</button>
         </div>
       </form>
 
+      <!-- Signup Form -->
       <form id="signup-form" class="hidden">
         <div class="mb-4">
           <label for="signup-email" class="block text-sm font-medium">Email Address</label>
@@ -163,20 +163,22 @@
         </div>
         <div id="signup-buttons">
           <button type="submit" id="signup-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-teal-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-colors btn-click-effect">Create Account</button>
-          <button type="button" id="show-login-btn" class="w-full mt-3 text-center text-sm text-indigo-400 hover:text-indigo-300">Already have an account? Login</button>
+          <button type="button" id="show-login-btn-from-signup" class="w-full mt-3 text-center text-sm text-indigo-400 hover:text-indigo-300">Already have an account? Login</button>
         </div>
       </form>
       
+      <!-- Forgot Password Form -->
       <form id="forgot-password-form" class="hidden">
         <div class="mb-4">
-          <label for="reset-email" class="block text-sm font-medium">Email Address</label>
-          <input type="email" id="reset-email" required class="mt-1 block w-full rounded-md border-gray-600 bg-gray-700/50 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+            <label for="reset-email" class="block text-sm font-medium">Email Address</label>
+            <input type="email" id="reset-email" required class="mt-1 block w-full rounded-md border-gray-600 bg-gray-700/50 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
         </div>
-        <div id="reset-buttons">
-          <button type="submit" id="reset-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors btn-click-effect">Send Reset Link</button>
-          <button type="button" id="back-to-login-btn" class="w-full mt-3 text-center text-sm text-indigo-400 hover:text-indigo-300">Back to Login</button>
+        <div id="forgot-password-buttons">
+            <button type="submit" id="reset-password-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-orange-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors btn-click-effect">Send Reset Link</button>
+            <button type="button" id="show-login-btn-from-forgot" class="w-full mt-3 text-center text-sm text-indigo-400 hover:text-indigo-300">Back to Login</button>
         </div>
       </form>
+
     </div>
   </div>
 
@@ -185,14 +187,20 @@
     <!-- Logged-in User Nav -->
     <div class="absolute top-4 right-6 text-sm z-20 flex items-center gap-4">
       <!-- Theme Toggle -->
-      <button id="theme-toggle-btn" class="p-2 rounded-full bg-gray-700/50 hover:bg-gray-600/50 transition-colors">
-          <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-300 hidden" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 14.464A1 1 0 106.465 13.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-1.414-2.12a1 1 0 011.414 0l.707.707a1 1 0 11-1.414 1.414l-.707-.707a1 1 0 010-1.414zM3 11a1 1 0 100-2H2a1 1 0 100 2h1z" />
-          </svg>
-          <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-          </svg>
-      </button>
+      <label for="theme-toggle" class="flex items-center cursor-pointer">
+        <input type="checkbox" id="theme-toggle" class="sr-only">
+        <div class="relative">
+          <div class="bg-gray-600 w-14 h-8 rounded-full flex items-center p-1 transition-colors">
+            <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-300 hidden" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 14.464A1 1 0 106.465 13.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-1.414-2.12a1 1 0 011.414 0l.707.707a1 1 0 11-1.414 1.414l-.707-.707a1 1 0 010-1.414zM3 11a1 1 0 100-2H2a1 1 0 100 2h1z" />
+            </svg>
+            <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+            </svg>
+          </div>
+          <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform"></div>
+        </div>
+      </label>
       <span id="user-email-display"></span>
       <button id="logout-btn" class="font-semibold text-indigo-400 hover:text-indigo-300">Logout</button>
     </div>
@@ -246,7 +254,7 @@
                 <label class="search-label block text-sm font-medium">Bulk UPC Search</label>
                 <textarea id="upc-list-input" rows="4" class="mt-1 block w-full rounded-md border-gray-600 bg-gray-700/50 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2" placeholder="Paste a list of UPCs, one per line (up to 100)"></textarea>
                 <button id="search-list-btn" class="mt-2 w-full inline-flex justify-center rounded-md border border-transparent bg-teal-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-colors btn-click-effect">Search UPC List</button>
-            </div>
+             </div>
           </div>
           
           <div id="controls-bar" class="mb-4 flex justify-end items-center gap-4 hidden">
@@ -262,8 +270,8 @@
 
           <div id="loader-container" class="hidden"></div>
           <div id="export-loader" class="flex justify-center items-center py-20 hidden">
-              <div class="loader"></div>
-              <p class="ml-4 text-gray-400">Generating your export file...</p>
+             <div class="loader"></div>
+             <p class="ml-4 text-gray-400">Generating your export file...</p>
           </div>
           <div id="error-display" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
             <strong class="font-bold">Error:</strong>
@@ -484,9 +492,12 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     const mainAppContainer = document.getElementById('main-app-container');
     const loginForm = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
+    const forgotPasswordForm = document.getElementById('forgot-password-form');
     const showSignupBtn = document.getElementById('show-signup-btn');
-    const showLoginBtn = document.getElementById('show-login-btn');
-    const authErrorDiv = document.getElementById('auth-feedback');
+    const showLoginBtnFromSignup = document.getElementById('show-login-btn-from-signup');
+    const showLoginBtnFromForgot = document.getElementById('show-login-btn-from-forgot');
+    const showForgotPasswordBtn = document.getElementById('show-forgot-password-btn');
+    const authMessageDiv = document.getElementById('auth-message');
     const userEmailDisplay = document.getElementById('user-email-display');
     const logoutBtn = document.getElementById('logout-btn');
     const tabButtons = document.querySelectorAll('.tab-button');
@@ -506,25 +517,29 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     const apiUsageBar = document.getElementById('api-usage-bar');
     const apiUsageText = document.getElementById('api-usage-text');
     const recentCallsTbody = document.getElementById('recent-calls-tbody');
-    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const themeToggle = document.getElementById('theme-toggle');
     const sunIcon = document.getElementById('sun-icon');
     const moonIcon = document.getElementById('moon-icon');
+    const authTitle = document.getElementById('auth-title');
+    const authSubtitle = document.getElementById('auth-subtitle');
     
     // --- Theme Logic ---
     const applyTheme = (isLight) => {
         if (isLight) {
             document.documentElement.classList.add('light-mode');
+            themeToggle.checked = true;
             sunIcon.classList.remove('hidden');
             moonIcon.classList.add('hidden');
         } else {
             document.documentElement.classList.remove('light-mode');
+            themeToggle.checked = false;
             sunIcon.classList.add('hidden');
             moonIcon.classList.remove('hidden');
         }
     };
 
-    themeToggleBtn.addEventListener('click', () => {
-        const isLight = document.documentElement.classList.toggle('light-mode');
+    themeToggle.addEventListener('change', () => {
+        const isLight = themeToggle.checked;
         localStorage.setItem('theme', isLight ? 'light' : 'dark');
         applyTheme(isLight);
     });
@@ -548,17 +563,45 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
       }
     });
 
+    function showAuthMessage(message, type = 'error') {
+        authMessageDiv.textContent = message;
+        if (type === 'error') {
+            authMessageDiv.className = 'bg-red-900/50 border border-red-700 text-red-300 px-4 py-2 rounded-lg mb-4 text-sm';
+        } else if (type === 'success') {
+            authMessageDiv.className = 'bg-green-900/50 border border-green-700 text-green-300 px-4 py-2 rounded-lg mb-4 text-sm';
+        }
+        authMessageDiv.classList.remove('hidden');
+    }
+
+    function showLoginForm() {
+        loginForm.classList.remove('hidden');
+        signupForm.classList.add('hidden');
+        forgotPasswordForm.classList.add('hidden');
+        authMessageDiv.classList.add('hidden');
+        authTitle.textContent = 'Member Login';
+        authSubtitle.textContent = 'Access the Supplier Database';
+    }
+
     showSignupBtn.addEventListener('click', () => {
-      loginForm.classList.add('hidden');
-      signupForm.classList.remove('hidden');
-      authErrorDiv.classList.add('hidden');
+        loginForm.classList.add('hidden');
+        signupForm.classList.remove('hidden');
+        forgotPasswordForm.classList.add('hidden');
+        authMessageDiv.classList.add('hidden');
+        authTitle.textContent = 'Create Account';
+        authSubtitle.textContent = 'Join the Supplier Database';
+    });
+    
+    showForgotPasswordBtn.addEventListener('click', () => {
+        loginForm.classList.add('hidden');
+        signupForm.classList.add('hidden');
+        forgotPasswordForm.classList.remove('hidden');
+        authMessageDiv.classList.add('hidden');
+        authTitle.textContent = 'Reset Password';
+        authSubtitle.textContent = 'Enter your email to get a reset link.';
     });
 
-    showLoginBtn.addEventListener('click', () => {
-      signupForm.classList.add('hidden');
-      loginForm.classList.remove('hidden');
-      authErrorDiv.classList.add('hidden');
-    });
+    showLoginBtnFromSignup.addEventListener('click', showLoginForm);
+    showLoginBtnFromForgot.addEventListener('click', showLoginForm);
 
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -566,8 +609,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
       const password = document.getElementById('password').value;
       auth.signInWithEmailAndPassword(email, password)
         .catch(error => {
-          authErrorDiv.textContent = error.message;
-          authErrorDiv.classList.remove('hidden');
+          showAuthMessage(error.message, 'error');
         });
     });
 
@@ -584,17 +626,29 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
         console.log(`Document exists check for ${normalizedEmail}:`, docSnap.exists);
 
         if (!docSnap.exists) {
-          authErrorDiv.textContent = "Access denied. This email has not been invited.";
-          authErrorDiv.classList.remove('hidden');
+          showAuthMessage("Access denied. This email has not been invited.", 'error');
           return;
         }
 
         await auth.createUserWithEmailAndPassword(email, password);
       } catch (error) {
         console.error("Detailed Signup Error:", error);
-        authErrorDiv.textContent = `Error: ${error.code} - ${error.message}`;
-        authErrorDiv.classList.remove('hidden');
+        showAuthMessage(`Error: ${error.code} - ${error.message}`, 'error');
       }
+    });
+    
+    forgotPasswordForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('reset-email').value;
+        showAuthMessage('Sending password reset email...', 'success'); // Using success style for neutral message
+        
+        auth.sendPasswordResetEmail(email)
+            .then(() => {
+                showAuthMessage('Password reset email sent! Please check your inbox.', 'success');
+            })
+            .catch(error => {
+                showAuthMessage(error.message, 'error');
+            });
     });
 
     logoutBtn.addEventListener('click', () => {
@@ -845,24 +899,25 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     }
 
     function handleSearch() {
-        currentSearchType = 'search';
-        const searchTerm = searchInput.value.trim();
-        const searchType = searchTypeSelect.value;
-        if (!searchTerm) {
-            alert("Please enter a search term.");
-            return;
-        }
-        currentPage = 1;
-        lastVisibleDoc = null;
-        firstVisibleDoc = null;
-        let constraints = [];
-        if (searchType === 'itemName_lowercase') {
-            constraints.push({ field: 'itemName_lowercase', op: '>=', value: searchTerm.toLowerCase() });
-            constraints.push({ field: 'itemName_lowercase', op: '<=', value: searchTerm.toLowerCase() + '\uf8ff' });
-        } else {
-            constraints.push({ field: searchType, op: '==', value: searchTerm });
-        }
-        fetchData(constraints);
+      currentSearchType = 'search';
+      const searchTerm = searchInput.value.trim();
+      const searchType = searchTypeSelect.value;
+      if (!searchTerm) {
+        // Using a custom modal/alert in the future would be better
+        alert("Please enter a search term.");
+        return;
+      }
+      currentPage = 1;
+      lastVisibleDoc = null;
+      firstVisibleDoc = null;
+      let constraints = [];
+      if (searchType === 'itemName_lowercase') {
+          constraints.push({ field: 'itemName_lowercase', op: '>=', value: searchTerm.toLowerCase() });
+          constraints.push({ field: 'itemName_lowercase', op: '<=', value: searchTerm.toLowerCase() + '\uf8ff' });
+      } else {
+          constraints.push({ field: searchType, op: '==', value: searchTerm });
+      }
+      fetchData(constraints);
     }
     
     async function handleBulkSearch() {
@@ -914,11 +969,11 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     }
 
     function handleBrowseAll() {
-        currentSearchType = 'browse';
-        currentPage = 1;
-        lastVisibleDoc = null;
-        firstVisibleDoc = null;
-        fetchData([]);
+      currentSearchType = 'browse';
+      currentPage = 1;
+      lastVisibleDoc = null;
+      firstVisibleDoc = null;
+      fetchData([]);
     }
 
     async function handleExport() {
@@ -1150,8 +1205,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     });
 
     supplierModalCloseBtn.addEventListener('click', () => supplierFilterModal.classList.add('hidden'));
-    supplierModalOverlay.addEventListener('click', () => supplierFilterModal.classList.add('hidden');
-    });
+    supplierModalOverlay.addEventListener('click', () => supplierFilterModal.classList.add('hidden'));
 
     selectAllSuppliersBtn.addEventListener('click', () => {
         supplierListContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
