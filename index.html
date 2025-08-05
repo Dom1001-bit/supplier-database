@@ -132,16 +132,19 @@
       <h2 id="auth-title" class="text-2xl font-bold text-center mb-2">Member Login</h2>
       <p id="auth-subtitle" class="text-center mb-6">Access the Supplier Database</p>
       
-      <div id="auth-error" class="hidden bg-red-900/50 border border-red-700 text-red-300 px-4 py-2 rounded-lg mb-4 text-sm"></div>
+      <div id="auth-feedback" class="hidden border px-4 py-2 rounded-lg mb-4 text-sm"></div>
 
       <form id="login-form">
         <div class="mb-4">
           <label for="email" class="block text-sm font-medium">Email Address</label>
           <input type="email" id="email" required class="mt-1 block w-full rounded-md border-gray-600 bg-gray-700/50 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
         </div>
-        <div class="mb-6">
+        <div class="mb-4">
           <label for="password" class="block text-sm font-medium">Password</label>
           <input type="password" id="password" required class="mt-1 block w-full rounded-md border-gray-600 bg-gray-700/50 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+        </div>
+        <div class="flex justify-end mb-6">
+            <button type="button" id="show-forgot-password-btn" class="text-sm text-indigo-400 hover:text-indigo-300">Forgot Password?</button>
         </div>
         <div id="auth-buttons">
           <button type="submit" id="login-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors btn-click-effect">Login</button>
@@ -163,6 +166,17 @@
           <button type="button" id="show-login-btn" class="w-full mt-3 text-center text-sm text-indigo-400 hover:text-indigo-300">Already have an account? Login</button>
         </div>
       </form>
+      
+      <form id="forgot-password-form" class="hidden">
+        <div class="mb-4">
+          <label for="reset-email" class="block text-sm font-medium">Email Address</label>
+          <input type="email" id="reset-email" required class="mt-1 block w-full rounded-md border-gray-600 bg-gray-700/50 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+        </div>
+        <div id="reset-buttons">
+          <button type="submit" id="reset-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors btn-click-effect">Send Reset Link</button>
+          <button type="button" id="back-to-login-btn" class="w-full mt-3 text-center text-sm text-indigo-400 hover:text-indigo-300">Back to Login</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -171,20 +185,14 @@
     <!-- Logged-in User Nav -->
     <div class="absolute top-4 right-6 text-sm z-20 flex items-center gap-4">
       <!-- Theme Toggle -->
-      <label for="theme-toggle" class="flex items-center cursor-pointer">
-        <input type="checkbox" id="theme-toggle" class="sr-only">
-        <div class="relative">
-          <div class="bg-gray-600 w-14 h-8 rounded-full flex items-center p-1 transition-colors">
-            <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-300 hidden" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 14.464A1 1 0 106.465 13.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-1.414-2.12a1 1 0 011.414 0l.707.707a1 1 0 11-1.414 1.414l-.707-.707a1 1 0 010-1.414zM3 11a1 1 0 100-2H2a1 1 0 100 2h1z" />
-            </svg>
-            <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-            </svg>
-          </div>
-          <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform"></div>
-        </div>
-      </label>
+      <button id="theme-toggle-btn" class="p-2 rounded-full bg-gray-700/50 hover:bg-gray-600/50 transition-colors">
+          <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-300 hidden" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 14.464A1 1 0 106.465 13.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-1.414-2.12a1 1 0 011.414 0l.707.707a1 1 0 11-1.414 1.414l-.707-.707a1 1 0 010-1.414zM3 11a1 1 0 100-2H2a1 1 0 100 2h1z" />
+          </svg>
+          <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+          </svg>
+      </button>
       <span id="user-email-display"></span>
       <button id="logout-btn" class="font-semibold text-indigo-400 hover:text-indigo-300">Logout</button>
     </div>
@@ -478,7 +486,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     const signupForm = document.getElementById('signup-form');
     const showSignupBtn = document.getElementById('show-signup-btn');
     const showLoginBtn = document.getElementById('show-login-btn');
-    const authErrorDiv = document.getElementById('auth-error');
+    const authErrorDiv = document.getElementById('auth-feedback');
     const userEmailDisplay = document.getElementById('user-email-display');
     const logoutBtn = document.getElementById('logout-btn');
     const tabButtons = document.querySelectorAll('.tab-button');
@@ -498,7 +506,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     const apiUsageBar = document.getElementById('api-usage-bar');
     const apiUsageText = document.getElementById('api-usage-text');
     const recentCallsTbody = document.getElementById('recent-calls-tbody');
-    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
     const sunIcon = document.getElementById('sun-icon');
     const moonIcon = document.getElementById('moon-icon');
     
@@ -506,19 +514,17 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     const applyTheme = (isLight) => {
         if (isLight) {
             document.documentElement.classList.add('light-mode');
-            themeToggle.checked = true;
             sunIcon.classList.remove('hidden');
             moonIcon.classList.add('hidden');
         } else {
             document.documentElement.classList.remove('light-mode');
-            themeToggle.checked = false;
             sunIcon.classList.add('hidden');
             moonIcon.classList.remove('hidden');
         }
     };
 
-    themeToggle.addEventListener('change', () => {
-        const isLight = themeToggle.checked;
+    themeToggleBtn.addEventListener('click', () => {
+        const isLight = document.documentElement.classList.toggle('light-mode');
         localStorage.setItem('theme', isLight ? 'light' : 'dark');
         applyTheme(isLight);
     });
@@ -1144,7 +1150,8 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     });
 
     supplierModalCloseBtn.addEventListener('click', () => supplierFilterModal.classList.add('hidden'));
-    supplierModalOverlay.addEventListener('click', () => supplierFilterModal.classList.add('hidden'));
+    supplierModalOverlay.addEventListener('click', () => supplierFilterModal.classList.add('hidden');
+    });
 
     selectAllSuppliersBtn.addEventListener('click', () => {
         supplierListContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
