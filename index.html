@@ -35,8 +35,8 @@
         --glass-bg: rgba(255, 255, 255, 0.6);
         --input-bg: rgba(229, 231, 235, 0.5);
         --code-block-bg: #f3f4f6;
-        --table-header-bg: rgba(229, 231, 235, 0.8);
-        --table-body-bg: rgba(249, 250, 251, 0.8);
+        --table-header-bg: rgba(229, 231, 235, 0.8); /* Lighter table header */
+        --table-body-bg: rgba(249, 250, 251, 0.8);   /* Lighter table body */
     }
 
     body { 
@@ -97,16 +97,17 @@
     #header-title, #header-subtitle, #user-email-display { color: var(--text-main); }
     html.light-mode .prose, html.light-mode .search-label, html.light-mode #no-results, html.light-mode #pagination-container { color: var(--text-main); }
     html.light-mode .prose h2, html.light-mode .prose h3 { color: var(--text-main); }
-    html.light-mode .result-card h3 { color: #111827; } /* Darker for light mode */
-    html.light-mode .result-card p { color: var(--text-secondary); } /* Use variable */
+    html.light-mode .result-card h3 { color: #111827; }
+    html.light-mode .result-card p { color: var(--text-secondary); }
     .result-card h3 { color: #f9fafb; font-weight: 600; }
     .result-card p { color: #9ca3af; }
-    html.light-mode #item-modal strong { color: #111827; } /* Darker for light mode */
-    html.light-mode #item-modal span { color: var(--text-secondary); } /* Use variable */
+    html.light-mode #item-modal strong { color: #111827; }
+    html.light-mode #item-modal span { color: var(--text-secondary); }
     html.light-mode #supplier-filter-modal h3, html.light-mode #supplier-filter-modal label { color: #1f2937; }
     .text-green-400 { color: #4ade80 !important; }
-    html.light-mode .text-green-400 { color: #16a34a !important; } /* Retain green for lowest price */
+    html.light-mode .text-green-400 { color: #16a34a !important; }
     html.light-mode ::placeholder { color: #6b7280; }
+    input, select, textarea { background-color: var(--input-bg); color: var(--text-on-glass); }
     html.light-mode input, html.light-mode select, html.light-mode textarea { color: var(--text-main); }
     html.light-mode #api-key-tab-content .text-yellow-400 { color: #92400e; }
     html.light-mode #api-key-tab-content .bg-yellow-900\/30 { background-color: rgba(252, 211, 77, 0.3); }
@@ -120,12 +121,11 @@
     }
 
     /* Modal Table Styling */
-    #item-modal table thead {
-        background-color: var(--table-header-bg);
-    }
-    #item-modal table tbody {
-        background-color: var(--table-body-bg);
-    }
+    #item-modal table thead { background-color: var(--table-header-bg); }
+    #item-modal table tbody { background-color: var(--table-body-bg); }
+    
+    /* Theme Toggle Switch */
+    #theme-toggle-btn:active { transform: scale(0.95); }
   </style>
 </head>
 <body class="text-gray-200">
@@ -143,11 +143,11 @@
       <form id="login-form">
         <div class="mb-4">
           <label for="email" class="block text-sm font-medium">Email Address</label>
-          <input type="email" id="email" required class="mt-1 block w-full rounded-md border-gray-600 bg-gray-700/50 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+          <input type="email" id="email" required class="mt-1 block w-full rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
         </div>
         <div class="mb-4">
           <label for="password" class="block text-sm font-medium">Password</label>
-          <input type="password" id="password" required class="mt-1 block w-full rounded-md border-gray-600 bg-gray-700/50 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+          <input type="password" id="password" required class="mt-1 block w-full rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
         </div>
         <button type="button" id="show-forgot-password-btn" class="text-xs text-indigo-400 hover:text-indigo-300 text-right w-full mb-4 -mt-2">Forgot Password?</button>
         <div id="auth-buttons">
@@ -160,11 +160,11 @@
       <form id="signup-form" class="hidden">
         <div class="mb-4">
           <label for="signup-email" class="block text-sm font-medium">Email Address</label>
-          <input type="email" id="signup-email" required class="mt-1 block w-full rounded-md border-gray-600 bg-gray-700/50 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+          <input type="email" id="signup-email" required class="mt-1 block w-full rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
         </div>
         <div class="mb-6">
           <label for="signup-password" class="block text-sm font-medium">Create Password (min. 6 characters)</label>
-          <input type="password" id="signup-password" required class="mt-1 block w-full rounded-md border-gray-600 bg-gray-700/50 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+          <input type="password" id="signup-password" required class="mt-1 block w-full rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
         </div>
         <div id="signup-buttons">
           <button type="submit" id="signup-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-teal-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-colors btn-click-effect">Create Account</button>
@@ -176,7 +176,7 @@
       <form id="forgot-password-form" class="hidden">
         <div class="mb-4">
             <label for="reset-email" class="block text-sm font-medium">Email Address</label>
-            <input type="email" id="reset-email" required class="mt-1 block w-full rounded-md border-gray-600 bg-gray-700/50 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+            <input type="email" id="reset-email" required class="mt-1 block w-full rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
         </div>
         <div id="forgot-password-buttons">
             <button type="submit" id="reset-password-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-orange-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors btn-click-effect">Send Reset Link</button>
@@ -228,12 +228,12 @@
                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
                    </div>
-                   <input type="text" id="search-input" placeholder="Enter UPC, Item Name, etc." class="block w-full rounded-md border-gray-600 bg-gray-700/50 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2.5 pl-10">
+                   <input type="text" id="search-input" placeholder="Enter UPC, Item Name, etc." class="block w-full rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2.5 pl-10">
                 </div>
               </div>
               <div>
                 <label for="search-type" class="search-label block text-sm font-medium mb-1">Search By</label>
-                <select id="search-type" class="block w-full rounded-md border-gray-600 bg-gray-700/50 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2.5">
+                <select id="search-type" class="block w-full rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2.5">
                   <option value="upc" selected>UPC</option>
                   <option value="itemName_lowercase">Item Name</option>
                   <option value="brand">Brand</option>
@@ -247,9 +247,9 @@
             </div>
              <div id="bulk-search-section" class="mt-4 pt-4 border-t border-gray-700">
                 <label class="search-label block text-sm font-medium">Bulk UPC Search</label>
-                <textarea id="upc-list-input" rows="4" class="mt-1 block w-full rounded-md border-gray-600 bg-gray-700/50 text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2" placeholder="Paste a list of UPCs, one per line (up to 100)"></textarea>
+                <textarea id="upc-list-input" rows="4" class="mt-1 block w-full rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2" placeholder="Paste a list of UPCs, one per line (up to 500)"></textarea>
                 <button id="search-list-btn" class="mt-2 w-full inline-flex justify-center rounded-md border border-transparent bg-teal-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-colors btn-click-effect">Search UPC List</button>
-             </div>
+            </div>
           </div>
           
           <div id="controls-bar" class="mb-4 flex justify-end items-center gap-4 hidden">
@@ -532,8 +532,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     };
 
     themeToggleBtn.addEventListener('click', () => {
-        const isCurrentlyLight = document.documentElement.classList.contains('light-mode');
-        const isLight = !isCurrentlyLight;
+        const isLight = document.documentElement.classList.toggle('light-mode');
         localStorage.setItem('theme', isLight ? 'light' : 'dark');
         applyTheme(isLight);
     });
@@ -634,7 +633,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     forgotPasswordForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const email = document.getElementById('reset-email').value;
-        showAuthMessage('Sending password reset email...', 'success'); // Using success style for neutral message
+        showAuthMessage('Sending password reset email...', 'success');
         
         auth.sendPasswordResetEmail(email)
             .then(() => {
@@ -921,8 +920,8 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
             alert("Please paste a list of UPCs.");
             return;
         }
-        if (upcList.length > 100) {
-            alert("Bulk search is limited to 100 UPCs at a time.");
+        if (upcList.length > 500) {
+            alert("Bulk search is limited to 500 UPCs at a time.");
             return;
         }
 
@@ -1199,7 +1198,9 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     });
 
     supplierModalCloseBtn.addEventListener('click', () => supplierFilterModal.classList.add('hidden'));
-    supplierModalOverlay.addEventListener('click', () => supplierFilterModal.classList.add('hidden'));
+    supplierModalOverlay.addEventListener('click', () => {
+        supplierFilterModal.classList.add('hidden');
+    });
 
     selectAllSuppliersBtn.addEventListener('click', () => {
         supplierListContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
