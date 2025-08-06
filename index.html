@@ -28,15 +28,15 @@
 
     html.light-mode {
         --bg-main: linear-gradient(-45deg, #f9fafb, #e5e7eb, #d1d5db, #f9fafb);
-        --text-main: #1f2937;
-        --text-secondary: #4b5563;
-        --text-on-glass: #1f2937; /* Dark text for light glass */
-        --border-color: rgba(209, 213, 219, 0.5);
+        --text-main: #1f2937; /* gray-800 */
+        --text-secondary: #374151; /* gray-700, darkened for better contrast */
+        --text-on-glass: #1f2937;
+        --border-color: rgba(209, 213, 219, 0.8); /* Increased opacity */
         --glass-bg: rgba(255, 255, 255, 0.6);
         --input-bg: rgba(229, 231, 235, 0.5);
         --code-block-bg: #f3f4f6;
-        --table-header-bg: rgba(229, 231, 235, 0.8); /* Lighter table header */
-        --table-body-bg: rgba(249, 250, 251, 0.8);   /* Lighter table body */
+        --table-header-bg: rgba(229, 231, 235, 0.8);
+        --table-body-bg: rgba(249, 250, 251, 0.8);
     }
 
     body { 
@@ -97,15 +97,15 @@
     #header-title, #header-subtitle, #user-email-display { color: var(--text-main); }
     html.light-mode .prose, html.light-mode .search-label, html.light-mode #no-results, html.light-mode #pagination-container { color: var(--text-main); }
     html.light-mode .prose h2, html.light-mode .prose h3 { color: var(--text-main); }
-    html.light-mode .result-card h3 { color: #1f2937; }
-    html.light-mode .result-card p { color: #4b5563; }
+    html.light-mode .result-card h3 { color: #111827; } /* Darker for light mode */
+    html.light-mode .result-card p { color: var(--text-secondary); } /* Use variable */
     .result-card h3 { color: #f9fafb; font-weight: 600; }
     .result-card p { color: #9ca3af; }
-    html.light-mode #item-modal strong { color: #374151; }
-    html.light-mode #item-modal span { color: #4b5563; }
+    html.light-mode #item-modal strong { color: #111827; } /* Darker for light mode */
+    html.light-mode #item-modal span { color: var(--text-secondary); } /* Use variable */
     html.light-mode #supplier-filter-modal h3, html.light-mode #supplier-filter-modal label { color: #1f2937; }
     .text-green-400 { color: #4ade80 !important; }
-    html.light-mode .text-green-400 { color: #16a34a !important; }
+    html.light-mode .text-green-400 { color: #16a34a !important; } /* Retain green for lowest price */
     html.light-mode ::placeholder { color: #6b7280; }
     html.light-mode input, html.light-mode select, html.light-mode textarea { color: var(--text-main); }
     html.light-mode #api-key-tab-content .text-yellow-400 { color: #92400e; }
@@ -113,13 +113,18 @@
     html.light-mode #recent-calls-tbody .text-gray-500, html.light-mode #recent-calls-tbody .text-gray-400 { color: var(--text-secondary); }
     html.light-mode #recent-calls-tbody .text-red-400 { color: #dc2626; }
     
-    /* Theme Toggle Switch */
-    #theme-toggle:checked ~ .relative .dot { transform: translateX(1.5rem); }
-    
     /* Button Click Animation */
     .btn-click-effect:active {
         transform: scale(0.98);
         transition: transform 0.1s ease;
+    }
+
+    /* Modal Table Styling */
+    #item-modal table thead {
+        background-color: var(--table-header-bg);
+    }
+    #item-modal table tbody {
+        background-color: var(--table-body-bg);
     }
   </style>
 </head>
@@ -186,21 +191,11 @@
   <div id="main-app-container" class="hidden">
     <!-- Logged-in User Nav -->
     <div class="absolute top-4 right-6 text-sm z-20 flex items-center gap-4">
-      <!-- Theme Toggle -->
-      <label for="theme-toggle" class="flex items-center cursor-pointer">
-        <input type="checkbox" id="theme-toggle" class="sr-only">
-        <div class="relative">
-          <div class="bg-gray-600 w-14 h-8 rounded-full flex items-center p-1 transition-colors">
-            <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-300 hidden" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 14.464A1 1 0 106.465 13.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-1.414-2.12a1 1 0 011.414 0l.707.707a1 1 0 11-1.414 1.414l-.707-.707a1 1 0 010-1.414zM3 11a1 1 0 100-2H2a1 1 0 100 2h1z" />
-            </svg>
-            <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-            </svg>
-          </div>
-          <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform"></div>
-        </div>
-      </label>
+      <!-- Theme Toggle Button -->
+      <button id="theme-toggle-btn" class="p-2 rounded-full hover:bg-gray-700/50 transition-colors">
+          <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-300 hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
       <span id="user-email-display"></span>
       <button id="logout-btn" class="font-semibold text-indigo-400 hover:text-indigo-300">Logout</button>
     </div>
@@ -517,7 +512,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     const apiUsageBar = document.getElementById('api-usage-bar');
     const apiUsageText = document.getElementById('api-usage-text');
     const recentCallsTbody = document.getElementById('recent-calls-tbody');
-    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
     const sunIcon = document.getElementById('sun-icon');
     const moonIcon = document.getElementById('moon-icon');
     const authTitle = document.getElementById('auth-title');
@@ -527,19 +522,18 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     const applyTheme = (isLight) => {
         if (isLight) {
             document.documentElement.classList.add('light-mode');
-            themeToggle.checked = true;
             sunIcon.classList.remove('hidden');
             moonIcon.classList.add('hidden');
         } else {
             document.documentElement.classList.remove('light-mode');
-            themeToggle.checked = false;
             sunIcon.classList.add('hidden');
             moonIcon.classList.remove('hidden');
         }
     };
 
-    themeToggle.addEventListener('change', () => {
-        const isLight = themeToggle.checked;
+    themeToggleBtn.addEventListener('click', () => {
+        const isCurrentlyLight = document.documentElement.classList.contains('light-mode');
+        const isLight = !isCurrentlyLight;
         localStorage.setItem('theme', isLight ? 'light' : 'dark');
         applyTheme(isLight);
     });
@@ -1309,14 +1303,14 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
             <h3 class="text-lg font-semibold mb-2">Supplier Stock & Pricing</h3>
             <div class="border border-gray-700/50 rounded-lg overflow-hidden">
                 <table class="w-full">
-                    <thead class="bg-gray-900/50">
+                    <thead>
                         <tr>
                             <th class="p-3 text-sm font-semibold text-left">Supplier</th>
                             <th class="p-3 text-sm font-semibold text-center">Price</th>
                             <th class="p-3 text-sm font-semibold text-center">Inventory</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-gray-800/50">${suppliersHtml}</tbody>
+                    <tbody>${suppliersHtml}</tbody>
                 </table>
             </div>
           </div>
