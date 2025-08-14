@@ -339,13 +339,77 @@
         ...
     ]
 }</pre>
+                <h3 class="text-xl font-semibold text-white mt-6 mb-2">Data Object Fields</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="border-b border-gray-600">
+                            <tr>
+                                <th class="p-2">Field</th>
+                                <th class="p-2">Type</th>
+                                <th class="p-2">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-700">
+                                <td class="p-2 font-mono">sku</td>
+                                <td class="p-2">String</td>
+                                <td class="p-2">The unique Stock Keeping Unit for the product.</td>
+                            </tr>
+                            <tr class="border-b border-gray-700">
+                                <td class="p-2 font-mono">upc</td>
+                                <td class="p-2">String</td>
+                                <td class="p-2">The Universal Product Code.</td>
+                            </tr>
+                            <tr class="border-b border-gray-700">
+                                <td class="p-2 font-mono">itemName</td>
+                                <td class="p-2">String</td>
+                                <td class="p-2">The name of the product.</td>
+                            </tr>
+                            <tr class="border-b border-gray-700">
+                                <td class="p-2 font-mono">brand</td>
+                                <td class="p-2">String</td>
+                                <td class="p-2">The brand of the product.</td>
+                            </tr>
+                            <tr class="border-b border-gray-700">
+                                <td class="p-2 font-mono">size</td>
+                                <td class="p-2">String</td>
+                                <td class="p-2">The size of the product (e.g., "100ml").</td>
+                            </tr>
+                            <tr class="border-b border-gray-700">
+                                <td class="p-2 font-mono">msrp</td>
+                                <td class="p-2">Number</td>
+                                <td class="p-2">The Manufacturer's Suggested Retail Price.</td>
+                            </tr>
+                             <tr class="border-b border-gray-700">
+                                <td class="p-2 font-mono">asin</td>
+                                <td class="p-2">String</td>
+                                <td class="p-2">The Amazon Standard Identification Number.</td>
+                            </tr>
+                            <tr class="border-b border-gray-700">
+                                <td class="p-2 font-mono">supplier_X_...</td>
+                                <td class="p-2">String/Number</td>
+                                <td class="p-2">Supplier data is flattened. 'X' is the supplier number, sorted by lowest price first.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                <h3 class="text-xl font-semibold mt-6 mb-2">Rate Limits</h3>
-                <p>You may call this endpoint up to 300 times per 24-hour period per token. Additional requests will receive a <code>429 Too Many Requests</code> error.</p>
+                <h3 class="text-xl font-semibold text-white mt-6 mb-2">Error Responses</h3>
+                <p>If a request fails, the API will return a JSON object with an <code>error</code> key.</p>
+                <ul class="list-disc list-inside space-y-4 mt-4">
+                    <li><strong>401 Unauthorized:</strong> The API key is missing, invalid, or has been revoked.<pre class="code-block mt-2">{ "error": "Unauthorized: Invalid API key." }</pre></li>
+                    <li><strong>429 Too Many Requests:</strong> The user has exceeded the 300 requests per day limit.<pre class="code-block mt-2">{ "error": "You have exceeded the 300 requests in 24 hrs limit!" }</pre></li>
+                    <li><strong>500 Internal Server Error:</strong> An unexpected error occurred on the server.<pre class="code-block mt-2">{ "error": "An unexpected error occurred." }</pre></li>
+                </ul>
+
 
                 <h3 class="text-xl font-semibold mt-6 mb-2">Example Request (cURL)</h3>
                 <pre class="code-block"># Get page 2 with 50 items per page
 curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&limit=50" \
+     -H "Authorization: Bearer YOUR_API_KEY"</pre>
+                <h3 class="text-xl font-semibold mt-6 mb-2">Example Request (Filtering by SKU)</h3>
+                <pre class="code-block"># Get a single product by its SKU
+curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?sku=PRODUCT-SKU-123" \
      -H "Authorization: Bearer YOUR_API_KEY"</pre>
             </div>
         </div>
@@ -815,6 +879,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     const lightboxCloseBtn = document.getElementById('lightbox-close-btn');
     const upcListInput = document.getElementById('upc-list-input');
     const searchListBtn = document.getElementById('search-list-btn');
+    const noResultsBrowseBtn = document.getElementById('no-results-browse-btn');
     
     let lastVisibleDoc = null;
     let firstVisibleDoc = null;
@@ -866,24 +931,11 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
     }
 
     function renderFilteredResults(docs) {
-        const processedItems = docs.map(item => {
-            const filteredSuppliers = item.suppliers.filter(sup => !excludedSuppliers.has(sup.name));
-            
-            const newLowestPrice = filteredSuppliers.reduce((min, sup) => {
-                const price = parseFloat(sup.price);
-                return !isNaN(price) && price > 0 && price < min ? price : min;
-            }, Infinity);
-
-            return {
-                ...item,
-                suppliers: filteredSuppliers,
-                lowestPrice: newLowestPrice === Infinity ? -1 : newLowestPrice
-            };
-        });
-
         resultsContainer.innerHTML = '';
-        processedItems.forEach((item, index) => {
-            resultsContainer.appendChild(createItemCard(item, index));
+        docs.forEach((item, index) => {
+            const card = createItemCard(item);
+            card.style.animationDelay = `${index * 30}ms`; // Staggered animation
+            resultsContainer.appendChild(card);
         });
 
         noResultsDiv.style.display = 'none';
@@ -896,7 +948,6 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
       const searchTerm = searchInput.value.trim();
       const searchType = searchTypeSelect.value;
       if (!searchTerm) {
-        // Using a custom modal/alert in the future would be better
         alert("Please enter a search term.");
         return;
       }
@@ -1049,11 +1100,10 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&lim
         document.body.removeChild(link);
     }
 
-    function createItemCard(item, index) {
+    function createItemCard(item) {
         var card = document.createElement('div');
         card.className = 'glass-modal rounded-lg shadow-lg overflow-hidden flex flex-col cursor-pointer hover:border-indigo-500 result-card transition-all duration-300 hover:shadow-indigo-500/20';
         card.dataset.sku = item.sku;
-        card.style.animationDelay = (index * 50) + 'ms';
         var placeholderImg = 'https://i.imgur.com/IUBzxFv.jpeg';
         var imageWrapper = document.createElement('div');
         imageWrapper.className = 'w-full h-48 bg-white flex items-center justify-center';
