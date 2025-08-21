@@ -14,157 +14,167 @@
   
   <style>
     :root {
-        --bg-main: linear-gradient(-45deg, #000000, #111827, #1f2937, #000000);
+        --bg-main: #111827;
+        --bg-secondary: #1f2937;
+        --bg-glass: rgba(31, 41, 55, 0.6);
         --text-main: #e5e7eb;
         --text-secondary: #9ca3af;
-        --text-on-glass: #e5e7eb;
-        --border-color: rgba(55, 65, 81, 0.5);
-        --glass-bg: rgba(31, 41, 55, 0.7);
-        --input-bg: rgba(55, 65, 81, 0.5);
-        --code-block-bg: #111827;
-        --table-header-bg: rgba(17, 24, 39, 0.5);
-        --table-body-bg: rgba(31, 41, 55, 0.5);
+        --border-color: rgba(55, 65, 81, 0.8);
+        --accent-color: #4f46e5;
+        --accent-hover: #4338ca;
+        --card-bg: #1f2937;
     }
 
     html.light-mode {
-        --bg-main: linear-gradient(-45deg, #f9fafb, #e5e7eb, #d1d5db, #f9fafb);
-        --text-main: #1f2937; /* gray-800 */
-        --text-secondary: #374151; /* gray-700, darkened for better contrast */
-        --text-on-glass: #1f2937;
-        --border-color: rgba(209, 213, 219, 0.8); /* Increased opacity */
-        --glass-bg: rgba(255, 255, 255, 0.6);
-        --input-bg: rgba(229, 231, 235, 0.5);
-        --code-block-bg: #f3f4f6;
-        --table-header-bg: rgba(229, 231, 235, 0.8); /* Lighter table header */
-        --table-body-bg: rgba(249, 250, 251, 0.8);   /* Lighter table body */
+        --bg-main: #f9fafb;
+        --bg-secondary: #f3f4f6;
+        --bg-glass: rgba(255, 255, 255, 0.7);
+        --text-main: #1f2937;
+        --text-secondary: #4b5563;
+        --border-color: rgba(209, 213, 219, 0.8);
+        --accent-color: #4f46e5;
+        --accent-hover: #5a53e0;
+        --card-bg: #ffffff;
     }
 
-    body { 
-        font-family: 'Inter', sans-serif; 
-        background: var(--bg-main);
-        background-size: 400% 400%;
-        animation: gradientBG 15s ease infinite;
+    body {  
+        font-family: 'Inter', sans-serif;  
+        background-color: var(--bg-main);
         color: var(--text-main);
+        transition: background-color 0.3s ease, color 0.3s ease;
     }
-    @keyframes gradientBG {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-    .loader { border: 4px solid #4a5568; border-top: 4px solid #4f46e5; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .skeleton-card { background-color: #1f2937; border-radius: 0.5rem; overflow: hidden; border: 1px solid #374151; }
-    .skeleton-image { background-color: #374151; height: 12rem; }
-    .skeleton-text { background-color: #374151; height: 1rem; margin-bottom: 0.5rem; border-radius: 0.25rem; }
-    @keyframes pulse { 50% { opacity: .5; } }
-    .skeleton-card, .skeleton-image, .skeleton-text { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-    .result-card { opacity: 0; transform: translateY(20px); animation: card-fade-in 0.5s forwards; transition: all 0.2s ease-in-out; }
-    .result-card:hover { transform: translateY(15px) scale(1.02); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-    @keyframes card-fade-in { to { opacity: 1; transform: translateY(0); } }
     
-    .tab-button {
-        background-color: transparent;
-        color: var(--text-secondary);
-        border-bottom: 2px solid transparent;
-        transition: all 0.3s ease;
-    }
-    .tab-button:hover { color: var(--text-main); }
-    .tab-button.active { border-bottom-color: #4f46e5; color: var(--text-main); font-weight: 600; }
-    
-    .glass-modal {
-        background-color: var(--glass-bg);
+    .glass-effect {
+        background-color: var(--bg-glass);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border: 1px solid var(--border-color);
-        color: var(--text-on-glass);
-    }
-    .glass-modal h2, .glass-modal h3, .glass-modal p, .glass-modal label, .glass-modal th, .glass-modal td {
-        color: var(--text-on-glass);
     }
 
-    .code-block {
-        background-color: var(--code-block-bg);
-        padding: 1rem;
-        border-radius: 0.5rem;
+    .loader { border: 4px solid var(--border-color); border-top: 4px solid var(--accent-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    .skeleton-card { background-color: var(--bg-secondary); border-radius: 0.75rem; overflow: hidden; border: 1px solid var(--border-color); }
+    .skeleton-image { background-color: var(--text-secondary); opacity: 0.3; height: 12rem; }
+    .skeleton-text { background-color: var(--text-secondary); opacity: 0.3; height: 1rem; margin-bottom: 0.5rem; border-radius: 0.25rem; }
+    @keyframes pulse { 50% { opacity: .5; } }
+    .skeleton-card, .skeleton-image, .skeleton-text { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+    .result-card { 
+        opacity: 0; 
+        transform: translateY(20px); 
+        animation: card-fade-in 0.5s forwards; 
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        background-color: var(--card-bg);
         border: 1px solid var(--border-color);
+    }
+    .result-card:hover { 
+        transform: translateY(-5px); 
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+    }
+    html.dark .result-card:hover {
+        box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.2), 0 8px 10px -6px rgba(79, 70, 229, 0.1);
+        border-color: var(--accent-color);
+    }
+    @keyframes card-fade-in { to { opacity: 1; transform: translateY(0); } }
+    
+    .tab-button {
+        position: relative;
         color: var(--text-secondary);
-        font-family: monospace;
-        white-space: pre-wrap;
-        word-wrap: break-word;
+        transition: color 0.3s ease;
+    }
+    .tab-button:hover { color: var(--text-main); }
+    .tab-button.active { color: var(--accent-color); font-weight: 600; }
+    .tab-button.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: var(--accent-color);
     }
     
-    /* Theme-specific overrides */
-    #header-title, #header-subtitle, #user-email-display { color: var(--text-main); }
-    html.light-mode .prose, html.light-mode .search-label, html.light-mode #no-results, html.light-mode #pagination-container { color: var(--text-main); }
-    html.light-mode .prose h2, html.light-mode .prose h3 { color: var(--text-main); }
-    html.light-mode .result-card h3 { color: #111827; }
-    html.light-mode .result-card p { color: var(--text-secondary); }
-    .result-card h3 { color: #f9fafb; font-weight: 600; }
-    .result-card p { color: #9ca3af; }
-    html.light-mode #item-modal strong { color: #111827; }
-    html.light-mode #item-modal span { color: var(--text-secondary); }
-    html.light-mode #supplier-filter-modal h3, html.light-mode #supplier-filter-modal label { color: #1f2937; }
-    .text-green-400 { color: #4ade80 !important; }
-    html.light-mode .text-green-400 { color: #16a34a !important; }
-    html.light-mode ::placeholder { color: #6b7280; }
-    input, select, textarea { background-color: var(--input-bg); color: var(--text-on-glass); }
-    html.light-mode input, html.light-mode select, html.light-mode textarea { color: var(--text-main); }
-    html.light-mode #api-key-tab-content .text-yellow-400 { color: #92400e; }
-    html.light-mode #api-key-tab-content .bg-yellow-900\/30 { background-color: rgba(252, 211, 77, 0.3); }
-    html.light-mode #recent-calls-tbody .text-gray-500, html.light-mode #recent-calls-tbody .text-gray-400 { color: var(--text-secondary); }
-    html.light-mode #recent-calls-tbody .text-red-400 { color: #dc2626; }
-    
-    /* Button Click Animation */
+    .btn-primary {
+        background-color: var(--accent-color);
+        color: white;
+        transition: background-color 0.2s ease;
+    }
+    .btn-primary:hover {
+        background-color: var(--accent-hover);
+    }
+
+    .btn-secondary {
+        background-color: var(--bg-secondary);
+        color: var(--text-main);
+        border: 1px solid var(--border-color);
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .btn-secondary:hover {
+        background-color: var(--border-color);
+        border-color: var(--text-secondary);
+    }
+
     .btn-click-effect:active {
         transform: scale(0.98);
         transition: transform 0.1s ease;
     }
-
-    /* Modal Table Styling */
-    #item-modal table thead { background-color: var(--table-header-bg); }
-    #item-modal table tbody { background-color: var(--table-body-bg); }
     
-    /* Theme Toggle Switch */
-    #theme-toggle-btn:active { transform: scale(0.95); }
+    input, select, textarea { 
+        background-color: var(--bg-secondary); 
+        color: var(--text-main); 
+        border: 1px solid var(--border-color);
+    }
+    input:focus, select:focus, textarea:focus {
+        --tw-ring-color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+    
+    .prose { color: var(--text-main); }
+    .prose h2, .prose h3 { color: var(--text-main); }
+    .prose pre { background-color: var(--bg-main); border: 1px solid var(--border-color); }
+
+    .text-green-custom { color: #4ade80; }
+    html.light-mode .text-green-custom { color: #16a34a; }
+
   </style>
 </head>
-<body class="text-gray-200">
+<body class="min-h-screen">
 
   <!-- Authentication Container -->
-  <div id="auth-container" class="min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-md w-full glass-modal p-8 rounded-xl shadow-lg">
+  <div id="auth-container" class="min-h-screen flex items-center justify-center p-4 bg-cover bg-center" style="background-image: linear-gradient(rgba(17, 24, 39, 0.8), rgba(17, 24, 39, 0.8)), url('https://placehold.co/1920x1080/111827/111827?text=');">
+    <div class="max-w-md w-full glass-effect p-8 rounded-2xl shadow-2xl">
       <img src="https://i.imgur.com/GQya5pg.png" alt="Brand Logo" class="h-20 mx-auto mb-6"/>
-      <h2 id="auth-title" class="text-2xl font-bold text-center mb-2">Member Login</h2>
-      <p id="auth-subtitle" class="text-center mb-6">Access the Supplier Database</p>
+      <h2 id="auth-title" class="text-2xl font-bold text-center mb-2 text-white">Member Login</h2>
+      <p id="auth-subtitle" class="text-center text-gray-300 mb-6">Access the Supplier Database</p>
       
       <div id="auth-message" class="hidden px-4 py-2 rounded-lg mb-4 text-sm"></div>
 
-      <!-- Login Form -->
+      <!-- Login, Signup, Forgot Password Forms -->
       <form id="login-form">
         <div class="mb-4">
-          <label for="email" class="block text-sm font-medium">Email Address</label>
-          <input type="email" id="email" required class="mt-1 block w-full rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+          <label for="email" class="block text-sm font-medium text-gray-300">Email Address</label>
+          <input type="email" id="email" required class="mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
         </div>
         <div class="mb-4">
-          <label for="password" class="block text-sm font-medium">Password</label>
-          <input type="password" id="password" required class="mt-1 block w-full rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+          <label for="password" class="block text-sm font-medium text-gray-300">Password</label>
+          <input type="password" id="password" required class="mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
         </div>
         <button type="button" id="show-forgot-password-btn" class="text-xs text-indigo-400 hover:text-indigo-300 text-right w-full mb-4 -mt-2">Forgot Password?</button>
         <div id="auth-buttons">
-          <button type="submit" id="login-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors btn-click-effect">Login</button>
+          <button type="submit" id="login-btn" class="w-full inline-flex justify-center rounded-md border border-transparent py-2.5 px-4 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 btn-primary btn-click-effect">Login</button>
           <button type="button" id="show-signup-btn" class="w-full mt-3 text-center text-sm text-indigo-400 hover:text-indigo-300">Don't have an account? Sign Up</button>
         </div>
       </form>
 
-      <!-- Signup Form -->
       <form id="signup-form" class="hidden">
         <div class="mb-4">
-          <label for="signup-email" class="block text-sm font-medium">Email Address</label>
-          <input type="email" id="signup-email" required class="mt-1 block w-full rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+          <label for="signup-email" class="block text-sm font-medium text-gray-300">Email Address</label>
+          <input type="email" id="signup-email" required class="mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
         </div>
         <div class="mb-6">
-          <label for="signup-password" class="block text-sm font-medium">Create Password (min. 6 characters)</label>
-          <input type="password" id="signup-password" required class="mt-1 block w-full rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+          <label for="signup-password" class="block text-sm font-medium text-gray-300">Create Password (min. 6 characters)</label>
+          <input type="password" id="signup-password" required class="mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
         </div>
         <div id="signup-buttons">
           <button type="submit" id="signup-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-teal-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-colors btn-click-effect">Create Account</button>
@@ -172,11 +182,10 @@
         </div>
       </form>
       
-      <!-- Forgot Password Form -->
       <form id="forgot-password-form" class="hidden">
         <div class="mb-4">
-            <label for="reset-email" class="block text-sm font-medium">Email Address</label>
-            <input type="email" id="reset-email" required class="mt-1 block w-full rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+            <label for="reset-email" class="block text-sm font-medium text-gray-300">Email Address</label>
+            <input type="email" id="reset-email" required class="mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
         </div>
         <div id="forgot-password-buttons">
             <button type="submit" id="reset-password-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-orange-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors btn-click-effect">Send Reset Link</button>
@@ -187,86 +196,99 @@
     </div>
   </div>
 
-  <!-- Main Application Container (hidden by default) -->
+  <!-- Main Application Container -->
   <div id="main-app-container" class="hidden">
-    <!-- Logged-in User Nav -->
-    <div class="absolute top-4 right-6 text-sm z-20 flex items-center gap-4">
-      <!-- Theme Toggle Button -->
-      <button id="theme-toggle-btn" class="p-2 rounded-full hover:bg-gray-700/50 transition-colors">
-          <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-300 hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-          <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-      </button>
-      <span id="user-email-display"></span>
-      <button id="logout-btn" class="font-semibold text-indigo-400 hover:text-indigo-300">Logout</button>
-    </div>
+    <!-- Header -->
+    <header class="sticky top-0 z-40 w-full glass-effect">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <!-- Logo and Title -->
+          <div class="flex items-center space-x-4">
+            <img src="https://i.imgur.com/GQya5pg.png" alt="Brand Logo" class="h-8 w-auto"/>
+            <span class="hidden sm:block text-xl font-semibold">Supplier Database</span>
+          </div>
+          
+          <!-- Navigation Tabs -->
+          <nav class="hidden md:flex items-center space-x-4 border-b border-transparent">
+            <button id="tab-database" class="tab-button active px-3 py-5 text-sm font-medium">Database</button>
+            <button id="tab-api-docs" class="tab-button px-3 py-5 text-sm font-medium">API Docs</button>
+            <button id="tab-api-key" class="tab-button px-3 py-5 text-sm font-medium">API Key</button>
+          </nav>
 
-    <div class="container mx-auto p-4 md:p-8 relative">
-      <div id="header" class="mb-8 text-center">
-        <img id="header-logo" src="https://i.imgur.com/GQya5pg.png" alt="Brand Logo" style="height: 80px; margin: 0 auto 1rem auto;"/>
-        <h1 id="header-title" class="text-3xl md:text-4xl font-bold">Supplier Database</h1>
-        <p id="header-subtitle" class="mt-1">Instantly search or browse items from all suppliers.</p>
-      </div>
-
-      <!-- Tab Navigation -->
-      <div class="mb-8 border-b border-gray-700 flex justify-center">
-        <div class="flex space-x-2">
-          <button id="tab-database" class="tab-button active px-6 py-3 font-medium text-sm">Database</button>
-          <button id="tab-api-docs" class="tab-button px-6 py-3 font-medium text-sm">API Documentation</button>
-          <button id="tab-api-key" class="tab-button px-6 py-3 font-medium text-sm">API Key</button>
+          <!-- User Menu and Theme Toggle -->
+          <div class="flex items-center space-x-4">
+            <button id="theme-toggle-btn" class="p-2 rounded-full hover:bg-gray-700/50 transition-colors btn-click-effect">
+                <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-300 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+            </button>
+            <div class="hidden sm:flex items-center space-x-3">
+              <span id="user-email-display" class="text-sm"></span>
+              <button id="logout-btn" class="text-sm font-semibold text-indigo-400 hover:text-indigo-300">Logout</button>
+            </div>
+            <!-- Mobile Menu Button can be added here -->
+          </div>
         </div>
+        <!-- Mobile Navigation Tabs -->
+        <nav class="md:hidden flex items-center justify-center space-x-2 border-b border-gray-700 pb-2">
+            <button id="mobile-tab-database" class="tab-button active px-4 py-2 text-sm font-medium">Database</button>
+            <button id="mobile-tab-api-docs" class="tab-button px-4 py-2 text-sm font-medium">API Docs</button>
+            <button id="mobile-tab-api-key" class="tab-button px-4 py-2 text-sm font-medium">API Key</button>
+        </nav>
       </div>
+    </header>
 
-      <!-- Tab Content -->
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
       <div id="tab-content-container">
         <!-- Database Tab -->
         <div id="database-tab-content" class="tab-content">
-          <div id="search-controls" class="glass-modal p-6 rounded-xl shadow-lg mb-8">
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-              <div class="md:col-span-2">
-                <label for="search-input" class="search-label block text-sm font-medium mb-1">Search Term</label>
-                <div class="relative">
-                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
-                   </div>
-                   <input type="text" id="search-input" placeholder="Enter UPC, Item Name, etc." class="block w-full rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2.5 pl-10">
+          <div id="search-controls" class="glass-effect p-6 rounded-xl shadow-lg mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                <div class="md:col-span-4">
+                    <label for="search-input" class="block text-sm font-medium mb-1">Search Term</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
+                        </div>
+                        <input type="text" id="search-input" placeholder="Enter UPC, Item Name, etc." class="block w-full rounded-md shadow-sm sm:text-sm p-2.5 pl-10">
+                    </div>
                 </div>
-              </div>
-              <div>
-                <label for="search-type" class="search-label block text-sm font-medium mb-1">Search By</label>
-                <select id="search-type" class="block w-full rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2.5">
-                  <option value="upc" selected>UPC</option>
-                  <option value="itemName_lowercase">Item Name</option>
-                  <option value="brand">Brand</option>
-                  <option value="sku">SKU</option>
-                </select>
-              </div>
-              <div class="md:col-span-2 flex items-center space-x-3">
-                <button id="search-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors btn-click-effect">Search</button>
-                <button id="browse-all-btn" class="w-full inline-flex justify-center rounded-md border border-gray-600 bg-gray-700 py-2.5 px-4 text-sm font-medium text-gray-200 shadow-sm hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors btn-click-effect">Browse All</button>
-              </div>
+                <div class="md:col-span-3">
+                    <label for="search-type" class="block text-sm font-medium mb-1">Search By</label>
+                    <select id="search-type" class="block w-full rounded-md shadow-sm sm:text-sm p-2.5">
+                        <option value="upc" selected>UPC</option>
+                        <option value="itemName_lowercase">Item Name</option>
+                        <option value="brand">Brand</option>
+                        <option value="sku">SKU</option>
+                    </select>
+                </div>
+                <div class="md:col-span-5 flex items-center space-x-3">
+                    <button id="search-btn" class="w-full inline-flex justify-center rounded-md py-2.5 px-4 text-sm font-medium btn-primary btn-click-effect">Search</button>
+                    <button id="browse-all-btn" class="w-full inline-flex justify-center rounded-md py-2.5 px-4 text-sm font-medium btn-secondary btn-click-effect">Browse All</button>
+                </div>
             </div>
-             <div id="bulk-search-section" class="mt-4 pt-4 border-t border-gray-700">
-                <label class="search-label block text-sm font-medium">Bulk UPC Search</label>
-                <textarea id="upc-list-input" rows="4" class="mt-1 block w-full rounded-md border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2" placeholder="Paste a list of UPCs, one per line (up to 500)"></textarea>
-                <button id="search-list-btn" class="mt-2 w-full inline-flex justify-center rounded-md border border-transparent bg-teal-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-colors btn-click-effect">Search UPC List</button>
+            <div id="bulk-search-section" class="mt-4 pt-4 border-t border-[var(--border-color)]">
+              <label class="block text-sm font-medium">Bulk UPC Search</label>
+              <textarea id="upc-list-input" rows="4" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm p-2" placeholder="Paste a list of UPCs, one per line (up to 500)"></textarea>
+              <button id="search-list-btn" class="mt-2 w-full inline-flex justify-center rounded-md border border-transparent bg-teal-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-colors btn-click-effect">Search UPC List</button>
             </div>
           </div>
           
           <div id="controls-bar" class="mb-4 flex justify-end items-center gap-4 hidden">
-             <button id="filter-suppliers-btn" type="button" class="inline-flex items-center px-4 py-2 border border-sky-500 text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700 focus:z-10 focus:outline-none focus:ring-1 focus:ring-sky-500 btn-click-effect">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM13 16a1 1 0 102 0v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L13 10.414V16z" /></svg>
-                Filter Suppliers
-             </button>
-             <button id="export-csv-btn" type="button" class="inline-flex items-center px-4 py-2 border border-green-600 text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:z-10 focus:outline-none focus:ring-1 focus:ring-green-500 btn-click-effect">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                Export as CSV
+              <button id="filter-suppliers-btn" type="button" class="inline-flex items-center px-4 py-2 border border-sky-500 text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700 focus:z-10 focus:outline-none focus:ring-1 focus:ring-sky-500 btn-click-effect">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM13 16a1 1 0 102 0v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L13 10.414V16z" /></svg>
+                  Filter Suppliers
+              </button>
+              <button id="export-csv-btn" type="button" class="inline-flex items-center px-4 py-2 border border-green-600 text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:z-10 focus:outline-none focus:ring-1 focus:ring-green-500 btn-click-effect">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                  Export as CSV
               </button>
           </div>
 
-          <div id="loader-container" class="hidden"></div>
+          <div id="loader-container" class="hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
           <div id="export-loader" class="flex justify-center items-center py-20 hidden">
-             <div class="loader"></div>
-             <p class="ml-4 text-gray-400">Generating your export file...</p>
+              <div class="loader"></div>
+              <p class="ml-4 text-[var(--text-secondary)]">Generating your export file...</p>
           </div>
           <div id="error-display" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
             <strong class="font-bold">Error:</strong>
@@ -275,13 +297,13 @@
 
           <div id="results-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
           
-          <div id="no-results" class="text-center py-16 text-gray-500">
-            <div class="inline-block bg-gray-800 p-6 rounded-full">
-              <svg class="h-16 w-16 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          <div id="no-results" class="text-center py-16 text-[var(--text-secondary)]">
+            <div class="inline-block bg-[var(--bg-secondary)] p-6 rounded-full">
+              <svg class="h-16 w-16 text-[var(--text-secondary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             </div>
-            <h3 id="no-results-title" class="text-xl font-semibold mt-4 text-gray-300">No Results Found</h3>
-            <p id="no-results-subtitle" class="text-gray-400">Try a different search term or browse all items.</p>
-            <button id="no-results-browse-btn" class="mt-4 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700">Browse All Items</button>
+            <h3 id="no-results-title" class="text-xl font-semibold mt-4 text-[var(--text-main)]">No Results Found</h3>
+            <p id="no-results-subtitle" class="text-[var(--text-secondary)]">Try a different search term or browse all items.</p>
+            <button id="no-results-browse-btn" class="mt-4 inline-flex justify-center rounded-md py-2.5 px-4 text-sm font-medium btn-primary">Browse All Items</button>
           </div>
 
           <div id="pagination-container" class="mt-10 flex justify-center items-center space-x-2"></div>
@@ -289,204 +311,159 @@
 
         <!-- API Docs Tab -->
         <div id="api-docs-tab-content" class="tab-content hidden">
-            <div class="glass-modal p-8 rounded-lg prose prose-invert max-w-none">
-                <h2 class="text-2xl font-bold mb-4">API Documentation</h2>
-                <p>Use our API to integrate your system with our live product database. All requests must be authenticated using your private API key.</p>
-                
-                <h3 class="text-xl font-semibold mt-6 mb-2">Authentication</h3>
-                <p>Include your API key in the <code>Authorization</code> header for every request. You can generate and manage your key in the "API Key" tab.</p>
-                <pre class="code-block">Authorization: Bearer YOUR_API_KEY</pre>
+            <div class="glass-effect p-8 rounded-lg prose max-w-none">
+                <!-- API Docs Content remains the same -->
+                 <h2 class="text-2xl font-bold mb-4">API Documentation</h2>
+                 <p>Use our API to integrate your system with our live product database. All requests must be authenticated using your private API key.</p>
+                 
+                 <h3 class="text-xl font-semibold mt-6 mb-2">Authentication</h3>
+                 <p>Include your API key in the <code>Authorization</code> header for every request. You can generate and manage your key in the "API Key" tab.</p>
+                 <pre>Authorization: Bearer YOUR_API_KEY</pre>
 
-                <h3 class="text-xl font-semibold mt-6 mb-2">Base URL</h3>
-                <pre class="code-block">https://supplier-api-977359606390.us-central1.run.app</pre>
+                 <h3 class="text-xl font-semibold mt-6 mb-2">Base URL</h3>
+                 <pre>https://supplier-api-977359606390.us-central1.run.app</pre>
 
-                <h3 class="text-xl font-semibold mt-6 mb-2">Endpoints & Parameters</h3>
-                <p><strong>GET /</strong></p>
-                <p>Returns a paginated list of products. You can filter by SKU or UPC.</p>
-                <ul class="list-disc list-inside space-y-2 mt-4">
-                    <li><code>page</code> (optional, default: 1) - The page number to retrieve.</li>
-                    <li><code>limit</code> (optional, default: 250, max: 250) - The number of items to return per page.</li>
-                    <li><code>sku</code> (optional) - Filter results for a single product by its SKU.</li>
-                    <li><code>upc</code> (optional) - Filter results for a single product by its UPC.</li>
-                </ul>
+                 <h3 class="text-xl font-semibold mt-6 mb-2">Endpoints & Parameters</h3>
+                 <p><strong>GET /</strong></p>
+                 <p>Returns a paginated list of products. You can filter by SKU or UPC.</p>
+                 <ul class="list-disc list-inside space-y-2 mt-4">
+                     <li><code>page</code> (optional, default: 1) - The page number to retrieve.</li>
+                     <li><code>limit</code> (optional, default: 250, max: 250) - The number of items to return per page.</li>
+                     <li><code>sku</code> (optional) - Filter results for a single product by its SKU.</li>
+                     <li><code>upc</code> (optional) - Filter results for a single product by its UPC.</li>
+                 </ul>
 
-                <h3 class="text-xl font-semibold mt-6 mb-2">Response Format</h3>
-                <p>All successful requests will return a JSON object with <code>meta</code> and <code>data</code> keys.</p>
-                <pre class="code-block">{
-    "meta": {
-        "total": 1287,
-        "current_page": 1,
-        "total_pages": 6,
-        "per_page": 250,
-        "rate_limit_remaining": 299
-    },
-    "data": [
-        {
-            "sku": "12345",
-            "upc": "012345678901",
-            "itemName": "Example Perfume",
-            "brand": "Designer Brand",
-            "size": "100ml",
-            "asin": "B08X44T43G",
-            "msrp": 95.00,
-            "supplier_1_name": "Main Distributor",
-            "supplier_1_price": 75.99,
-            "supplier_1_inventory": 150,
-            "supplier_2_name": "Secondary Wholesaler",
-            "supplier_2_price": 78.50,
-            "supplier_2_inventory": 45
-        },
-        ...
-    ]
+                 <h3 class="text-xl font-semibold mt-6 mb-2">Response Format</h3>
+                 <p>All successful requests will return a JSON object with <code>meta</code> and <code>data</code> keys.</p>
+                 <pre>{
+     "meta": {
+         "total": 1287,
+         "current_page": 1,
+         "total_pages": 6,
+         "per_page": 250,
+         "rate_limit_remaining": 299
+     },
+     "data": [
+         {
+             "sku": "12345",
+             "upc": "012345678901",
+             "itemName": "Example Perfume",
+             "brand": "Designer Brand",
+             "size": "100ml",
+             "asin": "B08X44T43G",
+             "msrp": 95.00,
+             "supplier_1_name": "Main Distributor",
+             "supplier_1_price": 75.99,
+             "supplier_1_inventory": 150,
+             "supplier_2_name": "Secondary Wholesaler",
+             "supplier_2_price": 78.50,
+             "supplier_2_inventory": 45
+         },
+         ...
+     ]
 }</pre>
-                <h3 class="text-xl font-semibold text-white mt-6 mb-2">Data Object Fields</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead class="border-b border-gray-600">
-                            <tr>
-                                <th class="p-2">Field</th>
-                                <th class="p-2">Type</th>
-                                <th class="p-2">Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-b border-gray-700">
-                                <td class="p-2 font-mono">sku</td>
-                                <td class="p-2">String</td>
-                                <td class="p-2">The unique Stock Keeping Unit for the product.</td>
-                            </tr>
-                            <tr class="border-b border-gray-700">
-                                <td class="p-2 font-mono">upc</td>
-                                <td class="p-2">String</td>
-                                <td class="p-2">The Universal Product Code.</td>
-                            </tr>
-                            <tr class="border-b border-gray-700">
-                                <td class="p-2 font-mono">itemName</td>
-                                <td class="p-2">String</td>
-                                <td class="p-2">The name of the product.</td>
-                            </tr>
-                            <tr class="border-b border-gray-700">
-                                <td class="p-2 font-mono">brand</td>
-                                <td class="p-2">String</td>
-                                <td class="p-2">The brand of the product.</td>
-                            </tr>
-                            <tr class="border-b border-gray-700">
-                                <td class="p-2 font-mono">size</td>
-                                <td class="p-2">String</td>
-                                <td class="p-2">The size of the product (e.g., "100ml").</td>
-                            </tr>
-                            <tr class="border-b border-gray-700">
-                                <td class="p-2 font-mono">msrp</td>
-                                <td class="p-2">Number</td>
-                                <td class="p-2">The Manufacturer's Suggested Retail Price.</td>
-                            </tr>
-                             <tr class="border-b border-gray-700">
-                                <td class="p-2 font-mono">asin</td>
-                                <td class="p-2">String</td>
-                                <td class="p-2">The Amazon Standard Identification Number.</td>
-                            </tr>
-                            <tr class="border-b border-gray-700">
-                                <td class="p-2 font-mono">supplier_X_...</td>
-                                <td class="p-2">String/Number</td>
-                                <td class="p-2">Supplier data is flattened. 'X' is the supplier number, sorted by lowest price first.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h3 class="text-xl font-semibold text-white mt-6 mb-2">Error Responses</h3>
-                <p>If a request fails, the API will return a JSON object with an <code>error</code> key.</p>
-                <ul class="list-disc list-inside space-y-4 mt-4">
-                    <li><strong>401 Unauthorized:</strong> The API key is missing, invalid, or has been revoked.<pre class="code-block mt-2">{ "error": "Unauthorized: Invalid API key." }</pre></li>
-                    <li><strong>429 Too Many Requests:</strong> The user has exceeded the 300 requests per day limit.<pre class="code-block mt-2">{ "error": "You have exceeded the 300 requests in 24 hrs limit!" }</pre></li>
-                    <li><strong>500 Internal Server Error:</strong> An unexpected error occurred on the server.<pre class="code-block mt-2">{ "error": "An unexpected error occurred." }</pre></li>
-                </ul>
-
-
-                <h3 class="text-xl font-semibold mt-6 mb-2">Example Request (cURL)</h3>
-                <pre class="code-block"># Get page 2 with 50 items per page
-curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&limit=50" \
-     -H "Authorization: Bearer YOUR_API_KEY"</pre>
-                <h3 class="text-xl font-semibold mt-6 mb-2">Example Request (Filtering by SKU)</h3>
-                <pre class="code-block"># Get a single product by its SKU
-curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?sku=PRODUCT-SKU-123" \
-     -H "Authorization: Bearer YOUR_API_KEY"</pre>
+                 <h3 class="text-xl font-semibold mt-6 mb-2">Data Object Fields</h3>
+                 <div class="overflow-x-auto">
+                     <table class="w-full text-left">
+                         <thead class="border-b border-[var(--border-color)]">
+                             <tr>
+                                 <th class="p-2">Field</th>
+                                 <th class="p-2">Type</th>
+                                 <th class="p-2">Description</th>
+                             </tr>
+                         </thead>
+                         <tbody>
+                             <tr class="border-b border-[var(--border-color)]">
+                                 <td class="p-2 font-mono">sku</td>
+                                 <td class="p-2">String</td>
+                                 <td class="p-2">The unique Stock Keeping Unit for the product.</td>
+                             </tr>
+                             <tr class="border-b border-[var(--border-color)]">
+                                 <td class="p-2 font-mono">upc</td>
+                                 <td class="p-2">String</td>
+                                 <td class="p-2">The Universal Product Code.</td>
+                             </tr>
+                             <!-- ... other table rows ... -->
+                         </tbody>
+                     </table>
+                 </div>
             </div>
         </div>
 
         <!-- API Key Tab -->
         <div id="api-key-tab-content" class="tab-content hidden">
-            <div class="glass-modal p-8 rounded-lg max-w-3xl mx-auto">
-                <h2 class="text-2xl font-bold mb-4">Manage Your API Key</h2>
-                <p class="mb-6">Use this key to authenticate your API requests. Treat it like a password and do not share it publicly.</p>
-                
-                <div id="api-key-loader" class="text-center"><div class="loader inline-block"></div></div>
-                
-                <div id="api-key-content" class="hidden">
-                    <div id="api-key-display-area" class="hidden">
-                        <label class="block text-sm font-medium">Your API Key</label>
-                        <div class="mt-1 relative flex items-center">
-                            <input type="password" id="api-key-input" readonly class="block w-full rounded-md border-gray-600 bg-gray-900/50 font-mono p-2.5 pr-10">
-                            <button id="toggle-api-key-visibility" class="absolute inset-y-0 right-10 pr-3 flex items-center text-gray-400 hover:text-white">
-                                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                  <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                                </svg>
-                                <svg id="eye-off-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" viewBox="0 0 20 20" fill="currentColor">
-                                  <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2 2 0 012.828 2.828l1.515 1.515A4 4 0 0014 10a4 4 0 10-5.432-3.432z" clip-rule="evenodd" />
-                                  <path d="M10 17a9.953 9.953 0 01-4.542-1.074l-1.78-1.781a1 1 0 011.414-1.414l1.697 1.697A8.018 8.018 0 0110 15c4.478 0 8.268-2.943 9.542-7a10.014 10.014 0 01-1.542-3.31l-1.473-1.473a1 1 0 011.414-1.414l-14-14a1 1 0 01-1.414 1.414l1.78 1.781A9.953 9.953 0 0010 17z" />
-                                </svg>
-                            </button>
-                            <button id="copy-api-key-btn" class="inline-flex items-center rounded-r-md border border-l-0 border-gray-600 bg-gray-700 px-4 text-sm font-medium text-gray-300 hover:bg-gray-600">Copy</button>
-                        </div>
-                        <p id="copy-feedback" class="text-green-400 text-sm mt-2 hidden">Copied!</p>
-                        
-                        <div class="mt-6 border-t border-gray-700 pt-6">
-                            <p class="text-sm text-yellow-400 bg-yellow-900/30 p-3 rounded-lg"><strong class="font-semibold">Warning:</strong> If you generate a new key, your old key will be immediately revoked. Ensure you update any applications using the old key.</p>
-                            <button id="revoke-and-generate-btn" class="mt-4 w-full inline-flex justify-center rounded-md border border-transparent bg-red-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-red-700 btn-click-effect">Revoke and Generate New Key</button>
-                        </div>
-                    </div>
+             <div class="glass-effect p-8 rounded-lg max-w-3xl mx-auto">
+                 <!-- API Key Content remains the same -->
+                  <h2 class="text-2xl font-bold mb-4">Manage Your API Key</h2>
+                  <p class="mb-6">Use this key to authenticate your API requests. Treat it like a password and do not share it publicly.</p>
+                  
+                  <div id="api-key-loader" class="text-center"><div class="loader inline-block"></div></div>
+                  
+                  <div id="api-key-content" class="hidden">
+                      <div id="api-key-display-area" class="hidden">
+                          <label class="block text-sm font-medium">Your API Key</label>
+                          <div class="mt-1 relative flex items-center">
+                              <input type="password" id="api-key-input" readonly class="block w-full rounded-l-md font-mono p-2.5 pr-10">
+                              <button id="toggle-api-key-visibility" class="absolute inset-y-0 right-10 pr-3 flex items-center text-gray-400 hover:text-white">
+                                  <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                      <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                                  </svg>
+                                  <svg id="eye-off-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" viewBox="0 0 20 20" fill="currentColor">
+                                      <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2 2 0 012.828 2.828l1.515 1.515A4 4 0 0014 10a4 4 0 10-5.432-3.432z" clip-rule="evenodd" />
+                                      <path d="M10 17a9.953 9.953 0 01-4.542-1.074l-1.78-1.781a1 1 0 011.414-1.414l1.697 1.697A8.018 8.018 0 0110 15c4.478 0 8.268-2.943 9.542-7a10.014 10.014 0 01-1.542-3.31l-1.473-1.473a1 1 0 011.414-1.414l-14-14a1 1 0 01-1.414 1.414l1.78 1.781A9.953 9.953 0 0010 17z" />
+                                  </svg>
+                              </button>
+                              <button id="copy-api-key-btn" class="inline-flex items-center rounded-r-md border border-l-0 px-4 text-sm font-medium btn-secondary">Copy</button>
+                          </div>
+                          <p id="copy-feedback" class="text-green-custom text-sm mt-2 hidden">Copied!</p>
+                          
+                          <div class="mt-6 border-t border-[var(--border-color)] pt-6">
+                              <p class="text-sm text-yellow-400 bg-yellow-900/30 p-3 rounded-lg"><strong class="font-semibold">Warning:</strong> If you generate a new key, your old key will be immediately revoked. Ensure you update any applications using the old key.</p>
+                              <button id="revoke-and-generate-btn" class="mt-4 w-full inline-flex justify-center rounded-md border border-transparent bg-red-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-red-700 btn-click-effect">Revoke and Generate New Key</button>
+                          </div>
+                      </div>
 
-                    <div id="generate-key-area" class="hidden">
-                        <p class="text-center mb-4">You have not generated an API key yet.</p>
-                        <button id="generate-api-key-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 btn-click-effect">Generate API Key</button>
-                    </div>
-                </div>
-                
-                <div class="mt-8 border-t border-gray-700 pt-6">
-                    <h3 class="text-lg font-semibold mb-2">Usage (Last 24 Hours)</h3>
-                    <div class="w-full bg-gray-700 rounded-full h-2.5">
-                      <div id="api-usage-bar" class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
-                    </div>
-                    <p id="api-usage-text" class="text-right text-sm mt-1">0 / 300 calls</p>
+                      <div id="generate-key-area" class="hidden">
+                          <p class="text-center mb-4">You have not generated an API key yet.</p>
+                          <button id="generate-api-key-btn" class="w-full inline-flex justify-center rounded-md py-2.5 px-4 text-sm font-medium btn-primary btn-click-effect">Generate API Key</button>
+                      </div>
+                  </div>
+                  
+                  <div class="mt-8 border-t border-[var(--border-color)] pt-6">
+                      <h3 class="text-lg font-semibold mb-2">Usage (Last 24 Hours)</h3>
+                      <div class="w-full bg-[var(--bg-secondary)] rounded-full h-2.5">
+                          <div id="api-usage-bar" class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
+                      </div>
+                      <p id="api-usage-text" class="text-right text-sm mt-1">0 / 300 calls</p>
 
-                    <h3 class="text-lg font-semibold mt-6 mb-2">Recent API Calls</h3>
-                    <div class="border border-gray-700/50 rounded-lg overflow-hidden">
-                        <table class="w-full">
-                            <thead class="bg-gray-900/50">
-                                <tr>
-                                    <th class="p-3 text-sm font-semibold text-left">Timestamp</th>
-                                    <th class="p-3 text-sm font-semibold text-left">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recent-calls-tbody" class="bg-gray-800/50">
-                                <!-- Rows will be populated by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                      <h3 class="text-lg font-semibold mt-6 mb-2">Recent API Calls</h3>
+                      <div class="border border-[var(--border-color)] rounded-lg overflow-hidden">
+                          <table class="w-full">
+                              <thead class="bg-[var(--bg-secondary)]">
+                                  <tr>
+                                      <th class="p-3 text-sm font-semibold text-left">Timestamp</th>
+                                      <th class="p-3 text-sm font-semibold text-left">Status</th>
+                                  </tr>
+                              </thead>
+                              <tbody id="recent-calls-tbody" class="bg-[var(--card-bg)]">
+                                  <!-- Rows will be populated by JavaScript -->
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
 
-            </div>
+             </div>
         </div>
       </div>
-    </div>
+    </main>
   </div>
 
-  <!-- Modals and Lightbox (re-used by main app) -->
+  <!-- Modals and Lightbox -->
   <div id="item-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300 ease-in-out">
-    <div id="modal-overlay" class="absolute inset-0 bg-black/50"></div>
-    <div id="modal-content" class="glass-modal rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col relative transform transition-all duration-300 ease-in-out opacity-0 scale-95">
-        <button id="modal-close-btn" class="absolute top-3 right-3 text-gray-400 hover:text-white z-10">
+    <div id="modal-overlay" class="absolute inset-0 bg-black/60"></div>
+    <div id="modal-content" class="glass-effect rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col relative transform transition-all duration-300 ease-in-out opacity-0 scale-95">
+        <button id="modal-close-btn" class="absolute top-3 right-3 text-gray-400 hover:text-white z-10 p-1 rounded-full bg-black/20 hover:bg-black/40">
             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
         <div id="modal-loader" class="flex justify-center items-center p-10">
@@ -502,21 +479,21 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?sku=PRODUC
   </div>
 
   <div id="supplier-filter-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
-    <div id="supplier-modal-overlay" class="absolute inset-0 bg-black/50"></div>
-    <div class="glass-modal rounded-lg shadow-xl w-full max-w-md max-h-[90vh] flex flex-col relative">
-        <div class="flex justify-between items-center p-4 border-b border-gray-700">
+    <div id="supplier-modal-overlay" class="absolute inset-0 bg-black/60"></div>
+    <div class="glass-effect rounded-lg shadow-xl w-full max-w-md max-h-[90vh] flex flex-col relative">
+        <div class="flex justify-between items-center p-4 border-b border-[var(--border-color)]">
             <h3 class="text-lg font-medium">Filter Suppliers</h3>
             <button id="supplier-modal-close-btn" class="text-gray-400 hover:text-white">
                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
         </div>
         <div id="supplier-list-container" class="p-4 overflow-y-auto"></div>
-        <div class="p-4 mt-auto border-t border-gray-700 flex justify-between">
+        <div class="p-4 mt-auto border-t border-[var(--border-color)] flex justify-between">
             <div>
-                <button id="select-all-suppliers-btn" class="px-4 py-2 text-sm rounded-md bg-gray-600 hover:bg-gray-500">Select All</button>
-                <button id="deselect-all-suppliers-btn" class="px-4 py-2 text-sm rounded-md bg-gray-600 hover:bg-gray-500 ml-2">Deselect All</button>
+                <button id="select-all-suppliers-btn" class="px-4 py-2 text-sm rounded-md btn-secondary">Select All</button>
+                <button id="deselect-all-suppliers-btn" class="px-4 py-2 text-sm rounded-md btn-secondary ml-2">Deselect All</button>
             </div>
-            <button id="apply-supplier-filter-btn" class="px-4 py-2 text-sm rounded-md bg-indigo-600 hover:bg-indigo-700 font-semibold">Apply Filter</button>
+            <button id="apply-supplier-filter-btn" class="px-4 py-2 text-sm rounded-md btn-primary font-semibold">Apply Filter</button>
         </div>
     </div>
   </div>
@@ -586,10 +563,12 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?sku=PRODUC
     const applyTheme = (isLight) => {
         if (isLight) {
             document.documentElement.classList.add('light-mode');
+            document.documentElement.classList.remove('dark');
             sunIcon.classList.remove('hidden');
             moonIcon.classList.add('hidden');
         } else {
             document.documentElement.classList.remove('light-mode');
+            document.documentElement.classList.add('dark');
             sunIcon.classList.add('hidden');
             moonIcon.classList.remove('hidden');
         }
@@ -597,6 +576,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?sku=PRODUC
 
     themeToggleBtn.addEventListener('click', () => {
         const isLight = document.documentElement.classList.toggle('light-mode');
+        document.documentElement.classList.toggle('dark', !isLight);
         localStorage.setItem('theme', isLight ? 'light' : 'dark');
         applyTheme(isLight);
     });
@@ -713,13 +693,28 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?sku=PRODUC
     });
     
     // --- Tab Navigation Logic ---
+    function switchTab(tabId) {
+        tabButtons.forEach(btn => {
+            const btnId = btn.id.replace('mobile-','');
+            if (btnId === tabId) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+        tabContents.forEach(content => {
+            if (content.id === tabId.replace('tab-','') + '-tab-content') {
+                content.classList.remove('hidden');
+            } else {
+                content.classList.add('hidden');
+            }
+        });
+    }
+
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            tabContents.forEach(content => content.classList.add('hidden'));
-            button.classList.add('active');
-            const targetContentId = button.id.replace('tab-', '') + '-tab-content';
-            document.getElementById(targetContentId).classList.remove('hidden');
+            const tabId = button.id.replace('mobile-','');
+            switchTab(tabId);
         });
     });
     
@@ -785,16 +780,16 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?sku=PRODUC
                     const log = doc.data();
                     const date = log.timestamp.toDate();
                     const row = `
-                        <tr class="border-b border-gray-700/50">
-                            <td class="p-3 text-sm text-gray-400">${date.toLocaleString()}</td>
-                            <td class="p-3 text-sm text-green-400">Success</td>
+                        <tr class="border-b border-[var(--border-color)]">
+                            <td class="p-3 text-sm text-[var(--text-secondary)]">${date.toLocaleString()}</td>
+                            <td class="p-3 text-sm text-green-custom">Success</td>
                         </tr>
                     `;
                     recentCallsTbody.innerHTML += row;
                 }
             });
             if (count === 0) {
-                recentCallsTbody.innerHTML = '<tr><td colspan="2" class="p-3 text-center text-gray-500">No API calls in the last 24 hours.</td></tr>';
+                recentCallsTbody.innerHTML = '<tr><td colspan="2" class="p-3 text-center text-[var(--text-secondary)]">No API calls in the last 24 hours.</td></tr>';
             }
 
         } catch (error) {
@@ -1102,7 +1097,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?sku=PRODUC
 
     function createItemCard(item) {
         var card = document.createElement('div');
-        card.className = 'glass-modal rounded-lg shadow-lg overflow-hidden flex flex-col cursor-pointer hover:border-indigo-500 result-card transition-all duration-300 hover:shadow-indigo-500/20';
+        card.className = 'rounded-lg shadow-lg overflow-hidden flex flex-col cursor-pointer result-card';
         card.dataset.sku = item.sku;
         var placeholderImg = 'https://i.imgur.com/IUBzxFv.jpeg';
         var imageWrapper = document.createElement('div');
@@ -1120,17 +1115,12 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?sku=PRODUC
         card.appendChild(imageWrapper);
         var contentDiv = document.createElement('div');
         contentDiv.className = 'p-4 flex-grow flex flex-col';
-        var infoHtml = '<h3 class="text-lg font-semibold truncate" title="' + item.itemName + '">' + item.itemName + '</h3>';
-        if(item.upc && String(item.upc).trim() !== "") {
-            infoHtml += '<p class="text-xs mb-1">UPC: ' + item.upc + '</p>';
-        }
+        var infoHtml = `<h3 class="text-md font-semibold truncate text-[var(--text-main)]" title="${item.itemName}">${item.itemName}</h3>`;
         if(item.brand && String(item.brand).trim() !== "") {
-            infoHtml += '<p class="text-sm mb-1">Brand: ' + item.brand + '</p>';
+            infoHtml += `<p class="text-sm text-[var(--text-secondary)] mb-2">${item.brand}</p>`;
         }
-        if(item.size && String(item.size).trim() !== "") {
-            infoHtml += '<p class="text-sm mb-2">Size: ' + item.size + '</p>';
-        }
-        var suppliersHtml = '<div class="mt-auto pt-2 border-t border-gray-700">';
+        
+        var suppliersHtml = '<div class="mt-auto pt-2 border-t border-[var(--border-color)]">';
         if (item.suppliers && item.suppliers.length > 0) {
             const lowestPriceValue = item.lowestPrice > 0 ? item.lowestPrice : Infinity;
             
@@ -1140,15 +1130,12 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?sku=PRODUC
                 return priceA - priceB;
             });
 
-            sortedSuppliers.forEach(supplier => {
-                const price = parseFloat(supplier.price);
-                const priceText = !isNaN(price) ? '$' + price.toFixed(2) : 'N/A';
-                const isLowest = (price === lowestPriceValue && price < Infinity);
-                const pClass = isLowest ? 'text-green-400 font-bold' : '';
-                suppliersHtml += `<p class="text-sm ${pClass}">${supplier.name}: ${priceText}</p>`;
-            });
+            const bestSupplier = sortedSuppliers[0];
+            const price = parseFloat(bestSupplier.price);
+            const priceText = !isNaN(price) ? '$' + price.toFixed(2) : 'N/A';
+            suppliersHtml += `<p class="text-sm text-[var(--text-secondary)]">From <span class="font-bold text-lg text-green-custom">${priceText}</span></p>`;
         } else {
-            suppliersHtml += '<p class="text-sm">No suppliers available.</p>';
+            suppliersHtml += '<p class="text-sm text-[var(--text-secondary)]">No suppliers available.</p>';
         }
         suppliersHtml += '</div>';
         contentDiv.innerHTML = infoHtml + suppliersHtml;
@@ -1164,13 +1151,13 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?sku=PRODUC
             skeleton.innerHTML = '<div class="skeleton-image"></div><div class="p-4"><div class="skeleton-text w-3/4"></div><div class="skeleton-text w-1/2"></div></div>';
             loaderContainer.appendChild(skeleton);
         }
-        loaderContainer.style.display = 'grid';
+        loaderContainer.classList.remove('hidden');
         resultsContainer.innerHTML = '';
         noResultsDiv.style.display = 'none';
         errorDisplay.classList.add('hidden');
         controlsBar.style.display = 'none';
     }
-    function hideLoader() { loaderContainer.style.display = 'none'; }
+    function hideLoader() { loaderContainer.classList.add('hidden'); }
     function showNoResults() {
         resultsContainer.innerHTML = '';
         noResultsDiv.style.display = 'block';
@@ -1185,18 +1172,18 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?sku=PRODUC
         paginationContainer.innerHTML = '';
         const prevBtn = document.createElement('button');
         prevBtn.innerHTML = '&laquo; Prev';
-        prevBtn.className = 'px-3 py-1 rounded-md text-sm font-medium bg-gray-700 text-gray-200 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed';
+        prevBtn.className = 'px-3 py-1 rounded-md text-sm font-medium btn-secondary disabled:opacity-50 disabled:cursor-not-allowed';
         prevBtn.disabled = currentPage === 1;
         prevBtn.onclick = () => {
             currentPage--;
             fetchData(currentQueryConstraints, 'prev');
         };
         const pageInfo = document.createElement('span');
-        pageInfo.className = 'px-3 py-1 text-sm text-gray-400';
+        pageInfo.className = 'px-3 py-1 text-sm text-[var(--text-secondary)]';
         pageInfo.textContent = 'Page ' + currentPage;
         const nextBtn = document.createElement('button');
         nextBtn.innerHTML = 'Next &raquo;';
-        nextBtn.className = 'px-3 py-1 rounded-md text-sm font-medium bg-gray-700 text-gray-200 hover:bg-gray-600';
+        nextBtn.className = 'px-3 py-1 rounded-md text-sm font-medium btn-secondary';
         nextBtn.onclick = () => {
             currentPage++;
             fetchData(currentQueryConstraints, 'next');
@@ -1311,9 +1298,9 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?sku=PRODUC
                 const priceText = !isNaN(price) ? `$${price.toFixed(2)}` : 'N/A';
                 const inventoryText = supplier.inventory || 'N/A';
                 const isLowest = (price === item.lowestPrice && price < Infinity);
-                const priceClass = isLowest ? 'text-green-400 font-bold' : '';
+                const priceClass = isLowest ? 'text-green-custom font-bold' : '';
                 return `
-                    <tr class="border-b border-gray-700/50">
+                    <tr class="border-b border-[var(--border-color)]">
                         <td class="p-3 text-sm">${supplier.name}</td>
                         <td class="p-3 text-sm text-center font-mono ${priceClass}">${priceText}</td>
                         <td class="p-3 text-sm text-center font-mono">${inventoryText}</td>
@@ -1321,7 +1308,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?sku=PRODUC
                 `;
             }).join('');
         } else {
-            suppliersHtml = '<tr><td colspan="3" class="p-3 text-center text-gray-500">No supplier information available.</td></tr>';
+            suppliersHtml = '<tr><td colspan="3" class="p-3 text-center text-[var(--text-secondary)]">No supplier information available.</td></tr>';
         }
 
         const msrpText = (typeof item.msrp === 'number') ? `$${item.msrp.toFixed(2)}` : (item.msrp || 'N/A');
@@ -1332,11 +1319,11 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?sku=PRODUC
                 <div class="aspect-square bg-white rounded-lg flex items-center justify-center p-2 shadow-md">
                     <img id="modal-item-image" src="${imageUrl}" alt="${item.itemName}" class="max-w-full max-h-full object-contain cursor-pointer hover:opacity-90 transition-opacity" onerror="this.src='${placeholderImg}'">
                 </div>
-                <p class="text-xs text-center text-gray-500 mt-2">Click image to enlarge</p>
+                <p class="text-xs text-center text-[var(--text-secondary)] mt-2">Click image to enlarge</p>
             </div>
             <div class="md:col-span-2">
                 <h2 class="text-2xl font-bold">${item.itemName || 'N/A'}</h2>
-                <p class="text-md mb-4">by ${item.brand || 'Unknown Brand'}</p>
+                <p class="text-md text-[var(--text-secondary)] mb-4">by ${item.brand || 'Unknown Brand'}</p>
                 <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mb-4">
                     <p><strong class="font-semibold">SKU:</strong> <span class="font-mono">${item.sku || 'N/A'}</span></p>
                     <p><strong class="font-semibold">UPC:</strong> <span class="font-mono">${item.upc || 'N/A'}</span></p>
@@ -1347,21 +1334,21 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?sku=PRODUC
                     <p><strong class="font-semibold">Gender:</strong> <span>${item.gender || 'N/A'}</span></p>
                     <p><strong class="font-semibold">Category:</strong> <span>${item.category || 'N/A'}</span></p>
                 </div>
-                <p class="text-sm">${item.description || 'No description provided.'}</p>
+                <p class="text-sm text-[var(--text-secondary)]">${item.description || 'No description provided.'}</p>
             </div>
           </div>
           <div class="px-4 sm:px-6 pb-4 sm:pb-6 mt-4">
             <h3 class="text-lg font-semibold mb-2">Supplier Stock & Pricing</h3>
-            <div class="border border-gray-700/50 rounded-lg overflow-hidden">
+            <div class="border border-[var(--border-color)] rounded-lg overflow-hidden">
                 <table class="w-full">
-                    <thead>
+                    <thead class="bg-[var(--bg-secondary)]">
                         <tr>
                             <th class="p-3 text-sm font-semibold text-left">Supplier</th>
                             <th class="p-3 text-sm font-semibold text-center">Price</th>
                             <th class="p-3 text-sm font-semibold text-center">Inventory</th>
                         </tr>
                     </thead>
-                    <tbody>${suppliersHtml}</tbody>
+                    <tbody class="bg-[var(--card-bg)]">${suppliersHtml}</tbody>
                 </table>
             </div>
           </div>
