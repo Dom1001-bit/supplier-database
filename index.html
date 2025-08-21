@@ -1115,11 +1115,19 @@
         card.appendChild(imageWrapper);
         var contentDiv = document.createElement('div');
         contentDiv.className = 'p-4 flex-grow flex flex-col';
-        var infoHtml = `<h3 class="text-md font-semibold truncate text-[var(--text-main)]" title="${item.itemName}">${item.itemName}</h3>`;
-        if(item.brand && String(item.brand).trim() !== "") {
-            infoHtml += `<p class="text-sm text-[var(--text-secondary)] mb-2">${item.brand}</p>`;
-        }
         
+        var infoHtml = `<h3 class="text-lg font-semibold truncate text-[var(--text-main)]" title="${item.itemName}">${item.itemName}</h3>`;
+        
+        if(item.upc && String(item.upc).trim() !== "") {
+            infoHtml += `<p class="text-xs text-[var(--text-secondary)] mb-1">UPC: ${item.upc}</p>`;
+        }
+        if(item.brand && String(item.brand).trim() !== "") {
+            infoHtml += `<p class="text-sm text-[var(--text-secondary)] mb-1">Brand: ${item.brand}</p>`;
+        }
+        if(item.size && String(item.size).trim() !== "") {
+            infoHtml += `<p class="text-sm text-[var(--text-secondary)] mb-2">Size: ${item.size}</p>`;
+        }
+
         var suppliersHtml = '<div class="mt-auto pt-2 border-t border-[var(--border-color)]">';
         if (item.suppliers && item.suppliers.length > 0) {
             const lowestPriceValue = item.lowestPrice > 0 ? item.lowestPrice : Infinity;
@@ -1130,14 +1138,18 @@
                 return priceA - priceB;
             });
 
-            const bestSupplier = sortedSuppliers[0];
-            const price = parseFloat(bestSupplier.price);
-            const priceText = !isNaN(price) ? '$' + price.toFixed(2) : 'N/A';
-            suppliersHtml += `<p class="text-sm text-[var(--text-secondary)]">From <span class="font-bold text-lg text-green-custom">${priceText}</span></p>`;
+            sortedSuppliers.forEach(supplier => {
+                const price = parseFloat(supplier.price);
+                const priceText = !isNaN(price) ? '$' + price.toFixed(2) : 'N/A';
+                const isLowest = (price === lowestPriceValue && price < Infinity);
+                const pClass = isLowest ? 'text-green-custom font-bold' : 'text-[var(--text-secondary)]';
+                suppliersHtml += `<p class="text-sm ${pClass}">${supplier.name}: ${priceText}</p>`;
+            });
         } else {
             suppliersHtml += '<p class="text-sm text-[var(--text-secondary)]">No suppliers available.</p>';
         }
         suppliersHtml += '</div>';
+        
         contentDiv.innerHTML = infoHtml + suppliersHtml;
         card.appendChild(contentDiv);
         return card;
