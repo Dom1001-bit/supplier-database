@@ -133,6 +133,12 @@
     .prose { color: var(--text-main); }
     .prose h2, .prose h3 { color: var(--text-main); }
     .prose pre { background-color: var(--bg-main); border: 1px solid var(--border-color); }
+    .prose code { color: var(--text-secondary); }
+    .prose table th { color: var(--text-main); }
+    .prose table td { color: var(--text-secondary); }
+    .prose a { color: var(--accent-color); }
+    .prose strong { color: var(--text-main); }
+
 
     .text-green-custom { color: #4ade80; }
     html.light-mode .text-green-custom { color: #16a34a; }
@@ -312,81 +318,127 @@
         <!-- API Docs Tab -->
         <div id="api-docs-tab-content" class="tab-content hidden">
             <div class="glass-effect p-8 rounded-lg prose max-w-none">
-                <!-- API Docs Content remains the same -->
-                 <h2 class="text-2xl font-bold mb-4">API Documentation</h2>
-                 <p>Use our API to integrate your system with our live product database. All requests must be authenticated using your private API key.</p>
-                 
-                 <h3 class="text-xl font-semibold mt-6 mb-2">Authentication</h3>
-                 <p>Include your API key in the <code>Authorization</code> header for every request. You can generate and manage your key in the "API Key" tab.</p>
-                 <pre>Authorization: Bearer YOUR_API_KEY</pre>
+                <h2 class="text-2xl font-bold mb-4">API Documentation</h2>
+                <p>Use our API to integrate your system with our live product database. All requests must be authenticated using your private API key.</p>
+                
+                <h3 class="text-xl font-semibold mt-6 mb-2">Authentication</h3>
+                <p>Include your API key in the <code>Authorization</code> header for every request. You can generate and manage your key in the "API Key" tab.</p>
+                <pre>Authorization: Bearer YOUR_API_KEY</pre>
 
-                 <h3 class="text-xl font-semibold mt-6 mb-2">Base URL</h3>
-                 <pre>https://supplier-api-977359606390.us-central1.run.app</pre>
+                <h3 class="text-xl font-semibold mt-6 mb-2">Base URL</h3>
+                <pre>https://supplier-api-977359606390.us-central1.run.app</pre>
 
-                 <h3 class="text-xl font-semibold mt-6 mb-2">Endpoints & Parameters</h3>
-                 <p><strong>GET /</strong></p>
-                 <p>Returns a paginated list of products. You can filter by SKU or UPC.</p>
-                 <ul class="list-disc list-inside space-y-2 mt-4">
-                     <li><code>page</code> (optional, default: 1) - The page number to retrieve.</li>
-                     <li><code>limit</code> (optional, default: 250, max: 250) - The number of items to return per page.</li>
-                     <li><code>sku</code> (optional) - Filter results for a single product by its SKU.</li>
-                     <li><code>upc</code> (optional) - Filter results for a single product by its UPC.</li>
-                 </ul>
+                <h3 class="text-xl font-semibold mt-6 mb-2">Endpoints & Parameters</h3>
+                <p><strong>GET /</strong></p>
+                <p>Returns a paginated list of products. You can filter by SKU or UPC.</p>
+                <ul class="list-disc list-inside space-y-2 mt-4">
+                    <li><code>page</code> (optional, default: 1) - The page number to retrieve.</li>
+                    <li><code>limit</code> (optional, default: 250, max: 250) - The number of items to return per page.</li>
+                    <li><code>sku</code> (optional) - Filter results for a single product by its SKU.</li>
+                    <li><code>upc</code> (optional) - Filter results for a single product by its UPC.</li>
+                </ul>
 
-                 <h3 class="text-xl font-semibold mt-6 mb-2">Response Format</h3>
-                 <p>All successful requests will return a JSON object with <code>meta</code> and <code>data</code> keys.</p>
-                 <pre>{
-     "meta": {
-         "total": 1287,
-         "current_page": 1,
-         "total_pages": 6,
-         "per_page": 250,
-         "rate_limit_remaining": 299
-     },
-     "data": [
-         {
-             "sku": "12345",
-             "upc": "012345678901",
-             "itemName": "Example Perfume",
-             "brand": "Designer Brand",
-             "size": "100ml",
-             "asin": "B08X44T43G",
-             "msrp": 95.00,
-             "supplier_1_name": "Main Distributor",
-             "supplier_1_price": 75.99,
-             "supplier_1_inventory": 150,
-             "supplier_2_name": "Secondary Wholesaler",
-             "supplier_2_price": 78.50,
-             "supplier_2_inventory": 45
-         },
-         ...
-     ]
+                <h3 class="text-xl font-semibold mt-6 mb-2">Response Format</h3>
+                <p>All successful requests will return a JSON object with <code>meta</code> and <code>data</code> keys.</p>
+                <pre>{
+    "meta": {
+        "total": 1287,
+        "current_page": 1,
+        "total_pages": 6,
+        "per_page": 250,
+        "rate_limit_remaining": 299
+    },
+    "data": [
+        {
+            "sku": "12345",
+            "upc": "012345678901",
+            "itemName": "Example Perfume",
+            "brand": "Designer Brand",
+            "size": "100ml",
+            "asin": "B08X44T43G",
+            "msrp": 95.00,
+            "supplier_1_name": "Main Distributor",
+            "supplier_1_price": 75.99,
+            "supplier_1_inventory": 150,
+            "supplier_2_name": "Secondary Wholesaler",
+            "supplier_2_price": 78.50,
+            "supplier_2_inventory": 45
+        },
+        ...
+    ]
 }</pre>
-                 <h3 class="text-xl font-semibold mt-6 mb-2">Data Object Fields</h3>
-                 <div class="overflow-x-auto">
-                     <table class="w-full text-left">
-                         <thead class="border-b border-[var(--border-color)]">
-                             <tr>
-                                 <th class="p-2">Field</th>
-                                 <th class="p-2">Type</th>
-                                 <th class="p-2">Description</th>
-                             </tr>
-                         </thead>
-                         <tbody>
+                <h3 class="text-xl font-semibold mt-6 mb-2">Data Object Fields</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="border-b border-[var(--border-color)]">
+                            <tr>
+                                <th class="p-2">Field</th>
+                                <th class="p-2">Type</th>
+                                <th class="p-2">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-[var(--border-color)]">
+                                <td class="p-2 font-mono">sku</td>
+                                <td class="p-2">String</td>
+                                <td class="p-2">The unique Stock Keeping Unit for the product.</td>
+                            </tr>
+                            <tr class="border-b border-[var(--border-color)]">
+                                <td class="p-2 font-mono">upc</td>
+                                <td class="p-2">String</td>
+                                <td class="p-2">The Universal Product Code.</td>
+                            </tr>
+                            <tr class="border-b border-[var(--border-color)]">
+                                <td class="p-2 font-mono">itemName</td>
+                                <td class="p-2">String</td>
+                                <td class="p-2">The name of the product.</td>
+                            </tr>
+                            <tr class="border-b border-[var(--border-color)]">
+                                <td class="p-2 font-mono">brand</td>
+                                <td class="p-2">String</td>
+                                <td class="p-2">The brand of the product.</td>
+                            </tr>
+                            <tr class="border-b border-[var(--border-color)]">
+                                <td class="p-2 font-mono">size</td>
+                                <td class="p-2">String</td>
+                                <td class="p-2">The size of the product (e.g., "100ml").</td>
+                            </tr>
+                            <tr class="border-b border-[var(--border-color)]">
+                                <td class="p-2 font-mono">msrp</td>
+                                <td class="p-2">Number</td>
+                                <td class="p-2">The Manufacturer's Suggested Retail Price.</td>
+                            </tr>
                              <tr class="border-b border-[var(--border-color)]">
-                                 <td class="p-2 font-mono">sku</td>
-                                 <td class="p-2">String</td>
-                                 <td class="p-2">The unique Stock Keeping Unit for the product.</td>
-                             </tr>
-                             <tr class="border-b border-[var(--border-color)]">
-                                 <td class="p-2 font-mono">upc</td>
-                                 <td class="p-2">String</td>
-                                 <td class="p-2">The Universal Product Code.</td>
-                             </tr>
-                             <!-- ... other table rows ... -->
-                         </tbody>
-                     </table>
-                 </div>
+                                <td class="p-2 font-mono">asin</td>
+                                <td class="p-2">String</td>
+                                <td class="p-2">The Amazon Standard Identification Number.</td>
+                            </tr>
+                            <tr class="border-b border-[var(--border-color)]">
+                                <td class="p-2 font-mono">supplier_X_...</td>
+                                <td class="p-2">String/Number</td>
+                                <td class="p-2">Supplier data is flattened. 'X' is the supplier number, sorted by lowest price first.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="text-xl font-semibold mt-6 mb-2">Error Responses</h3>
+                <p>If a request fails, the API will return a JSON object with an <code>error</code> key.</p>
+                <ul class="list-disc list-inside space-y-4 mt-4">
+                    <li><strong>401 Unauthorized:</strong> The API key is missing, invalid, or has been revoked.<pre class="mt-2">{ "error": "Unauthorized: Invalid API key." }</pre></li>
+                    <li><strong>429 Too Many Requests:</strong> The user has exceeded the 300 requests per day limit.<pre class="mt-2">{ "error": "You have exceeded the 300 requests in 24 hrs limit!" }</pre></li>
+                    <li><strong>500 Internal Server Error:</strong> An unexpected error occurred on the server.<pre class="mt-2">{ "error": "An unexpected error occurred." }</pre></li>
+                </ul>
+
+
+                <h3 class="text-xl font-semibold mt-6 mb-2">Example Request (cURL)</h3>
+                <pre># Get page 2 with 50 items per page
+curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?page=2&limit=50" \
+     -H "Authorization: Bearer YOUR_API_KEY"</pre>
+                <h3 class="text-xl font-semibold mt-6 mb-2">Example Request (Filtering by SKU)</h3>
+                <pre># Get a single product by its SKU
+curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?sku=PRODUCT-SKU-123" \
+     -H "Authorization: Bearer YOUR_API_KEY"</pre>
             </div>
         </div>
 
