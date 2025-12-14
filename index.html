@@ -422,7 +422,7 @@
                 <p>If a request fails, the API will return a JSON object with an <code>error</code> key.</p>
                 <ul class="list-disc list-inside space-y-4 mt-4">
                     <li><strong>401 Unauthorized:</strong> The API key is missing, invalid, or has been revoked.<pre class="mt-2">{ "error": "Unauthorized: Invalid API key." }</pre></li>
-                    <li><strong>429 Too Many Requests:</strong> The user has exceeded the 100 requests per day limit.<pre class="mt-2">{ "error": "You have exceeded the 100 requests in 24 hrs limit!" }</pre></li>
+                    <li><strong>429 Too Many Requests:</strong> The user has exceeded the 300 requests per day limit.<pre class="mt-2">{ "error": "You have exceeded the 300 requests in 24 hrs limit!" }</pre></li>
                     <li><strong>500 Internal Server Error:</strong> An unexpected error occurred on the server.<pre class="mt-2">{ "error": "An unexpected error occurred." }</pre></li>
                 </ul>
 
@@ -483,7 +483,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
                       <div class="w-full bg-[var(--bg-secondary)] rounded-full h-2.5">
                           <div id="api-usage-bar" class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
                       </div>
-                      <p id="api-usage-text" class="text-right text-sm mt-1">0 / 100 calls</p>
+                      <p id="api-usage-text" class="text-right text-sm mt-1">0 / 300 calls</p>
 
                       <h3 class="text-lg font-semibold mt-6 mb-2">Recent API Calls</h3>
                       <div class="border border-[var(--border-color)] rounded-lg overflow-hidden">
@@ -639,7 +639,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
         mainAppContainer.classList.remove('hidden');
         userEmailDisplay.textContent = user.email;
         handleBrowseAll();
-        loadApiKey(); 
+        loadApiKey(); 
         loadApiUsage();
       } else {
         authContainer.classList.remove('hidden');
@@ -816,9 +816,9 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
                 .get();
 
             const usageCount = querySnapshot.size;
-            const usagePercentage = (usageCount / 100) * 100;
+            const usagePercentage = (usageCount / 300) * 100;
             
-            apiUsageText.textContent = `${usageCount} / 100 calls`;
+            apiUsageText.textContent = `${usageCount} / 300 calls`;
             apiUsageBar.style.width = `${usagePercentage}%`;
             
             recentCallsTbody.innerHTML = '';
@@ -1052,7 +1052,9 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
         querySnapshots.forEach(snapshot => {
             snapshot.forEach(doc => allDocs.push(doc.data()));
         });
-        return allDocs.sort((a, b) => a.sku.localeCompare(b.sku));
+        
+        // Sort results based on the order of UPCs in the input list
+        return allDocs.sort((a, b) => upcList.indexOf(a.upc) - upcList.indexOf(b.upc));
     }
 
     function handleBrowseAll() {
@@ -1439,4 +1441,3 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
   </script>
 </body>
 </html>
-
