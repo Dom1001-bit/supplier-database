@@ -975,7 +975,23 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
 
     function renderFilteredResults(docs) {
         resultsContainer.innerHTML = '';
-        docs.forEach((item, index) => {
+        
+        const processedDocs = docs.map(item => {
+            const filteredSuppliers = item.suppliers ? item.suppliers.filter(sup => !excludedSuppliers.has(sup.name)) : [];
+            
+            const newLowestPrice = filteredSuppliers.reduce((min, sup) => {
+                const price = parseFloat(sup.price);
+                return !isNaN(price) && price > 0 && price < min ? price : min;
+            }, Infinity);
+
+            return {
+                ...item,
+                suppliers: filteredSuppliers,
+                lowestPrice: newLowestPrice === Infinity ? -1 : newLowestPrice
+            };
+        });
+
+        processedDocs.forEach((item, index) => {
             const card = createItemCard(item);
             card.style.animationDelay = `${index * 30}ms`; // Staggered animation
             resultsContainer.appendChild(card);
@@ -1347,7 +1363,16 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
         const placeholderImg = 'https://i.imgur.com/IUBzxFv.jpeg';
         const imageUrl = (item.imageUrl && String(item.imageUrl).trim() !== "") ? item.imageUrl : placeholderImg;
 
-        const sortedSuppliers = [...item.suppliers].sort((a, b) => {
+        // Filter based on excluded suppliers
+        const visibleSuppliers = item.suppliers ? item.suppliers.filter(s => !excludedSuppliers.has(s.name)) : [];
+
+        // Calculate lowest price among visible suppliers for highlighting
+        const lowestVisiblePrice = visibleSuppliers.reduce((min, sup) => {
+            const price = parseFloat(sup.price);
+            return !isNaN(price) && price > 0 && price < min ? price : min;
+        }, Infinity);
+
+        const sortedSuppliers = [...visibleSuppliers].sort((a, b) => {
             const priceA = parseFloat(a.price) || Infinity;
             const priceB = parseFloat(b.price) || Infinity;
             return priceA - priceB;
@@ -1359,7 +1384,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
                 const price = parseFloat(supplier.price);
                 const priceText = !isNaN(price) ? `$${price.toFixed(2)}` : 'N/A';
                 const inventoryText = supplier.inventory || 'N/A';
-                const isLowest = (price === item.lowestPrice && price < Infinity);
+                const isLowest = (price === lowestVisiblePrice && price < Infinity);
                 const priceClass = isLowest ? 'text-green-custom font-bold' : '';
                 return `
                     <tr class="border-b border-[var(--border-color)]">
