@@ -217,6 +217,8 @@
           <!-- Navigation Tabs -->
           <nav class="hidden md:flex items-center space-x-4 border-b border-transparent">
             <button id="tab-database" class="tab-button active px-3 py-5 text-sm font-medium">Database</button>
+            <!-- NEW TAB: Inventory Nexus -->
+            <button id="tab-inventory-nexus" class="tab-button px-3 py-5 text-sm font-medium">Inventory Nexus</button>
             <button id="tab-api-docs" class="tab-button px-3 py-5 text-sm font-medium">API Docs</button>
             <button id="tab-api-key" class="tab-button px-3 py-5 text-sm font-medium">API Key</button>
           </nav>
@@ -237,6 +239,7 @@
         <!-- Mobile Navigation Tabs -->
         <nav class="md:hidden flex items-center justify-center space-x-2 border-b border-gray-700 pb-2">
             <button id="mobile-tab-database" class="tab-button active px-4 py-2 text-sm font-medium">Database</button>
+            <button id="mobile-tab-inventory-nexus" class="tab-button px-4 py-2 text-sm font-medium">Inventory Nexus</button>
             <button id="mobile-tab-api-docs" class="tab-button px-4 py-2 text-sm font-medium">API Docs</button>
             <button id="mobile-tab-api-key" class="tab-button px-4 py-2 text-sm font-medium">API Key</button>
         </nav>
@@ -313,6 +316,44 @@
           </div>
 
           <div id="pagination-container" class="mt-10 flex justify-center items-center space-x-2"></div>
+        </div>
+
+        <!-- NEW: Inventory Nexus Tab Content -->
+        <div id="inventory-nexus-tab-content" class="tab-content hidden">
+            <div class="glass-effect p-8 rounded-lg max-w-4xl mx-auto text-center">
+                <div class="inline-block p-4 rounded-full bg-[var(--bg-secondary)] mb-6">
+                   <!-- Icon -->
+                   <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-[var(--accent-color)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                   </svg>
+                </div>
+                <h2 class="text-3xl font-bold mb-4">Inventory Nexus</h2>
+                <p class="text-lg text-[var(--text-secondary)] mb-8 max-w-2xl mx-auto">
+                    A powerful extension tool designed to streamline your inventory management. Upload your own inventory files, map data columns, and consolidate information efficiently.
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 text-left max-w-3xl mx-auto">
+                    <div class="p-4 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--accent-color)] transition-colors duration-200">
+                        <h3 class="font-bold text-[var(--text-main)] mb-2 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-green-custom" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                            Upload & Map
+                        </h3>
+                        <p class="text-sm text-[var(--text-secondary)]">Seamlessly upload inventory files (CSV/Excel) and map columns to your specific needs.</p>
+                    </div>
+                    <div class="p-4 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--accent-color)] transition-colors duration-200">
+                        <h3 class="font-bold text-[var(--text-main)] mb-2 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            Bulk Search & Extract
+                        </h3>
+                        <p class="text-sm text-[var(--text-secondary)]">Perform bulk UPC searches against your uploaded data and extract results instantly.</p>
+                    </div>
+                </div>
+
+                <a href="https://inventorynexus.brnddirect.com/" target="_blank" class="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-200 bg-[var(--accent-color)] border border-transparent rounded-full shadow-lg hover:bg-[var(--accent-hover)] hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Launch Inventory Nexus
+                    <svg class="w-5 h-5 ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+            </div>
         </div>
 
         <!-- API Docs Tab -->
