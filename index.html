@@ -12,322 +12,347 @@
   
   <script src="https://cdn.tailwindcss.com"></script>
   
+  <!-- Libraries for Inventory Tool -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  
   <style>
     :root {
-        --bg-main: #111827;
-        --bg-secondary: #1f2937;
-        --bg-glass: rgba(31, 41, 55, 0.6);
-        --text-main: #e5e7eb;
-        --text-secondary: #9ca3af;
-        --border-color: rgba(55, 65, 81, 0.8);
-        --accent-color: #4f46e5;
-        --accent-hover: #4338ca;
-        --card-bg: #1f2937;
+        /* Dark Mode (Default) - Slate Palette */
+        --bg-main: #0f172a;       /* slate-900 */
+        --bg-secondary: #1e293b;  /* slate-800 */
+        --bg-glass: rgba(15, 23, 42, 0.85);
+        --text-main: #f1f5f9;     /* slate-100 */
+        --text-secondary: #94a3b8; /* slate-400 */
+        --border-color: #334155;  /* slate-700 */
+        --accent-color: #6366f1;  /* indigo-500 */
+        --accent-hover: #4f46e5;  /* indigo-600 */
+        --card-bg: #1e293b;       /* slate-800 */
+        --input-bg: #0f172a;      /* slate-900 */
     }
 
     html.light-mode {
-        --bg-main: #f9fafb;
-        --bg-secondary: #f3f4f6;
-        --bg-glass: rgba(255, 255, 255, 0.7);
-        --text-main: #1f2937;
-        --text-secondary: #4b5563;
-        --border-color: rgba(209, 213, 219, 0.8);
-        --accent-color: #4f46e5;
-        --accent-hover: #5a53e0;
-        --card-bg: #ffffff;
+        /* Light Mode - Slate Palette */
+        --bg-main: #f8fafc;       /* slate-50 */
+        --bg-secondary: #ffffff;  /* white */
+        --bg-glass: rgba(255, 255, 255, 0.9);
+        --text-main: #0f172a;     /* slate-900 */
+        --text-secondary: #64748b; /* slate-500 */
+        --border-color: #e2e8f0;  /* slate-200 */
+        --accent-color: #4f46e5;  /* indigo-600 */
+        --accent-hover: #4338ca;  /* indigo-700 */
+        --card-bg: #ffffff;       /* white */
+        --input-bg: #ffffff;      /* white */
     }
 
     body { 
         font-family: 'Inter', sans-serif; 
         background-color: var(--bg-main);
         color: var(--text-main);
-        transition: background-color 0.3s ease, color 0.3s ease;
+        transition: background-color 0.2s ease, color 0.2s ease;
+        font-size: 0.9rem;
     }
     
     .glass-effect {
         background-color: var(--bg-glass);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
-        border: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
     }
 
-    .loader { border: 4px solid var(--border-color); border-top: 4px solid var(--accent-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+    /* Clean Abstract Background for Login */
+    .auth-bg {
+        background-color: var(--bg-main);
+        background-image: 
+            radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.08), transparent 25%), 
+            radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.08), transparent 25%);
+    }
+
+    .loader { border: 3px solid var(--border-color); border-top: 3px solid var(--accent-color); border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     
-    .skeleton-card { background-color: var(--bg-secondary); border-radius: 0.75rem; overflow: hidden; border: 1px solid var(--border-color); }
-    .skeleton-image { background-color: var(--text-secondary); opacity: 0.3; height: 12rem; }
-    .skeleton-text { background-color: var(--text-secondary); opacity: 0.3; height: 1rem; margin-bottom: 0.5rem; border-radius: 0.25rem; }
-    @keyframes pulse { 50% { opacity: .5; } }
-    .skeleton-card, .skeleton-image, .skeleton-text { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    .skeleton-card { background-color: var(--bg-secondary); border-radius: 0.5rem; overflow: hidden; border: 1px solid var(--border-color); }
+    .skeleton-image { background-color: var(--border-color); opacity: 0.1; height: 10rem; }
+    .skeleton-text { background-color: var(--border-color); opacity: 0.1; height: 0.75rem; margin-bottom: 0.5rem; border-radius: 0.25rem; }
+    @keyframes pulse { 50% { opacity: .7; } }
+    .skeleton-card, .skeleton-image, .skeleton-text { animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
 
     .result-card { 
         opacity: 0; 
-        transform: translateY(20px); 
-        animation: card-fade-in 0.5s forwards; 
-        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        transform: translateY(10px); 
+        animation: card-fade-in 0.4s forwards; 
+        transition: all 0.2s ease-in-out;
         background-color: var(--card-bg);
         border: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
     }
     .result-card:hover { 
-        transform: translateY(-5px); 
-        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
-    }
-    html.dark .result-card:hover {
-        box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.2), 0 8px 10px -6px rgba(79, 70, 229, 0.1);
+        transform: translateY(-2px); 
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         border-color: var(--accent-color);
     }
     @keyframes card-fade-in { to { opacity: 1; transform: translateY(0); } }
     
-    .tab-button {
+    .nav-tab {
         position: relative;
         color: var(--text-secondary);
-        transition: color 0.3s ease;
+        transition: all 0.2s ease;
+        border-radius: 9999px;
     }
-    .tab-button:hover { color: var(--text-main); }
-    .tab-button.active { color: var(--accent-color); font-weight: 600; }
-    .tab-button.active::after {
-        content: '';
-        position: absolute;
-        bottom: -1px;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background-color: var(--accent-color);
+    .nav-tab:hover { color: var(--text-main); background-color: var(--border-color); }
+    .nav-tab.active { 
+        color: white; 
+        background-color: var(--accent-color); 
+        font-weight: 500;
     }
+    
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    .btn:active { transform: scale(0.98); }
     
     .btn-primary {
         background-color: var(--accent-color);
         color: white;
-        transition: background-color 0.2s ease;
     }
-    .btn-primary:hover {
-        background-color: var(--accent-hover);
-    }
+    .btn-primary:hover { background-color: var(--accent-hover); }
 
     .btn-secondary {
-        background-color: var(--bg-secondary);
+        background-color: transparent;
         color: var(--text-main);
         border: 1px solid var(--border-color);
-        transition: background-color 0.2s ease, border-color 0.2s ease;
     }
     .btn-secondary:hover {
-        background-color: var(--border-color);
+        background-color: var(--bg-secondary);
         border-color: var(--text-secondary);
-    }
-
-    .btn-click-effect:active {
-        transform: scale(0.98);
-        transition: transform 0.1s ease;
     }
     
     input, select, textarea { 
-        background-color: var(--bg-secondary); 
+        background-color: var(--input-bg); 
         color: var(--text-main); 
         border: 1px solid var(--border-color);
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        transition: border-color 0.15s;
     }
     input:focus, select:focus, textarea:focus {
-        --tw-ring-color: var(--accent-color);
+        outline: none;
         border-color: var(--accent-color);
+        box-shadow: 0 0 0 1px var(--accent-color);
     }
     
-    .prose { color: var(--text-main); }
-    .prose h2, .prose h3 { color: var(--text-main); }
-    .prose pre { background-color: var(--bg-main); border: 1px solid var(--border-color); }
-    .prose code { color: var(--text-secondary); }
-    .prose table th { color: var(--text-main); }
-    .prose table td { color: var(--text-secondary); }
-    .prose a { color: var(--accent-color); }
-    .prose strong { color: var(--text-main); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
 
-
-    .text-green-custom { color: #4ade80; }
-    html.light-mode .text-green-custom { color: #16a34a; }
-
+    .text-green-custom { color: #10b981; }
+    html.light-mode .text-green-custom { color: #059669; }
   </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen flex flex-col">
 
   <!-- Authentication Container -->
-  <div id="auth-container" class="min-h-screen flex items-center justify-center p-4 bg-cover bg-center" style="background-image: linear-gradient(rgba(17, 24, 39, 0.8), rgba(17, 24, 39, 0.8)), url('https://placehold.co/1920x1080/111827/111827?text=');">
-    <div class="max-w-md w-full glass-effect p-8 rounded-2xl shadow-2xl">
-      <img src="https://i.imgur.com/GQya5pg.png" alt="Brand Logo" class="h-20 mx-auto mb-6"/>
-      <h2 id="auth-title" class="text-2xl font-bold text-center mb-2 text-white">Member Login</h2>
-      <p id="auth-subtitle" class="text-center text-gray-300 mb-6">Access the Supplier Database</p>
+  <div id="auth-container" class="fixed inset-0 z-50 flex items-center justify-center p-4 auth-bg">
+    <div class="max-w-sm w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] p-8 rounded-2xl shadow-2xl">
+      <div class="text-center mb-6">
+          <img src="https://i.imgur.com/U4WPjmA.png" alt="Logo" class="h-12 w-auto mx-auto mb-3"/>
+          <h2 id="auth-title" class="text-xl font-bold text-[var(--text-main)]">Welcome Back</h2>
+          <p id="auth-subtitle" class="text-sm text-[var(--text-secondary)]">Sign in to access the database</p>
+      </div>
       
-      <div id="auth-message" class="hidden px-4 py-2 rounded-lg mb-4 text-sm"></div>
+      <div id="auth-message" class="hidden px-3 py-2 rounded-md mb-4 text-xs font-medium bg-red-500/10 text-red-500 border border-red-500/20"></div>
 
-      <!-- Login, Signup, Forgot Password Forms -->
-      <form id="login-form">
-        <div class="mb-4">
-          <label for="email" class="block text-sm font-medium text-gray-300">Email Address</label>
-          <input type="email" id="email" required class="mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+      <!-- Login Forms -->
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1">Email</label>
+          <input type="email" id="email" required class="w-full p-2.5">
         </div>
-        <div class="mb-4">
-          <label for="password" class="block text-sm font-medium text-gray-300">Password</label>
-          <input type="password" id="password" required class="mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+        <div>
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1">Password</label>
+          <input type="password" id="password" required class="w-full p-2.5">
         </div>
-        <button type="button" id="show-forgot-password-btn" class="text-xs text-indigo-400 hover:text-indigo-300 text-right w-full mb-4 -mt-2">Forgot Password?</button>
-        <div id="auth-buttons">
-          <button type="submit" id="login-btn" class="w-full inline-flex justify-center rounded-md border border-transparent py-2.5 px-4 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 btn-primary btn-click-effect">Login</button>
-          <button type="button" id="show-signup-btn" class="w-full mt-3 text-center text-sm text-indigo-400 hover:text-indigo-300">Don't have an account? Sign Up</button>
+        <div class="flex justify-end">
+            <button type="button" id="show-forgot-password-btn" class="text-xs text-[var(--accent-color)] hover:underline">Forgot Password?</button>
+        </div>
+        <button type="submit" id="login-btn" class="btn btn-primary w-full py-2.5">Sign In</button>
+        <div class="text-center mt-4">
+            <button type="button" id="show-signup-btn" class="text-xs text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors">Create an account</button>
         </div>
       </form>
 
-      <form id="signup-form" class="hidden">
-        <div class="mb-4">
-          <label for="signup-email" class="block text-sm font-medium text-gray-300">Email Address</label>
-          <input type="email" id="signup-email" required class="mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+      <form id="signup-form" class="hidden space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1">Email</label>
+          <input type="email" id="signup-email" required class="w-full p-2.5">
         </div>
-        <div class="mb-6">
-          <label for="signup-password" class="block text-sm font-medium text-gray-300">Create Password (min. 6 characters)</label>
-          <input type="password" id="signup-password" required class="mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+        <div>
+          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1">Password (min 6 chars)</label>
+          <input type="password" id="signup-password" required class="w-full p-2.5">
         </div>
-        <div id="signup-buttons">
-          <button type="submit" id="signup-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-teal-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-colors btn-click-effect">Create Account</button>
-          <button type="button" id="show-login-btn-from-signup" class="w-full mt-3 text-center text-sm text-indigo-400 hover:text-indigo-300">Already have an account? Login</button>
+        <button type="submit" id="signup-btn" class="btn btn-primary w-full py-2.5">Create Account</button>
+        <div class="text-center mt-4">
+            <button type="button" id="show-login-btn-from-signup" class="text-xs text-[var(--text-secondary)] hover:text-[var(--text-main)]">Back to Login</button>
         </div>
       </form>
       
-      <form id="forgot-password-form" class="hidden">
-        <div class="mb-4">
-            <label for="reset-email" class="block text-sm font-medium text-gray-300">Email Address</label>
-            <input type="email" id="reset-email" required class="mt-1 block w-full rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2.5">
+      <form id="forgot-password-form" class="hidden space-y-4">
+        <div>
+            <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1">Email</label>
+            <input type="email" id="reset-email" required class="w-full p-2.5">
         </div>
-        <div id="forgot-password-buttons">
-            <button type="submit" id="reset-password-btn" class="w-full inline-flex justify-center rounded-md border border-transparent bg-orange-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors btn-click-effect">Send Reset Link</button>
-            <button type="button" id="show-login-btn-from-forgot" class="w-full mt-3 text-center text-sm text-indigo-400 hover:text-indigo-300">Back to Login</button>
+        <button type="submit" id="reset-password-btn" class="btn btn-primary w-full py-2.5">Send Reset Link</button>
+        <div class="text-center mt-4">
+            <button type="button" id="show-login-btn-from-forgot" class="text-xs text-[var(--text-secondary)] hover:text-[var(--text-main)]">Back to Login</button>
         </div>
       </form>
-
     </div>
   </div>
 
   <!-- Main Application Container -->
-  <div id="main-app-container" class="hidden">
-    <!-- Header -->
-    <header class="sticky top-0 z-40 w-full glass-effect">
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
-          <!-- Logo and Title -->
-          <div class="flex items-center space-x-4">
-            <img src="https://i.imgur.com/GQya5pg.png" alt="Brand Logo" class="h-8 w-auto"/>
-            <span class="hidden sm:block text-xl font-semibold">Supplier Database</span>
-          </div>
-          
-          <!-- Navigation Tabs -->
-          <nav class="hidden md:flex items-center space-x-4 border-b border-transparent">
-            <button id="tab-database" class="tab-button active px-3 py-5 text-sm font-medium">Database</button>
-            <!-- NEW TAB: Inventory Nexus -->
-            <button id="tab-inventory-nexus" class="tab-button px-3 py-5 text-sm font-medium">Inventory Nexus</button>
-            <button id="tab-api-docs" class="tab-button px-3 py-5 text-sm font-medium">API Docs</button>
-            <button id="tab-api-key" class="tab-button px-3 py-5 text-sm font-medium">API Key</button>
-          </nav>
-
-          <!-- User Menu and Theme Toggle -->
-          <div class="flex items-center space-x-4">
-            <button id="theme-toggle-btn" class="p-2 rounded-full hover:bg-gray-700/50 transition-colors btn-click-effect">
-                <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-300 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-            </button>
-            <div class="hidden sm:flex items-center space-x-3">
-              <span id="user-email-display" class="text-sm"></span>
-              <button id="logout-btn" class="text-sm font-semibold text-indigo-400 hover:text-indigo-300">Logout</button>
-            </div>
-            <!-- Mobile Menu Button can be added here -->
-          </div>
+  <div id="main-app-container" class="hidden flex-1 flex flex-col">
+    <!-- Compact Header -->
+    <header class="sticky top-0 z-40 w-full glass-effect h-14">
+      <div class="container mx-auto px-4 h-full flex items-center justify-between">
+        <!-- Logo -->
+        <div class="flex items-center space-x-3">
+          <img src="https://i.imgur.com/U4WPjmA.png" alt="Logo" class="h-6 w-auto"/>
+          <span class="hidden sm:block text-sm font-bold tracking-tight">SUPPLIER DB</span>
         </div>
-        <!-- Mobile Navigation Tabs -->
-        <nav class="md:hidden flex items-center justify-center space-x-2 border-b border-gray-700 pb-2">
-            <button id="mobile-tab-database" class="tab-button active px-4 py-2 text-sm font-medium">Database</button>
-            <button id="mobile-tab-inventory-nexus" class="tab-button px-4 py-2 text-sm font-medium">Inventory Nexus</button>
-            <button id="mobile-tab-api-docs" class="tab-button px-4 py-2 text-sm font-medium">API Docs</button>
-            <button id="mobile-tab-api-key" class="tab-button px-4 py-2 text-sm font-medium">API Key</button>
+        
+        <!-- Compact Nav -->
+        <nav class="hidden md:flex items-center space-x-1">
+          <button id="tab-database" class="nav-tab active px-4 py-1.5 text-xs">Database</button>
+          <button id="tab-inventory-nexus" class="nav-tab px-4 py-1.5 text-xs">Inventory Nexus</button>
+          <button id="tab-api-docs" class="nav-tab px-4 py-1.5 text-xs">API Docs</button>
+          <button id="tab-api-key" class="nav-tab px-4 py-1.5 text-xs">API Key</button>
         </nav>
+
+        <!-- Tools -->
+        <div class="flex items-center space-x-3">
+          <button id="theme-toggle-btn" class="p-1.5 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--border-color)] transition-colors">
+              <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+              <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+          </button>
+          <div class="h-4 w-px bg-[var(--border-color)] mx-2"></div>
+          <span id="user-email-display" class="hidden sm:block text-xs font-medium text-[var(--text-secondary)]"></span>
+          <button id="logout-btn" class="text-xs font-semibold text-red-400 hover:text-red-500 ml-2">Logout</button>
+        </div>
+      </div>
+      
+      <!-- Mobile Nav -->
+      <div class="md:hidden border-t border-[var(--border-color)] flex justify-around p-1 bg-[var(--bg-main)]">
+          <button id="mobile-tab-database" class="nav-tab active flex-1 py-2 text-xs">Database</button>
+          <button id="mobile-tab-inventory-nexus" class="nav-tab flex-1 py-2 text-xs">Inv. Nexus</button>
+          <button id="mobile-tab-api-docs" class="nav-tab flex-1 py-2 text-xs">Docs</button>
+          <button id="mobile-tab-api-key" class="nav-tab flex-1 py-2 text-xs">Key</button>
       </div>
     </header>
 
     <!-- Main Content -->
-    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+    <main class="flex-1 container mx-auto p-4 lg:p-6">
       <div id="tab-content-container">
+        
         <!-- Database Tab -->
         <div id="database-tab-content" class="tab-content">
-          <div id="search-controls" class="glass-effect p-6 rounded-xl shadow-lg mb-8">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                <div class="md:col-span-4">
-                    <label for="search-input" class="block text-sm font-medium mb-1">Search Term</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" /></svg>
-                        </div>
-                        <input type="text" id="search-input" placeholder="Enter UPC, Item Name, etc." class="block w-full rounded-md shadow-sm sm:text-sm p-2.5 pl-10">
+          
+          <!-- Compact Search Bar -->
+          <div class="bg-[var(--card-bg)] border border-[var(--border-color)] p-4 rounded-xl shadow-sm mb-6">
+            <div class="flex flex-col md:flex-row gap-3">
+                <div class="flex-grow relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-4 w-4 text-[var(--text-secondary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                     </div>
+                    <input type="text" id="search-input" placeholder="Search by UPC, Name, Brand..." class="w-full pl-9 py-2">
                 </div>
-                <div class="md:col-span-3">
-                    <label for="search-type" class="block text-sm font-medium mb-1">Search By</label>
-                    <select id="search-type" class="block w-full rounded-md shadow-sm sm:text-sm p-2.5">
+                <div class="w-full md:w-40">
+                    <select id="search-type" class="w-full py-2">
                         <option value="upc" selected>UPC</option>
-                        <option value="itemName_lowercase">Item Name</option>
+                        <option value="itemName_lowercase">Name</option>
                         <option value="brand">Brand</option>
                         <option value="sku">SKU</option>
                     </select>
                 </div>
-                <div class="md:col-span-5 flex items-center space-x-3">
-                    <button id="search-btn" class="w-full inline-flex justify-center rounded-md py-2.5 px-4 text-sm font-medium btn-primary btn-click-effect">Search</button>
-                    <button id="browse-all-btn" class="w-full inline-flex justify-center rounded-md py-2.5 px-4 text-sm font-medium btn-secondary btn-click-effect">Browse All</button>
+                <div class="flex gap-2">
+                    <button id="search-btn" class="btn btn-primary px-6 py-2">Search</button>
+                    <button id="browse-all-btn" class="btn btn-secondary px-4 py-2 whitespace-nowrap">Browse All</button>
                 </div>
             </div>
-            <div id="bulk-search-section" class="mt-4 pt-4 border-t border-[var(--border-color)]">
-              <label class="block text-sm font-medium">Bulk UPC Search</label>
-              <textarea id="upc-list-input" rows="4" class="mt-1 block w-full rounded-md shadow-sm sm:text-sm p-2" placeholder="Paste a list of UPCs, one per line (up to 500)"></textarea>
-              <button id="search-list-btn" class="mt-2 w-full inline-flex justify-center rounded-md border border-transparent bg-teal-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-colors btn-click-effect">Search UPC List</button>
+            
+            <!-- Collapsible Filters/Tools -->
+            <div class="mt-4 pt-3 border-t border-[var(--border-color)] flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                     <button id="filter-suppliers-btn" class="btn btn-secondary py-1.5 px-3 text-xs">
+                        <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                        Filter Suppliers
+                     </button>
+                     <button id="export-csv-btn" class="btn btn-secondary py-1.5 px-3 text-xs text-green-600 hover:bg-green-50/10 border-green-600/30">
+                        <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Export CSV
+                     </button>
+                </div>
+                <!-- Bulk Search Toggle (Could be expanded) -->
+                 <details class="w-full md:w-auto relative group">
+                    <summary class="list-none cursor-pointer text-xs font-medium text-[var(--accent-color)] hover:underline flex items-center">
+                        Advanced: Bulk Search
+                        <svg class="w-3 h-3 ml-1 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </summary>
+                    <div class="absolute right-0 mt-2 w-72 bg-[var(--card-bg)] border border-[var(--border-color)] rounded-lg shadow-xl p-3 z-20">
+                        <textarea id="upc-list-input" rows="4" class="w-full text-xs p-2 mb-2" placeholder="Paste UPCs (one per line)"></textarea>
+                        <button id="search-list-btn" class="btn btn-primary w-full py-1.5 text-xs">Search List</button>
+                    </div>
+                 </details>
             </div>
           </div>
+
+          <!-- Loading State -->
+          <div id="loader-container" class="hidden grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
+          <div id="export-loader" class="flex justify-center items-center py-12 hidden">
+             <div class="loader mr-3"></div>
+             <p class="text-sm text-[var(--text-secondary)]">Generating CSV...</p>
+          </div>
           
-          <div id="controls-bar" class="mb-4 flex justify-end items-center gap-4 hidden">
-             <button id="filter-suppliers-btn" type="button" class="inline-flex items-center px-4 py-2 border border-sky-500 text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700 focus:z-10 focus:outline-none focus:ring-1 focus:ring-sky-500 btn-click-effect">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM13 16a1 1 0 102 0v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L13 10.414V16z" /></svg>
-                Filter Suppliers
-             </button>
-             <button id="export-csv-btn" type="button" class="inline-flex items-center px-4 py-2 border border-green-600 text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:z-10 focus:outline-none focus:ring-1 focus:ring-green-500 btn-click-effect">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                Export as CSV
-              </button>
+          <!-- Error State -->
+          <div id="error-display" class="hidden bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 rounded-lg mb-6 text-sm flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span id="error-message">Error</span>
           </div>
 
-          <div id="loader-container" class="hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
-          <div id="export-loader" class="flex justify-center items-center py-20 hidden">
-              <div class="loader"></div>
-              <p class="ml-4 text-[var(--text-secondary)]">Generating your export file...</p>
-          </div>
-          <div id="error-display" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
-            <strong class="font-bold">Error:</strong>
-            <span id="error-message" class="block sm:inline">Something went wrong.</span>
-          </div>
-
-          <div id="results-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
+          <!-- Results Grid -->
+          <div id="results-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
           
-          <div id="no-results" class="text-center py-16 text-[var(--text-secondary)]">
-            <div class="inline-block bg-[var(--bg-secondary)] p-6 rounded-full">
-              <svg class="h-16 w-16 text-[var(--text-secondary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          <!-- No Results -->
+          <div id="no-results" class="text-center py-20 text-[var(--text-secondary)] hidden">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[var(--bg-secondary)] mb-4">
+              <svg class="h-8 w-8 text-[var(--text-secondary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             </div>
-            <h3 id="no-results-title" class="text-xl font-semibold mt-4 text-[var(--text-main)]">No Results Found</h3>
-            <p id="no-results-subtitle" class="text-[var(--text-secondary)]">Try a different search term or browse all items.</p>
-            <button id="no-results-browse-btn" class="mt-4 inline-flex justify-center rounded-md py-2.5 px-4 text-sm font-medium btn-primary">Browse All Items</button>
+            <h3 id="no-results-title" class="text-lg font-bold text-[var(--text-main)]">No Products Found</h3>
+            <p id="no-results-subtitle" class="text-sm mb-4">Try adjusting your search terms.</p>
+            <button id="no-results-browse-btn" class="btn btn-secondary px-6 py-2">Clear Search</button>
           </div>
 
-          <div id="pagination-container" class="mt-10 flex justify-center items-center space-x-2"></div>
+          <!-- Pagination -->
+          <div id="pagination-container" class="mt-8 flex justify-center items-center space-x-2"></div>
         </div>
 
-        <!-- NEW: Inventory Nexus Tab Content -->
+        <!-- Inventory Nexus Tab Content -->
         <div id="inventory-nexus-tab-content" class="tab-content hidden">
-            <div class="glass-effect p-8 rounded-lg max-w-4xl mx-auto text-center">
+            <div class="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl p-8 max-w-4xl mx-auto text-center">
                 <div class="inline-block p-4 rounded-full bg-[var(--bg-secondary)] mb-6">
                    <!-- Icon -->
                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-[var(--accent-color)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                    </svg>
                 </div>
-                <h2 class="text-3xl font-bold mb-4">Inventory Nexus</h2>
+                <h2 class="text-3xl font-bold mb-4 text-[var(--text-main)]">Inventory Nexus</h2>
                 <p class="text-lg text-[var(--text-secondary)] mb-8 max-w-2xl mx-auto">
                     A powerful extension tool designed to streamline your inventory management. Upload your own inventory files, map data columns, and consolidate information efficiently.
                 </p>
@@ -342,7 +367,7 @@
                     </div>
                     <div class="p-4 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--accent-color)] transition-colors duration-200">
                         <h3 class="font-bold text-[var(--text-main)] mb-2 flex items-center">
-                            <svg class="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            <svg class="w-5 h-5 mr-2 text-[var(--accent-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                             Bulk Search & Extract
                         </h3>
                         <p class="text-sm text-[var(--text-secondary)]">Perform bulk UPC searches against your uploaded data and extract results instantly.</p>
@@ -358,231 +383,165 @@
 
         <!-- API Docs Tab -->
         <div id="api-docs-tab-content" class="tab-content hidden">
-            <div class="glass-effect p-8 rounded-lg prose max-w-none">
+            <div class="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl p-6 md:p-10 max-w-4xl mx-auto prose prose-sm prose-slate dark:prose-invert">
                 <h2 class="text-2xl font-bold mb-4">API Documentation</h2>
-                <p>Use our API to integrate your system with our live product database. All requests must be authenticated using your private API key.</p>
+                <p>Integrate your system directly with our live inventory. Authenticate using your private key from the API Key tab.</p>
                 
-                <h3 class="text-xl font-semibold mt-6 mb-2">Authentication</h3>
-                <p>Include your API key in the <code>Authorization</code> header for every request. You can generate and manage your key in the "API Key" tab.</p>
-                <pre>Authorization: Bearer YOUR_API_KEY</pre>
+                <h3 class="text-lg font-semibold mt-6 mb-2">Authentication</h3>
+                <pre class="rounded-lg p-4 bg-[var(--bg-main)] overflow-x-auto text-xs">Authorization: Bearer YOUR_API_KEY</pre>
 
-                <h3 class="text-xl font-semibold mt-6 mb-2">Base URL</h3>
-                <pre>https://supplier-api-977359606390.us-central1.run.app</pre>
+                <h3 class="text-lg font-semibold mt-6 mb-2">Base URL</h3>
+                <pre class="rounded-lg p-4 bg-[var(--bg-main)] overflow-x-auto text-xs">https://supplier-api-977359606390.us-central1.run.app</pre>
 
-                <h3 class="text-xl font-semibold mt-6 mb-2">Endpoints & Parameters</h3>
-                <p><strong>GET /</strong></p>
-                <p>Returns a paginated list of products. You can filter by SKU or UPC.</p>
-                <ul class="list-disc list-inside space-y-2 mt-4">
-                    <li><code>limit</code> (optional, default: 250, max: 250) - The number of items to return per page.</li>
-                    <li><code>sku</code> (optional) - Filter results for a single product by its SKU.</li>
-                    <li><code>upc</code> (optional) - Filter results for a single product by its UPC.</li>
-                    <li><code>cursor</code> (optional) - The ID of the last item from the previous page to get the next page of results.</li>
+                <h3 class="text-lg font-semibold mt-6 mb-2">Endpoints</h3>
+                <p><strong>GET /</strong> - Retrieve products.</p>
+                <ul class="list-disc list-inside space-y-1">
+                    <li><code>limit</code> (max: 250)</li>
+                    <li><code>sku</code>, <code>upc</code> (Exact match)</li>
+                    <li><code>cursor</code> (Pagination)</li>
                 </ul>
-
-                <h3 class="text-xl font-semibold mt-6 mb-2">Response Format</h3>
-                <p>All successful requests will return a JSON object with <code>meta</code> and <code>data</code> keys. The structure of the <code>meta</code> object depends on the type of query.</p>
                 
-                <p class="mt-4"><strong>For general browsing (no SKU or UPC filter):</strong></p>
-                <pre>{
+                <h3 class="text-lg font-semibold mt-6 mb-2">Response Format</h3>
+                <p>All successful requests will return a JSON object with <code>meta</code> and <code>data</code> keys.</p>
+
+                <p><strong>General Browsing:</strong></p>
+                <pre class="rounded-lg p-4 bg-[var(--bg-main)] overflow-x-auto text-xs">{
     "meta": {
-        "rate_limit_remaining": 99,
+        "rate_limit_remaining": 299,
         "per_page": 250,
-        "next_page_cursor": "DOCUMENT_ID_OF_LAST_ITEM" 
+        "next_page_cursor": "..." 
     },
     "data": [ ... ]
 }</pre>
 
-                <p class="mt-4"><strong>For filtered queries (by SKU or UPC):</strong></p>
-                <pre>{
+                <p><strong>Filtered Queries (SKU/UPC):</strong></p>
+                <pre class="rounded-lg p-4 bg-[var(--bg-main)] overflow-x-auto text-xs">{
     "meta": {
-        "rate_limit_remaining": 98,
+        "rate_limit_remaining": 298,
         "total": 1,
-        "total_pages": 1,
         "per_page": 250
     },
     "data": [ ... ]
 }</pre>
 
-
-                <h3 class="text-xl font-semibold mt-6 mb-2">Data Object Fields</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead class="border-b border-[var(--border-color)]">
-                            <tr>
-                                <th class="p-2">Field</th>
-                                <th class="p-2">Type</th>
-                                <th class="p-2">Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-b border-[var(--border-color)]">
-                                <td class="p-2 font-mono">sku</td>
-                                <td class="p-2">String</td>
-                                <td class="p-2">The unique Stock Keeping Unit for the product.</td>
-                            </tr>
-                            <tr class="border-b border-[var(--border-color)]">
-                                <td class="p-2 font-mono">upc</td>
-                                <td class="p-2">String</td>
-                                <td class="p-2">The Universal Product Code.</td>
-                            </tr>
-                            <tr class="border-b border-[var(--border-color)]">
-                                <td class="p-2 font-mono">itemName</td>
-                                <td class="p-2">String</td>
-                                <td class="p-2">The name of the product.</td>
-                            </tr>
-                            <tr class="border-b border-[var(--border-color)]">
-                                <td class="p-2 font-mono">brand</td>
-                                <td class="p-2">String</td>
-                                <td class="p-2">The brand of the product.</td>
-                            </tr>
-                            <tr class="border-b border-[var(--border-color)]">
-                                <td class="p-2 font-mono">size</td>
-                                <td class="p-2">String</td>
-                                <td class="p-2">The size of the product (e.g., "100ml").</td>
-                            </tr>
-                            <tr class="border-b border-[var(--border-color)]">
-                                <td class="p-2 font-mono">msrp</td>
-                                <td class="p-2">Number</td>
-                                <td class="p-2">The Manufacturer's Suggested Retail Price.</td>
-                            </tr>
-                             <tr class="border-b border-[var(--border-color)]">
-                                <td class="p-2 font-mono">asin</td>
-                                <td class="p-2">String</td>
-                                <td class="p-2">The Amazon Standard Identification Number.</td>
-                            </tr>
-                            <tr class="border-b border-[var(--border-color)]">
-                                <td class="p-2 font-mono">supplier_X_...</td>
-                                <td class="p-2">String/Number</td>
-                                <td class="p-2">Supplier data is flattened. 'X' is the supplier number, sorted by lowest price first.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h3 class="text-xl font-semibold mt-6 mb-2">Error Responses</h3>
-                <p>If a request fails, the API will return a JSON object with an <code>error</code> key.</p>
-                <ul class="list-disc list-inside space-y-4 mt-4">
-                    <li><strong>401 Unauthorized:</strong> The API key is missing, invalid, or has been revoked.<pre class="mt-2">{ "error": "Unauthorized: Invalid API key." }</pre></li>
-                    <li><strong>429 Too Many Requests:</strong> The user has exceeded the 300 requests per day limit.<pre class="mt-2">{ "error": "You have exceeded the 300 requests in 24 hrs limit!" }</pre></li>
-                    <li><strong>500 Internal Server Error:</strong> An unexpected error occurred on the server.<pre class="mt-2">{ "error": "An unexpected error occurred." }</pre></li>
+                <h3 class="text-lg font-semibold mt-6 mb-2">Data Fields</h3>
+                <ul class="list-disc list-inside space-y-1">
+                    <li><code>sku</code>, <code>upc</code>, <code>asin</code> (String) - Identifiers</li>
+                    <li><code>itemName</code>, <code>brand</code>, <code>size</code> (String) - Product details</li>
+                    <li><code>msrp</code> (Number) - Suggested retail price</li>
+                    <li><code>supplier_X_name</code>, <code>supplier_X_price</code>, <code>supplier_X_inventory</code> - Flattened supplier data (sorted by price)</li>
                 </ul>
 
-
-                <h3 class="text-xl font-semibold mt-6 mb-2">Example Request (cURL)</h3>
-                <pre># Get the first page of items
-curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app" \
-     -H "Authorization: Bearer YOUR_API_KEY"
-
-# Get the next page using the cursor from the previous response
-curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PREVIOUS_CURSOR_ID" \
-     -H "Authorization: Bearer YOUR_API_KEY"</pre>
+                <h3 class="text-lg font-semibold mt-6 mb-2">Rate Limit</h3>
+                <div class="bg-[var(--bg-secondary)] border border-[var(--border-color)] p-3 rounded-lg inline-block">
+                    <span class="font-mono text-[var(--accent-color)] font-bold">300</span> requests / 24 hours
+                </div>
+                
+                <h3 class="text-lg font-semibold mt-6 mb-2">Errors</h3>
+                <ul class="list-disc list-inside space-y-1">
+                    <li><strong>401:</strong> Invalid API Key</li>
+                    <li><strong>429:</strong> Rate limit exceeded</li>
+                    <li><strong>500:</strong> Server error</li>
+                </ul>
             </div>
         </div>
 
         <!-- API Key Tab -->
         <div id="api-key-tab-content" class="tab-content hidden">
-             <div class="glass-effect p-8 rounded-lg max-w-3xl mx-auto">
-                 <!-- API Key Content remains the same -->
-                  <h2 class="text-2xl font-bold mb-4">Manage Your API Key</h2>
-                  <p class="mb-6">Use this key to authenticate your API requests. Treat it like a password and do not share it publicly.</p>
+             <div class="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl p-8 max-w-2xl mx-auto text-center">
+                  <h2 class="text-2xl font-bold mb-2">API Access</h2>
+                  <p class="text-sm text-[var(--text-secondary)] mb-8">Manage your secret key for external integrations.</p>
                   
-                  <div id="api-key-loader" class="text-center"><div class="loader inline-block"></div></div>
+                  <div id="api-key-loader" class="hidden"><div class="loader inline-block"></div></div>
                   
-                  <div id="api-key-content" class="hidden">
+                  <div id="api-key-content" class="hidden text-left">
                       <div id="api-key-display-area" class="hidden">
-                          <label class="block text-sm font-medium">Your API Key</label>
-                          <div class="mt-1 relative flex items-center">
-                              <input type="password" id="api-key-input" readonly class="block w-full rounded-l-md font-mono p-2.5 pr-10">
-                              <button id="toggle-api-key-visibility" class="absolute inset-y-0 right-10 pr-3 flex items-center text-gray-400 hover:text-white">
-                                  <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                      <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.022 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                                  </svg>
-                                  <svg id="eye-off-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" viewBox="0 0 20 20" fill="currentColor">
-                                      <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2 2 0 012.828 2.828l1.515 1.515A4 4 0 0014 10a4 4 0 10-5.432-3.432z" clip-rule="evenodd" />
-                                      <path d="M10 17a9.953 9.953 0 01-4.542-1.074l-1.78-1.781a1 1 0 011.414-1.414l1.697 1.697A8.018 8.018 0 0110 15c4.478 0 8.268-2.943 9.542-7a10.014 10.014 0 01-1.542-3.31l-1.473-1.473a1 1 0 011.414-1.414l-14-14a1 1 0 01-1.414 1.414l1.78 1.781A9.953 9.953 0 0010 17z" />
-                                  </svg>
-                              </button>
-                              <button id="copy-api-key-btn" class="inline-flex items-center rounded-r-md border border-l-0 px-4 text-sm font-medium btn-secondary">Copy</button>
+                          <label class="block text-xs font-bold uppercase text-[var(--text-secondary)] mb-1">Your Secret Key</label>
+                          <div class="flex items-center gap-2 mb-2">
+                              <div class="relative flex-grow">
+                                  <input type="password" id="api-key-input" readonly class="w-full pr-10 font-mono text-sm bg-[var(--bg-secondary)]">
+                                  <button id="toggle-api-key-visibility" class="absolute right-2 top-2 text-[var(--text-secondary)] hover:text-[var(--text-main)]">
+                                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                  </button>
+                              </div>
+                              <button id="copy-api-key-btn" class="btn btn-secondary px-4 py-2">Copy</button>
                           </div>
-                          <p id="copy-feedback" class="text-green-custom text-sm mt-2 hidden">Copied!</p>
+                          <p id="copy-feedback" class="text-xs text-green-500 font-bold hidden mb-6">Copied to clipboard!</p>
                           
-                          <div class="mt-6 border-t border-[var(--border-color)] pt-6">
-                              <p class="text-sm text-yellow-400 bg-yellow-900/30 p-3 rounded-lg"><strong class="font-semibold">Warning:</strong> If you generate a new key, your old key will be immediately revoked. Ensure you update any applications using the old key.</p>
-                              <button id="revoke-and-generate-btn" class="mt-4 w-full inline-flex justify-center rounded-md border border-transparent bg-red-600 py-2.5 px-4 text-sm font-medium text-white shadow-sm hover:bg-red-700 btn-click-effect">Revoke and Generate New Key</button>
-                          </div>
+                          <button id="revoke-and-generate-btn" class="text-xs text-red-400 hover:text-red-500 underline">Revoke & Generate New Key</button>
                       </div>
 
-                      <div id="generate-key-area" class="hidden">
-                          <p class="text-center mb-4">You have not generated an API key yet.</p>
-                          <button id="generate-api-key-btn" class="w-full inline-flex justify-center rounded-md py-2.5 px-4 text-sm font-medium btn-primary btn-click-effect">Generate API Key</button>
+                      <div id="generate-key-area" class="hidden text-center py-8">
+                          <button id="generate-api-key-btn" class="btn btn-primary px-6 py-3 shadow-lg">Generate New API Key</button>
                       </div>
                   </div>
                   
-                  <div class="mt-8 border-t border-[var(--border-color)] pt-6">
-                      <h3 class="text-lg font-semibold mb-2">Usage (Last 24 Hours)</h3>
-                      <div class="w-full bg-[var(--bg-secondary)] rounded-full h-2.5">
-                          <div id="api-usage-bar" class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
+                  <div class="mt-8 pt-8 border-t border-[var(--border-color)] text-left">
+                      <div class="flex justify-between items-end mb-2">
+                          <h3 class="text-sm font-bold">Usage Quota</h3>
+                          <span id="api-usage-text" class="text-xs font-mono text-[var(--text-secondary)]">0 / 300</span>
                       </div>
-                      <p id="api-usage-text" class="text-right text-sm mt-1">0 / 300 calls</p>
+                      <div class="w-full bg-[var(--bg-secondary)] rounded-full h-1.5 overflow-hidden mb-6">
+                          <div id="api-usage-bar" class="bg-[var(--accent-color)] h-full transition-all duration-500" style="width: 0%"></div>
+                      </div>
 
-                      <h3 class="text-lg font-semibold mt-6 mb-2">Recent API Calls</h3>
-                      <div class="border border-[var(--border-color)] rounded-lg overflow-hidden">
+                      <h3 class="text-sm font-bold mb-2">Recent Activity</h3>
+                      <div class="border border-[var(--border-color)] rounded-lg overflow-hidden text-xs">
                           <table class="w-full">
-                              <thead class="bg-[var(--bg-secondary)]">
-                                  <tr>
-                                      <th class="p-3 text-sm font-semibold text-left">Timestamp</th>
-                                      <th class="p-3 text-sm font-semibold text-left">Status</th>
-                                  </tr>
+                              <thead class="bg-[var(--bg-secondary)] text-[var(--text-secondary)]">
+                                  <tr><th class="p-2 text-left font-normal">Time</th><th class="p-2 text-right font-normal">Status</th></tr>
                               </thead>
-                              <tbody id="recent-calls-tbody" class="bg-[var(--card-bg)]">
-                                  <!-- Rows will be populated by JavaScript -->
+                              <tbody id="recent-calls-tbody" class="divide-y divide-[var(--border-color)]">
+                                  <!-- JS Populated -->
                               </tbody>
                           </table>
                       </div>
                   </div>
-
              </div>
         </div>
       </div>
     </main>
   </div>
 
-  <!-- Modals and Lightbox -->
+  <!-- --- MODALS --- -->
+  
+  <!-- Item Details Modal (Updated Table) -->
   <div id="item-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300 ease-in-out">
-    <div id="modal-overlay" class="absolute inset-0 bg-black/60"></div>
-    <div id="modal-content" class="glass-effect rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col relative transform transition-all duration-300 ease-in-out opacity-0 scale-95">
-        <button id="modal-close-btn" class="absolute top-3 right-3 text-gray-400 hover:text-white z-10 p-1 rounded-full bg-black/20 hover:bg-black/40">
-            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-        </button>
-        <div id="modal-loader" class="flex justify-center items-center p-10">
-            <div class="loader"></div>
+    <div id="modal-overlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div id="modal-content" class="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col relative transform transition-all duration-300 ease-in-out opacity-0 scale-95 overflow-hidden">
+        <div class="absolute top-0 right-0 p-4 z-10">
+             <button id="modal-close-btn" class="bg-[var(--bg-main)] p-1.5 rounded-full text-[var(--text-secondary)] hover:text-white hover:bg-red-500 transition-colors">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
         </div>
-        <div id="modal-body" class="hidden overflow-y-auto"></div>
+        <div id="modal-loader" class="flex justify-center items-center p-20"><div class="loader"></div></div>
+        <div id="modal-body" class="hidden overflow-y-auto custom-scrollbar"></div>
     </div>
   </div>
 
-  <div id="image-lightbox" class="fixed inset-0 z-[60] bg-black/80 hidden items-center justify-center">
-      <button id="lightbox-close-btn" class="absolute top-6 right-8 text-white text-5xl font-bold">&times;</button>
-      <img id="lightbox-img" src="" class="max-w-[90vw] max-h-[90vh] object-contain">
+  <!-- Image Lightbox -->
+  <div id="image-lightbox" class="fixed inset-0 z-[60] bg-black/90 hidden items-center justify-center backdrop-blur-md">
+      <button id="lightbox-close-btn" class="absolute top-6 right-6 text-white/50 hover:text-white transition-colors">
+        <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+      <img id="lightbox-img" src="" class="max-w-[95vw] max-h-[95vh] object-contain rounded-lg shadow-2xl">
   </div>
 
+  <!-- Supplier Filter Modal -->
   <div id="supplier-filter-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
-    <div id="supplier-modal-overlay" class="absolute inset-0 bg-black/60"></div>
-    <div class="glass-effect rounded-lg shadow-xl w-full max-w-md max-h-[90vh] flex flex-col relative">
+    <div id="supplier-modal-overlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl shadow-2xl w-full max-w-sm max-h-[80vh] flex flex-col relative">
         <div class="flex justify-between items-center p-4 border-b border-[var(--border-color)]">
-            <h3 class="text-lg font-medium">Filter Suppliers</h3>
-            <button id="supplier-modal-close-btn" class="text-gray-400 hover:text-white">
-                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
+            <h3 class="text-sm font-bold">Filter Suppliers</h3>
+            <button id="supplier-modal-close-btn" class="text-[var(--text-secondary)] hover:text-[var(--text-main)]"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
         </div>
-        <div id="supplier-list-container" class="p-4 overflow-y-auto"></div>
-        <div class="p-4 mt-auto border-t border-[var(--border-color)] flex justify-between">
-            <div>
-                <button id="select-all-suppliers-btn" class="px-4 py-2 text-sm rounded-md btn-secondary">Select All</button>
-                <button id="deselect-all-suppliers-btn" class="px-4 py-2 text-sm rounded-md btn-secondary ml-2">Deselect All</button>
+        <div id="supplier-list-container" class="p-4 overflow-y-auto flex-1"></div>
+        <div class="p-4 border-t border-[var(--border-color)] bg-[var(--bg-secondary)] flex justify-between gap-3">
+            <div class="flex gap-2">
+                <button id="select-all-suppliers-btn" class="text-xs text-[var(--text-secondary)] hover:underline">Select All</button>
+                <button id="deselect-all-suppliers-btn" class="text-xs text-[var(--text-secondary)] hover:underline">Clear</button>
             </div>
-            <button id="apply-supplier-filter-btn" class="px-4 py-2 text-sm rounded-md btn-primary font-semibold">Apply Filter</button>
+            <button id="apply-supplier-filter-btn" class="btn btn-primary px-4 py-1.5 text-xs">Apply</button>
         </div>
     </div>
   </div>
@@ -625,7 +584,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
     const authMessageDiv = document.getElementById('auth-message');
     const userEmailDisplay = document.getElementById('user-email-display');
     const logoutBtn = document.getElementById('logout-btn');
-    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabButtons = document.querySelectorAll('.nav-tab');
     const tabContents = document.querySelectorAll('.tab-content');
     const apiKeyDisplayArea = document.getElementById('api-key-display-area');
     const apiKeyInput = document.getElementById('api-key-input');
@@ -680,7 +639,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
         mainAppContainer.classList.remove('hidden');
         userEmailDisplay.textContent = user.email;
         handleBrowseAll();
-        loadApiKey(); 
+        loadApiKey(); 
         loadApiUsage();
       } else {
         authContainer.classList.remove('hidden');
@@ -692,48 +651,24 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
     function showAuthMessage(message, type = 'error') {
         authMessageDiv.textContent = message;
         if (type === 'error') {
-            authMessageDiv.className = 'bg-red-900/50 border border-red-700 text-red-300 px-4 py-2 rounded-lg mb-4 text-sm';
+            authMessageDiv.className = 'px-3 py-2 rounded-md mb-4 text-xs font-medium bg-red-500/10 text-red-500 border border-red-500/20';
         } else if (type === 'success') {
-            authMessageDiv.className = 'bg-green-900/50 border border-green-700 text-green-300 px-4 py-2 rounded-lg mb-4 text-sm';
+            authMessageDiv.className = 'px-3 py-2 rounded-md mb-4 text-xs font-medium bg-green-500/10 text-green-500 border border-green-500/20';
         }
         authMessageDiv.classList.remove('hidden');
     }
 
-    function showLoginForm() {
-        loginForm.classList.remove('hidden');
-        signupForm.classList.add('hidden');
-        forgotPasswordForm.classList.add('hidden');
-        authMessageDiv.classList.add('hidden');
-        authTitle.textContent = 'Member Login';
-        authSubtitle.textContent = 'Access the Supplier Database';
-    }
+    // Auth Form Toggling
+    const forms = [loginForm, signupForm, forgotPasswordForm];
+    const hideAllForms = () => forms.forEach(f => f.classList.add('hidden'));
 
-    showSignupBtn.addEventListener('click', () => {
-        loginForm.classList.add('hidden');
-        signupForm.classList.remove('hidden');
-        forgotPasswordForm.classList.add('hidden');
-        authMessageDiv.classList.add('hidden');
-        authTitle.textContent = 'Create Account';
-        authSubtitle.textContent = 'Join the Supplier Database';
-    });
-    
-    showForgotPasswordBtn.addEventListener('click', () => {
-        loginForm.classList.add('hidden');
-        signupForm.classList.add('hidden');
-        forgotPasswordForm.classList.remove('hidden');
-        authMessageDiv.classList.add('hidden');
-        authTitle.textContent = 'Reset Password';
-        authSubtitle.textContent = 'Enter your email to get a reset link.';
-    });
-
-    showLoginBtnFromSignup.addEventListener('click', showLoginForm);
-    showLoginBtnFromForgot.addEventListener('click', showLoginForm);
+    showSignupBtn.addEventListener('click', () => { hideAllForms(); signupForm.classList.remove('hidden'); authTitle.textContent = 'Create Account'; authSubtitle.textContent = 'Join the database'; authMessageDiv.classList.add('hidden');});
+    showForgotPasswordBtn.addEventListener('click', () => { hideAllForms(); forgotPasswordForm.classList.remove('hidden'); authTitle.textContent = 'Reset Password'; authSubtitle.textContent = 'Recover your account'; authMessageDiv.classList.add('hidden');});
+    [showLoginBtnFromSignup, showLoginBtnFromForgot].forEach(btn => btn.addEventListener('click', () => { hideAllForms(); loginForm.classList.remove('hidden'); authTitle.textContent = 'Welcome Back'; authSubtitle.textContent = 'Sign in to access'; authMessageDiv.classList.add('hidden');}));
 
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      auth.signInWithEmailAndPassword(email, password)
+      auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value)
         .catch(error => {
           showAuthMessage(error.message, 'error');
         });
@@ -744,33 +679,25 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
       const email = document.getElementById('signup-email').value;
       const password = document.getElementById('signup-password').value;
       const normalizedEmail = email.toLowerCase();
-      console.log("Checking for invited email:", normalizedEmail);
-
       try {
         const docRef = invitedUsersCollection.doc(normalizedEmail);
         const docSnap = await docRef.get();
-        console.log(`Document exists check for ${normalizedEmail}:`, docSnap.exists);
-
         if (!docSnap.exists) {
-          showAuthMessage("Access denied. This email has not been invited.", 'error');
+          showAuthMessage("Access denied. Email not invited.", 'error');
           return;
         }
-
         await auth.createUserWithEmailAndPassword(email, password);
       } catch (error) {
-        console.error("Detailed Signup Error:", error);
-        showAuthMessage(`Error: ${error.code} - ${error.message}`, 'error');
+        showAuthMessage(error.message, 'error');
       }
     });
     
     forgotPasswordForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const email = document.getElementById('reset-email').value;
-        showAuthMessage('Sending password reset email...', 'success');
-        
         auth.sendPasswordResetEmail(email)
             .then(() => {
-                showAuthMessage('Password reset email sent! Please check your inbox.', 'success');
+                showAuthMessage('Reset link sent!', 'success');
             })
             .catch(error => {
                 showAuthMessage(error.message, 'error');
@@ -857,7 +784,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
                 .get();
 
             const usageCount = querySnapshot.size;
-            const usagePercentage = (usageCount / 300) * 100;
+            const usagePercentage = (usageCount / 300) * 100; // Limit updated to 300
             
             apiUsageText.textContent = `${usageCount} / 300 calls`;
             apiUsageBar.style.width = `${usagePercentage}%`;
@@ -869,21 +796,20 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
                     const log = doc.data();
                     const date = log.timestamp.toDate();
                     const row = `
-                        <tr class="border-b border-[var(--border-color)]">
-                            <td class="p-3 text-sm text-[var(--text-secondary)]">${date.toLocaleString()}</td>
-                            <td class="p-3 text-sm text-green-custom">Success</td>
+                        <tr class="border-b border-[var(--border-color)] last:border-0">
+                            <td class="p-2 text-left">${date.toLocaleString()}</td>
+                            <td class="p-2 text-right text-green-custom">Success</td>
                         </tr>
                     `;
                     recentCallsTbody.innerHTML += row;
                 }
             });
             if (count === 0) {
-                recentCallsTbody.innerHTML = '<tr><td colspan="2" class="p-3 text-center text-[var(--text-secondary)]">No API calls in the last 24 hours.</td></tr>';
+                recentCallsTbody.innerHTML = '<tr><td colspan="2" class="p-3 text-center text-[var(--text-secondary)] italic">No recent activity</td></tr>';
             }
 
         } catch (error) {
             console.error("Error loading API usage:", error);
-            recentCallsTbody.innerHTML = '<tr><td colspan="2" class="p-3 text-center text-red-400">Could not load usage data.</td></tr>';
         }
     }
 
@@ -1015,22 +941,55 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
     }
 
     function renderFilteredResults(docs) {
+        if(!resultsContainer) return;
         resultsContainer.innerHTML = '';
         
-        const processedDocs = docs.map(item => {
-            const filteredSuppliers = item.suppliers ? item.suppliers.filter(sup => !excludedSuppliers.has(sup.name)) : [];
-            
-            const newLowestPrice = filteredSuppliers.reduce((min, sup) => {
-                const price = parseFloat(sup.price);
-                return !isNaN(price) && price > 0 && price < min ? price : min;
-            }, Infinity);
+        const processedDocs = docs.reduce((acc, item) => {
+            // 1. Get ALL suppliers that are NOT strictly excluded by the checkbox UI
+            // This is our baseline "viewable" list for this user session
+            const allowedSuppliers = item.suppliers ? item.suppliers.filter(sup => !excludedSuppliers.has(sup.name)) : [];
 
-            return {
-                ...item,
-                suppliers: filteredSuppliers,
-                lowestPrice: newLowestPrice === Infinity ? -1 : newLowestPrice
-            };
-        });
+            // 2. Determine "Active Filtering" Mode
+            const isFilteringActive = excludedSuppliers.size > 0;
+
+            let shouldShowItem = true;
+
+            if (isFilteringActive) {
+                 // Requirement: If filtering is active, only show items where at least one 
+                 // of the SELECTED suppliers has actual inventory (stock > 0).
+                 const hasInventoryInSelected = allowedSuppliers.some(sup => {
+                     const stock = parseFloat(String(sup.inventory).replace(/,/g, ''));
+                     return !isNaN(stock) && stock > 0;
+                 });
+                 
+                 if (!hasInventoryInSelected) {
+                     shouldShowItem = false;
+                 }
+            }
+
+            if (shouldShowItem) {
+                 // Calculate lowest price from ALLOWED suppliers only
+                 const newLowestPrice = allowedSuppliers.reduce((min, sup) => {
+                    const price = parseFloat(sup.price);
+                    const stock = parseFloat(String(sup.inventory).replace(/,/g, ''));
+                    const hasStock = !isNaN(stock) && stock > 0;
+
+                    if (hasStock && !isNaN(price) && price > 0 && price < min) {
+                        return price;
+                    }
+                    return min;
+                }, Infinity);
+
+                acc.push({
+                    ...item,
+                    // Pass ALL suppliers to the card so user can compare, 
+                    // even if they filtered for specific ones to find the item.
+                    suppliers: item.suppliers, 
+                    lowestPrice: newLowestPrice === Infinity ? -1 : newLowestPrice
+                });
+            }
+            return acc;
+        }, []);
 
         processedDocs.forEach((item, index) => {
             const card = createItemCard(item);
@@ -1038,9 +997,16 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
             resultsContainer.appendChild(card);
         });
 
-        noResultsDiv.style.display = 'none';
-        controlsBar.style.display = 'flex';
-        renderPagination();
+        if (processedDocs.length === 0) {
+            showNoResults();
+        } else {
+            if(noResultsDiv) noResultsDiv.classList.add('hidden');
+            if(controlsBar) {
+                controlsBar.classList.remove('hidden');
+                controlsBar.classList.add('flex');
+            }
+            renderPagination();
+        }
     }
 
     function handleSearch() {
@@ -1092,7 +1058,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
 
         } catch (err) {
             console.error("Firestore bulk query failed:", err);
-            showError({ message: "Could not fetch data for bulk search. " + err.message });
+            showError({ message: "Bulk search failed. " + err.message });
         }
     }
 
@@ -1133,53 +1099,78 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
                     docsToExport = await fetchAllBulkDocs(upcList);
                 }
             } else {
-                let query = productsCollection.orderBy('sku');
-                currentQueryConstraints.forEach(constraint => {
-                    query = query.where(constraint.field, constraint.op, constraint.value);
-                });
-                const snapshot = await query.get();
-                snapshot.forEach(doc => docsToExport.push(doc.data()));
+                // EXPORT LOGIC: Only export CURRENT PAGE data when in browse mode
+                // This saves massive amounts of reads.
+                if (lastFetchedDocs && lastFetchedDocs.length > 0) {
+                     docsToExport = [...lastFetchedDocs];
+                } else {
+                     // Fallback: If for some reason lastFetchedDocs is empty (shouldn't happen if user sees data)
+                     // Re-fetch current page logic - but to be safe, let's just abort if empty
+                     // to prevent accidental full reads.
+                     docsToExport = [];
+                }
             }
 
             if (docsToExport.length === 0) {
-                alert("No data to export.");
+                alert("No data to export. Please perform a search or load data first.");
                 exportLoader.classList.add('hidden');
                 return;
             }
-            
-            const filteredForExport = docsToExport.map(item => {
-                const filteredSuppliers = item.suppliers.filter(sup => !excludedSuppliers.has(sup.name));
-                return {...item, suppliers: filteredSuppliers};
-            });
 
-            generateComplexCsv(filteredForExport);
+            generateMatrixCsv(docsToExport);
 
         } catch (err) {
             console.error("Export failed:", err);
-            showError({ message: "Could not fetch data for export. " + err.message });
+            showError({ message: "Export failed. " + err.message });
         } finally {
             exportLoader.classList.add('hidden');
         }
     }
 
-    function generateComplexCsv(items) {
-        const maxSuppliers = items.reduce((max, item) => Math.max(max, item.suppliers.length), 0);
-        const baseHeaders = ["SKU", "UPC", "Item Name", "Brand", "Size", "Type", "Gender", "Description"];
-        let csvHeaders = [...baseHeaders];
-        for (let i = 1; i <= maxSuppliers; i++) {
-            csvHeaders.push(`Supplier ${i} Name`, `Supplier ${i} Price`, `Supplier ${i} Inventory`);
-        }
-        const rows = items.map(item => {
-            const row = [
-                item.sku, `="${item.upc}"`, item.itemName, item.brand,
-                item.size, item.type, item.gender, item.description
-            ];
-            const sortedSuppliers = item.suppliers.sort((a, b) => (parseFloat(a.price) || Infinity) - (parseFloat(b.price) || Infinity));
-            sortedSuppliers.forEach(sup => {
-                row.push(sup.name, sup.price, sup.inventory);
-            });
-            return row;
+    function generateMatrixCsv(items) {
+        // 1. Identify all unique suppliers in this dataset to create columns
+        const supplierSet = new Set();
+        const supplierLastUpdates = {};
+
+        items.forEach(item => {
+            if (item.suppliers) {
+                item.suppliers.forEach(s => {
+                    supplierSet.add(s.name);
+                    // Capture last update if available
+                    if (s.lastUpdate && !supplierLastUpdates[s.name]) {
+                         let dateStr = '';
+                         try {
+                            const dateObj = s.lastUpdate.toDate ? s.lastUpdate.toDate() : new Date(s.lastUpdate);
+                            if (!isNaN(dateObj)) dateStr = dateObj.toLocaleDateString();
+                         } catch(e) { dateStr = s.lastUpdate; }
+                         supplierLastUpdates[s.name] = dateStr;
+                    }
+                });
+            }
         });
+
+        const sortedSuppliers = Array.from(supplierSet).sort();
+
+        // 2. Build Rows
+        // Row 1: Last Updates (aligned with supplier columns)
+        let row1 = ["", "", "", "", "", ""]; // Skip basic info cols (UPC, Item Name, Brand, Size, Gender, Category)
+        sortedSuppliers.forEach(name => {
+             const date = supplierLastUpdates[name] || "";
+             row1.push(date, ""); // Two columns per supplier (Price, Inv)
+        });
+
+        // Row 2: Supplier Names
+        let row2 = ["", "", "", "", "", ""];
+        sortedSuppliers.forEach(name => {
+            row2.push(name, "");
+        });
+
+        // Row 3: Headers
+        let row3 = ["UPC", "Item Name", "Brand", "Size", "Gender", "Category"];
+        sortedSuppliers.forEach(() => {
+            row3.push("Price", "Inventory");
+        });
+
         const escapeCell = (cell) => {
             const strCell = String(cell === null || cell === undefined ? "" : cell);
             if (strCell.includes(',') || strCell.includes('"') || strCell.includes('\n')) {
@@ -1187,15 +1178,39 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
             }
             return strCell;
         };
-        let csvContent = [
-            csvHeaders.map(escapeCell).join(','),
-            ...rows.map(row => row.map(escapeCell).join(','))
-        ].join('\r\n');
+
+        let csvContent = "";
+        csvContent += row1.map(escapeCell).join(",") + "\n";
+        csvContent += row2.map(escapeCell).join(",") + "\n";
+        csvContent += row3.map(escapeCell).join(",") + "\n";
+
+        // Data Rows
+        items.forEach(item => {
+            let row = [
+                item.upc, 
+                item.itemName, 
+                item.brand, 
+                item.size,
+                item.gender,
+                item.category
+            ];
+
+            sortedSuppliers.forEach(supName => {
+                const supData = item.suppliers ? item.suppliers.find(s => s.name === supName) : null;
+                if (supData) {
+                    row.push(supData.price, supData.inventory);
+                } else {
+                    row.push("", "");
+                }
+            });
+            csvContent += row.map(escapeCell).join(",") + "\n";
+        });
+
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);
         link.setAttribute("href", url);
-        link.setAttribute("download", "supplier_report.csv");
+        link.setAttribute("download", "supplier_matrix_report.csv");
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
@@ -1204,105 +1219,116 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
 
     function createItemCard(item) {
         var card = document.createElement('div');
-        card.className = 'rounded-lg shadow-lg overflow-hidden flex flex-col cursor-pointer result-card';
+        card.className = 'result-card rounded-lg overflow-hidden flex flex-col cursor-pointer hover:border-[var(--accent-color)]';
         card.dataset.sku = item.sku;
+        
         var placeholderImg = 'https://i.imgur.com/IUBzxFv.jpeg';
-        var imageWrapper = document.createElement('div');
-        imageWrapper.className = 'w-full h-48 bg-white flex items-center justify-center';
-        var imgElement = document.createElement('img');
-        imgElement.className = 'w-full h-full object-contain';
-        imgElement.alt = item.itemName;
-        if (item.imageUrl && String(item.imageUrl).trim() !== "") {
-            imgElement.src = item.imageUrl;
-            imgElement.onerror = function() { this.src = placeholderImg; };
-        } else {
-            imgElement.src = placeholderImg;
-        }
-        imageWrapper.appendChild(imgElement);
-        card.appendChild(imageWrapper);
-        var contentDiv = document.createElement('div');
-        contentDiv.className = 'p-4 flex-grow flex flex-col';
-        
-        var infoHtml = `<h3 class="text-lg font-semibold truncate" title="${item.itemName}">${item.itemName}</h3>`;
-        
-        if(item.upc && String(item.upc).trim() !== "") {
-            infoHtml += `<p class="text-xs mb-1">UPC: ${item.upc}</p>`;
-        }
-        if(item.brand && String(item.brand).trim() !== "") {
-            infoHtml += `<p class="text-sm mb-1">Brand: ${item.brand}</p>`;
-        }
-        if(item.size && String(item.size).trim() !== "") {
-            infoHtml += `<p class="text-sm mb-2">Size: ${item.size}</p>`;
-        }
+        var imgUrl = (item.imageUrl && String(item.imageUrl).trim() !== "") ? item.imageUrl : placeholderImg;
 
-        var suppliersHtml = '<div class="mt-auto pt-2 border-t border-[var(--border-color)]">';
+        // Calculate lowest price for display (using pre-filtered suppliers from renderFilteredResults)
+        const priceDisplay = item.lowestPrice !== -1 ? `$${item.lowestPrice.toFixed(2)}` : 'N/A';
+
+        // Compact Supplier List (Vertical, Clean)
+        let supplierGridHtml = '';
         if (item.suppliers && item.suppliers.length > 0) {
-            const lowestPriceValue = item.lowestPrice > 0 ? item.lowestPrice : Infinity;
+            // Sort by price and take top 3
+            const topSuppliers = [...item.suppliers].sort((a,b) => (parseFloat(a.price)||Infinity) - (parseFloat(b.price)||Infinity)).slice(0, 3);
             
-            const sortedSuppliers = [...item.suppliers].sort((a, b) => {
-                const priceA = parseFloat(a.price) || Infinity;
-                const priceB = parseFloat(b.price) || Infinity;
-                return priceA - priceB;
+            supplierGridHtml = `<div class="mt-auto pt-3 border-t border-[var(--border-color)] flex flex-col gap-1.5">`;
+            
+            topSuppliers.forEach(s => {
+                const p = parseFloat(s.price);
+                const pStr = !isNaN(p) ? `$${p.toFixed(2)}` : '-';
+                const isLowest = p === item.lowestPrice;
+                const stock = s.inventory || 0;
+                
+                supplierGridHtml += `
+                    <div class="flex justify-between items-center text-xs">
+                        <div class="flex items-center gap-2 overflow-hidden">
+                             <span class="truncate text-[var(--text-secondary)] font-medium max-w-[80px]" title="${s.name}">${s.name}</span>
+                             <span class="text-[10px] text-[var(--text-secondary)]/70 bg-[var(--bg-secondary)] px-1 rounded">Qty: ${stock}</span>
+                        </div>
+                        <span class="font-mono ${isLowest ? 'text-green-custom font-bold' : 'text-[var(--text-main)]'}">${pStr}</span>
+                    </div>`;
             });
-
-            sortedSuppliers.forEach(supplier => {
-                const price = parseFloat(supplier.price);
-                const priceText = !isNaN(price) ? '$' + price.toFixed(2) : 'N/A';
-                const isLowest = (price === lowestPriceValue && price < Infinity);
-                const pClass = isLowest ? 'text-green-custom font-bold' : 'text-[var(--text-secondary)]';
-                suppliersHtml += `<p class="text-sm ${pClass}">${supplier.name}: ${priceText}</p>`;
-            });
+            
+            if (item.suppliers.length > 3) {
+                 supplierGridHtml += `<div class="text-[10px] text-[var(--text-secondary)] text-center pt-1 italic">+${item.suppliers.length - 3} more</div>`;
+            }
+            supplierGridHtml += `</div>`;
         } else {
-            suppliersHtml += '<p class="text-sm text-[var(--text-secondary)]">No suppliers available.</p>';
+             supplierGridHtml = `<div class="mt-auto pt-3 border-t border-[var(--border-color)] text-xs text-[var(--text-secondary)] text-center italic">No active suppliers</div>`;
         }
-        suppliersHtml += '</div>';
-        
-        contentDiv.innerHTML = infoHtml + suppliersHtml;
-        card.appendChild(contentDiv);
+
+        card.innerHTML = `
+            <div class="w-full h-40 bg-white flex items-center justify-center p-4 relative border-b border-[var(--border-color)]">
+                <img src="${imgUrl}" alt="${item.itemName}" class="w-full h-full object-contain" onerror="this.src='${placeholderImg}'">
+                <div class="absolute top-2 right-2 bg-black/80 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                    ${priceDisplay}
+                </div>
+            </div>
+            <div class="p-3 flex-grow flex flex-col">
+                <div class="mb-2">
+                    <h3 class="text-sm font-bold leading-snug text-[var(--text-main)] line-clamp-2" title="${item.itemName}">${item.itemName}</h3>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border-color)] truncate max-w-[80px]">${item.brand || 'No Brand'}</span>
+                         ${item.size ? `<span class="text-[10px] font-mono text-[var(--text-secondary)]">${item.size}</span>` : ''}
+                    </div>
+                </div>
+                ${supplierGridHtml}
+            </div>
+        `;
         return card;
     }
 
     function showLoader() {
-        loaderContainer.innerHTML = '';
-        for(let i = 0; i < 15; i++) {
-            const skeleton = document.createElement('div');
-            skeleton.className = 'skeleton-card';
-            skeleton.innerHTML = '<div class="skeleton-image"></div><div class="p-4"><div class="skeleton-text w-3/4"></div><div class="skeleton-text w-1/2"></div></div>';
-            loaderContainer.appendChild(skeleton);
+        if(loaderContainer) {
+            loaderContainer.innerHTML = '';
+            for(let i = 0; i < 15; i++) {
+                const skeleton = document.createElement('div');
+                skeleton.className = 'skeleton-card';
+                skeleton.innerHTML = '<div class="skeleton-image h-40"></div><div class="p-3"><div class="skeleton-text w-3/4 mb-2"></div><div class="skeleton-text w-1/2"></div></div>';
+                loaderContainer.appendChild(skeleton);
+            }
+            loaderContainer.classList.remove('hidden');
         }
-        loaderContainer.classList.remove('hidden');
-        resultsContainer.innerHTML = '';
-        noResultsDiv.style.display = 'none';
-        errorDisplay.classList.add('hidden');
-        controlsBar.style.display = 'none';
+        if(resultsContainer) resultsContainer.innerHTML = '';
+        if(noResultsDiv) noResultsDiv.classList.add('hidden');
+        if(errorDisplay) errorDisplay.classList.add('hidden');
+        if(controlsBar) controlsBar.classList.add('hidden');
     }
-    function hideLoader() { loaderContainer.classList.add('hidden'); }
+    
+    function hideLoader() { if(loaderContainer) loaderContainer.classList.add('hidden'); }
+    
     function showNoResults() {
-        resultsContainer.innerHTML = '';
-        noResultsDiv.style.display = 'block';
-        controlsBar.style.display = 'none';
+        if(resultsContainer) resultsContainer.innerHTML = '';
+        if(noResultsDiv) noResultsDiv.classList.remove('hidden');
+        if(controlsBar) controlsBar.classList.add('hidden');
     }
+    
     function showError(error) {
         hideLoader();
-        errorMessage.textContent = error.message || "An unknown error occurred.";
-        errorDisplay.classList.remove('hidden');
+        if(errorMessage) errorMessage.textContent = error.message || "An unknown error occurred.";
+        if(errorDisplay) errorDisplay.classList.remove('hidden');
     }
+
     function renderPagination() {
+        if(!paginationContainer) return;
         paginationContainer.innerHTML = '';
         const prevBtn = document.createElement('button');
-        prevBtn.innerHTML = '&laquo; Prev';
-        prevBtn.className = 'px-3 py-1 rounded-md text-sm font-medium btn-secondary disabled:opacity-50 disabled:cursor-not-allowed';
+        prevBtn.innerHTML = '&laquo;';
+        prevBtn.className = 'btn btn-secondary px-3 py-1 disabled:opacity-50';
         prevBtn.disabled = currentPage === 1;
         prevBtn.onclick = () => {
             currentPage--;
             fetchData(currentQueryConstraints, 'prev');
         };
         const pageInfo = document.createElement('span');
-        pageInfo.className = 'px-3 py-1 text-sm text-[var(--text-secondary)]';
-        pageInfo.textContent = 'Page ' + currentPage;
+        pageInfo.className = 'text-xs text-[var(--text-secondary)] font-mono';
+        pageInfo.textContent = 'Pg ' + currentPage;
         const nextBtn = document.createElement('button');
-        nextBtn.innerHTML = 'Next &raquo;';
-        nextBtn.className = 'px-3 py-1 rounded-md text-sm font-medium btn-secondary';
+        nextBtn.innerHTML = '&raquo;';
+        nextBtn.className = 'btn btn-secondary px-3 py-1';
         nextBtn.onclick = () => {
             currentPage++;
             fetchData(currentQueryConstraints, 'next');
@@ -1331,11 +1357,11 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
             checkbox.id = `supplier-cb-${name}`;
             checkbox.value = name;
             checkbox.checked = !excludedSuppliers.has(name);
-            checkbox.className = 'h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500';
+            checkbox.className = 'w-4 h-4 rounded border-[var(--border-color)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]';
             const label = document.createElement('label');
             label.htmlFor = checkbox.id;
             label.textContent = name;
-            label.className = 'ml-3 block text-sm font-medium';
+            label.className = 'ml-3 block text-sm text-[var(--text-secondary)]';
             div.appendChild(checkbox);
             div.appendChild(label);
             supplierListContainer.appendChild(div);
@@ -1347,6 +1373,7 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
     searchListBtn.addEventListener('click', handleBulkSearch);
     exportCsvBtn.addEventListener('click', handleExport);
     searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') searchBtn.click(); });
+    noResultsBrowseBtn.addEventListener('click', handleBrowseAll);
     
     filterSuppliersBtn.addEventListener('click', () => {
         populateSupplierFilterModal();
@@ -1425,59 +1452,114 @@ curl -L -X GET "https://supplier-api-977359606390.us-central1.run.app?cursor=PRE
                 const price = parseFloat(supplier.price);
                 const priceText = !isNaN(price) ? `$${price.toFixed(2)}` : 'N/A';
                 const inventoryText = supplier.inventory || 'N/A';
+                
+                // Format Last Update
+                let lastUpdateText = 'N/A';
+                if (supplier.lastUpdate) {
+                    try {
+                        const dateObj = supplier.lastUpdate.toDate ? supplier.lastUpdate.toDate() : new Date(supplier.lastUpdate);
+                        if (!isNaN(dateObj)) {
+                            lastUpdateText = dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' });
+                        } else {
+                             lastUpdateText = supplier.lastUpdate;
+                        }
+                    } catch (e) {
+                        lastUpdateText = supplier.lastUpdate;
+                    }
+                }
+
                 const isLowest = (price === lowestVisiblePrice && price < Infinity);
-                const priceClass = isLowest ? 'text-green-custom font-bold' : '';
+                const priceClass = isLowest ? 'text-green-custom font-bold' : 'text-[var(--text-secondary)]';
                 return `
-                    <tr class="border-b border-[var(--border-color)]">
-                        <td class="p-3 text-sm">${supplier.name}</td>
+                    <tr class="border-b border-[var(--border-color)] hover:bg-[var(--bg-secondary)] transition-colors">
+                        <td class="p-3 text-sm text-[var(--text-main)]">${supplier.name}</td>
                         <td class="p-3 text-sm text-center font-mono ${priceClass}">${priceText}</td>
-                        <td class="p-3 text-sm text-center font-mono">${inventoryText}</td>
+                        <td class="p-3 text-sm text-center font-mono text-[var(--text-secondary)]">${inventoryText}</td>
+                        <td class="p-3 text-sm text-center text-[var(--text-secondary)] text-xs">${lastUpdateText}</td>
                     </tr>
                 `;
             }).join('');
         } else {
-            suppliersHtml = '<tr><td colspan="3" class="p-3 text-center text-[var(--text-secondary)]">No supplier information available.</td></tr>';
+            suppliersHtml = '<tr><td colspan="4" class="p-4 text-center text-[var(--text-secondary)] text-sm italic">No suppliers available for the selected criteria.</td></tr>';
         }
 
         const msrpText = (typeof item.msrp === 'number') ? `$${item.msrp.toFixed(2)}` : (item.msrp || 'N/A');
 
         modalBody.innerHTML = `
-          <div class="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="md:col-span-1">
-                <div class="aspect-square bg-white rounded-lg flex items-center justify-center p-2 shadow-md">
-                    <img id="modal-item-image" src="${imageUrl}" alt="${item.itemName}" class="max-w-full max-h-full object-contain cursor-pointer hover:opacity-90 transition-opacity" onerror="this.src='${placeholderImg}'">
+          <div class="flex flex-col md:flex-row gap-6 p-6">
+            <!-- Image Column -->
+            <div class="w-full md:w-1/3 flex-shrink-0">
+                <div class="aspect-square bg-white rounded-lg flex items-center justify-center p-4 border border-[var(--border-color)] overflow-hidden relative group">
+                    <img id="modal-item-image" src="${imageUrl}" alt="${item.itemName}" class="max-w-full max-h-full object-contain cursor-pointer transition-transform duration-300 group-hover:scale-105" onerror="this.src='${placeholderImg}'">
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none"></div>
                 </div>
-                <p class="text-xs text-center text-gray-500 mt-2">Click image to enlarge</p>
             </div>
-            <div class="md:col-span-2">
-                <h2 class="text-2xl font-bold">${item.itemName || 'N/A'}</h2>
-                <p class="text-md mb-4">by ${item.brand || 'Unknown Brand'}</p>
-                <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm mb-4">
-                    <p><strong class="font-semibold">SKU:</strong> <span class="font-mono">${item.sku || 'N/A'}</span></p>
-                    <p><strong class="font-semibold">UPC:</strong> <span class="font-mono">${item.upc || 'N/A'}</span></p>
-                    <p><strong class="font-semibold">ASIN:</strong> <span class="font-mono">${item.asin || 'N/A'}</span></p>
-                    <p><strong class="font-semibold">MSRP:</strong> <span class="font-mono">${msrpText}</span></p>
-                    <p><strong class="font-semibold">Size:</strong> <span>${item.size || 'N/A'}</span></p>
-                    <p><strong class="font-semibold">Type:</strong> <span>${item.type || 'N/A'}</span></p>
-                    <p><strong class="font-semibold">Gender:</strong> <span>${item.gender || 'N/A'}</span></p>
-                    <p><strong class="font-semibold">Category:</strong> <span>${item.category || 'N/A'}</span></p>
+            
+            <!-- Details Column -->
+            <div class="w-full md:w-2/3 flex flex-col">
+                <div class="mb-4">
+                    <h2 class="text-xl md:text-2xl font-bold text-[var(--text-main)] mb-1 leading-tight">${item.itemName || 'N/A'}</h2>
+                    <p class="text-sm text-[var(--text-secondary)]">by <span class="font-medium text-[var(--text-main)]">${item.brand || 'Unknown Brand'}</span></p>
                 </div>
-                <p class="text-sm">${item.description || 'No description provided.'}</p>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6 bg-[var(--bg-secondary)] p-4 rounded-lg border border-[var(--border-color)]">
+                     <div>
+                        <span class="block text-xs text-[var(--text-secondary)] uppercase tracking-wider mb-0.5">SKU</span>
+                        <span class="font-mono text-sm text-[var(--text-main)] select-all">${item.sku || 'N/A'}</span>
+                     </div>
+                     <div>
+                        <span class="block text-xs text-[var(--text-secondary)] uppercase tracking-wider mb-0.5">UPC</span>
+                        <span class="font-mono text-sm text-[var(--text-main)] select-all">${item.upc || 'N/A'}</span>
+                     </div>
+                     <div>
+                        <span class="block text-xs text-[var(--text-secondary)] uppercase tracking-wider mb-0.5">MSRP</span>
+                        <span class="font-mono text-sm text-[var(--text-main)]">${msrpText}</span>
+                     </div>
+                     <div>
+                        <span class="block text-xs text-[var(--text-secondary)] uppercase tracking-wider mb-0.5">Size / Type</span>
+                        <span class="text-sm text-[var(--text-main)]">${item.size || '-'} / ${item.type || '-'}</span>
+                     </div>
+                     <div>
+                        <span class="block text-xs text-[var(--text-secondary)] uppercase tracking-wider mb-0.5">Gender</span>
+                        <span class="text-sm text-[var(--text-main)]">${item.gender || '-'}</span>
+                     </div>
+                     <div>
+                        <span class="block text-xs text-[var(--text-secondary)] uppercase tracking-wider mb-0.5">Category</span>
+                        <span class="text-sm text-[var(--text-main)]">${item.category || '-'}</span>
+                     </div>
+                </div>
+                
+                <div class="flex-grow">
+                    <h3 class="text-sm font-bold text-[var(--text-main)] mb-2">Description</h3>
+                    <div class="text-sm text-[var(--text-secondary)] leading-relaxed max-h-32 overflow-y-auto pr-2 custom-scrollbar">
+                        ${item.description || 'No description provided.'}
+                    </div>
+                </div>
             </div>
           </div>
-          <div class="px-4 sm:px-6 pb-4 sm:pb-6 mt-4">
-            <h3 class="text-lg font-semibold mb-2">Supplier Stock & Pricing</h3>
-            <div class="border border-[var(--border-color)] rounded-lg overflow-hidden">
-                <table class="w-full">
-                    <thead>
-                        <tr>
-                            <th class="p-3 text-sm font-semibold text-left">Supplier</th>
-                            <th class="p-3 text-sm font-semibold text-center">Price</th>
-                            <th class="p-3 text-sm font-semibold text-center">Inventory</th>
-                        </tr>
-                    </thead>
-                    <tbody>${suppliersHtml}</tbody>
-                </table>
+          
+          <!-- Table Section -->
+          <div class="border-t border-[var(--border-color)] bg-[var(--bg-secondary)]/30">
+            <div class="p-4 md:p-6">
+                <h3 class="text-sm font-bold text-[var(--text-main)] mb-3 flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-[var(--accent-color)]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+                    Supplier Pricing & Stock
+                </h3>
+                <div class="border border-[var(--border-color)] rounded-lg overflow-hidden">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-[var(--bg-secondary)] text-[var(--text-secondary)] text-xs uppercase tracking-wider">
+                                <th class="p-3 text-left font-medium">Supplier</th>
+                                <th class="p-3 text-center font-medium">Price</th>
+                                <th class="p-3 text-center font-medium">Stock</th>
+                                <th class="p-3 text-center font-medium">Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[var(--border-color)] bg-[var(--card-bg)]">
+                            ${suppliersHtml}
+                        </tbody>
+                    </table>
+                </div>
             </div>
           </div>
         `;
