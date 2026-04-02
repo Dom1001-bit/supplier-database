@@ -18,45 +18,51 @@
   
   <style>
     :root {
-        /* Dark Mode (Default) - Slate Palette */
-        --bg-main: #0f172a;       /* slate-900 */
-        --bg-secondary: #1e293b;  /* slate-800 */
-        --bg-glass: rgba(15, 23, 42, 0.85);
-        --text-main: #f1f5f9;     /* slate-100 */
-        --text-secondary: #94a3b8; /* slate-400 */
-        --border-color: #334155;  /* slate-700 */
-        --accent-color: #6366f1;  /* indigo-500 */
-        --accent-hover: #4f46e5;  /* indigo-600 */
-        --card-bg: #1e293b;       /* slate-800 */
-        --input-bg: #0f172a;      /* slate-900 */
+        /* Dark Mode (Default) - Sleek Zinc Palette */
+        --bg-main: #09090b;       /* zinc-950 */
+        --bg-secondary: #18181b;  /* zinc-900 */
+        --bg-glass: rgba(9, 9, 11, 0.75);
+        --text-main: #fafafa;     /* zinc-50 */
+        --text-secondary: #a1a1aa; /* zinc-400 */
+        --border-color: #27272a;  /* zinc-800 */
+        --accent-color: #ffffff;  /* High contrast white */
+        --accent-hover: #e4e4e7;  /* zinc-200 */
+        --accent-text: #09090b;   /* For text inside accent buttons */
+        --card-bg: #09090b;       /* zinc-950 */
+        --input-bg: #18181b;      /* zinc-900 */
+        --ring-color: rgba(255, 255, 255, 0.15);
     }
 
     html.light-mode {
-        /* Light Mode - Slate Palette */
-        --bg-main: #f8fafc;       /* slate-50 */
+        /* Light Mode - Sleek Monochromatic */
+        --bg-main: #fbfbfb;       /* Very light gray/white */
         --bg-secondary: #ffffff;  /* white */
-        --bg-glass: rgba(255, 255, 255, 0.9);
-        --text-main: #0f172a;     /* slate-900 */
-        --text-secondary: #64748b; /* slate-500 */
-        --border-color: #e2e8f0;  /* slate-200 */
-        --accent-color: #4f46e5;  /* indigo-600 */
-        --accent-hover: #4338ca;  /* indigo-700 */
+        --bg-glass: rgba(255, 255, 255, 0.85);
+        --text-main: #09090b;     /* zinc-950 */
+        --text-secondary: #71717a; /* zinc-500 */
+        --border-color: #e4e4e7;  /* zinc-200 */
+        --accent-color: #09090b;  /* True black */
+        --accent-hover: #27272a;  /* zinc-800 */
+        --accent-text: #ffffff;   /* For text inside accent buttons */
         --card-bg: #ffffff;       /* white */
         --input-bg: #ffffff;      /* white */
+        --ring-color: rgba(0, 0, 0, 0.1);
     }
 
     body { 
         font-family: 'Inter', sans-serif; 
         background-color: var(--bg-main);
         color: var(--text-main);
-        transition: background-color 0.2s ease, color 0.2s ease;
-        font-size: 0.9rem;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        font-size: 0.875rem;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
     
     .glass-effect {
         background-color: var(--bg-glass);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         border-bottom: 1px solid var(--border-color);
     }
 
@@ -64,33 +70,51 @@
     .auth-bg {
         background-color: var(--bg-main);
         background-image: 
-            radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.08), transparent 25%), 
-            radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.08), transparent 25%);
+            radial-gradient(circle at 0% 0%, rgba(255,255,255,0.03) 0%, transparent 50%), 
+            radial-gradient(circle at 100% 100%, rgba(255,255,255,0.03) 0%, transparent 50%);
+    }
+    
+    html.light-mode .auth-bg {
+        background-image: 
+            radial-gradient(circle at 0% 0%, rgba(0,0,0,0.02) 0%, transparent 50%), 
+            radial-gradient(circle at 100% 100%, rgba(0,0,0,0.02) 0%, transparent 50%);
     }
 
-    .loader { border: 3px solid var(--border-color); border-top: 3px solid var(--accent-color); border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
+    .loader { 
+        border: 2px solid var(--border-color); 
+        border-top: 2px solid var(--text-main); 
+        border-radius: 50%; 
+        width: 20px; 
+        height: 20px; 
+        animation: spin 0.6s linear infinite; 
+    }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     
-    .skeleton-card { background-color: var(--bg-secondary); border-radius: 0.5rem; overflow: hidden; border: 1px solid var(--border-color); }
-    .skeleton-image { background-color: var(--border-color); opacity: 0.1; height: 10rem; }
-    .skeleton-text { background-color: var(--border-color); opacity: 0.1; height: 0.75rem; margin-bottom: 0.5rem; border-radius: 0.25rem; }
-    @keyframes pulse { 50% { opacity: .7; } }
-    .skeleton-card, .skeleton-image, .skeleton-text { animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    .skeleton-card { 
+        background-color: var(--card-bg); 
+        border-radius: 0.5rem; 
+        overflow: hidden; 
+        border: 1px solid var(--border-color); 
+    }
+    .skeleton-image { background-color: var(--border-color); opacity: 0.3; height: 10rem; }
+    .skeleton-text { background-color: var(--border-color); opacity: 0.3; height: 0.75rem; margin-bottom: 0.5rem; border-radius: 0.25rem; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+    .skeleton-card, .skeleton-image, .skeleton-text { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
 
     .result-card { 
         opacity: 0; 
-        transform: translateY(10px); 
-        animation: card-fade-in 0.4s forwards; 
-        transition: all 0.2s ease-in-out;
+        transform: translateY(8px); 
+        animation: card-fade-in 0.4s ease-out forwards; 
         background-color: var(--card-bg);
         border: 1px solid var(--border-color);
         display: flex;
         flex-direction: column;
+        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
     .result-card:hover { 
         transform: translateY(-2px); 
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        border-color: var(--accent-color);
+        border-color: var(--text-secondary);
+        box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.15);
     }
     @keyframes card-fade-in { to { opacity: 1; transform: translateY(0); } }
     
@@ -98,13 +122,14 @@
         position: relative;
         color: var(--text-secondary);
         transition: all 0.2s ease;
-        border-radius: 9999px;
+        border-radius: 0.375rem;
     }
-    .nav-tab:hover { color: var(--text-main); background-color: var(--border-color); }
+    .nav-tab:hover { color: var(--text-main); background-color: var(--bg-secondary); }
     .nav-tab.active { 
-        color: white; 
-        background-color: var(--accent-color); 
+        color: var(--text-main); 
+        background-color: var(--bg-secondary); 
         font-weight: 500;
+        border: 1px solid var(--border-color);
     }
     
     .btn {
@@ -112,25 +137,27 @@
         align-items: center;
         justify-content: center;
         border-radius: 0.375rem;
-        font-size: 0.875rem;
+        font-size: 0.8125rem; /* Sleeker 13px */
         font-weight: 500;
-        transition: all 0.2s;
+        transition: all 0.15s ease;
     }
     .btn:active { transform: scale(0.98); }
     
     .btn-primary {
         background-color: var(--accent-color);
-        color: white;
+        color: var(--accent-text);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
-    .btn-primary:hover { background-color: var(--accent-hover); }
+    .btn-primary:hover { 
+        background-color: var(--accent-hover); 
+    }
 
     .btn-secondary {
-        background-color: transparent;
+        background-color: var(--bg-secondary);
         color: var(--text-main);
         border: 1px solid var(--border-color);
     }
     .btn-secondary:hover {
-        background-color: var(--bg-secondary);
         border-color: var(--text-secondary);
     }
     
@@ -139,79 +166,88 @@
         color: var(--text-main); 
         border: 1px solid var(--border-color);
         border-radius: 0.375rem;
-        font-size: 0.875rem;
-        transition: border-color 0.15s;
+        font-size: 0.8125rem; /* Compact 13px */
+        transition: all 0.15s ease;
     }
     input:focus, select:focus, textarea:focus {
         outline: none;
-        border-color: var(--accent-color);
-        box-shadow: 0 0 0 1px var(--accent-color);
+        border-color: var(--text-secondary);
+        box-shadow: 0 0 0 2px var(--ring-color);
     }
     
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    /* Sleek Scrollbar */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
 
     .text-green-custom { color: #10b981; }
     html.light-mode .text-green-custom { color: #059669; }
+
+    /* Custom highlight color for search inputs */
+    ::selection {
+        background-color: var(--text-secondary);
+        color: var(--bg-main);
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
   <!-- Authentication Container -->
   <div id="auth-container" class="fixed inset-0 z-50 flex items-center justify-center p-4 auth-bg">
-    <div class="max-w-sm w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] p-8 rounded-2xl shadow-2xl">
-      <div class="text-center mb-6">
-          <img src="https://i.imgur.com/U4WPjmA.png" alt="Logo" class="h-12 w-auto mx-auto mb-3"/>
-          <h2 id="auth-title" class="text-xl font-bold text-[var(--text-main)]">Welcome Back</h2>
-          <p id="auth-subtitle" class="text-sm text-[var(--text-secondary)]">Sign in to access the database</p>
+    <div class="max-w-sm w-full bg-[var(--bg-secondary)]/80 backdrop-blur-xl border border-[var(--border-color)] p-8 rounded-xl shadow-2xl">
+      <div class="text-center mb-8">
+          <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--bg-main)] border border-[var(--border-color)] shadow-sm mb-4">
+              <img src="https://i.imgur.com/U4WPjmA.png" alt="Logo" class="h-6 w-auto"/>
+          </div>
+          <h2 id="auth-title" class="text-xl font-semibold tracking-tight text-[var(--text-main)]">Welcome Back</h2>
+          <p id="auth-subtitle" class="text-xs text-[var(--text-secondary)] mt-1">Sign in to access the database</p>
       </div>
       
-      <div id="auth-message" class="hidden px-3 py-2 rounded-md mb-4 text-xs font-medium bg-red-500/10 text-red-500 border border-red-500/20"></div>
+      <div id="auth-message" class="hidden px-3 py-2 rounded-md mb-5 text-xs font-medium bg-red-500/10 text-red-500 border border-red-500/20"></div>
 
       <!-- Login Forms -->
       <form id="login-form" class="space-y-4">
         <div>
-          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1">Email</label>
-          <input type="email" id="email" required class="w-full p-2.5">
+          <label class="block text-[11px] font-medium uppercase tracking-wider text-[var(--text-secondary)] mb-1.5">Email</label>
+          <input type="email" id="email" required class="w-full p-2">
         </div>
         <div>
-          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1">Password</label>
-          <input type="password" id="password" required class="w-full p-2.5">
+          <label class="block text-[11px] font-medium uppercase tracking-wider text-[var(--text-secondary)] mb-1.5">Password</label>
+          <input type="password" id="password" required class="w-full p-2">
         </div>
-        <div class="flex justify-end">
-            <button type="button" id="show-forgot-password-btn" class="text-xs text-[var(--accent-color)] hover:underline">Forgot Password?</button>
+        <div class="flex justify-end pt-1">
+            <button type="button" id="show-forgot-password-btn" class="text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors">Forgot Password?</button>
         </div>
-        <button type="submit" id="login-btn" class="btn btn-primary w-full py-2.5">Sign In</button>
-        <div class="text-center mt-4">
-            <button type="button" id="show-signup-btn" class="text-xs text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors">Create an account</button>
+        <button type="submit" id="login-btn" class="btn btn-primary w-full py-2 mt-2">Sign In</button>
+        <div class="text-center mt-6">
+            <button type="button" id="show-signup-btn" class="text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors">Create an account</button>
         </div>
       </form>
 
       <form id="signup-form" class="hidden space-y-4">
         <div>
-          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1">Email</label>
-          <input type="email" id="signup-email" required class="w-full p-2.5">
+          <label class="block text-[11px] font-medium uppercase tracking-wider text-[var(--text-secondary)] mb-1.5">Email</label>
+          <input type="email" id="signup-email" required class="w-full p-2">
         </div>
         <div>
-          <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1">Password (min 6 chars)</label>
-          <input type="password" id="signup-password" required class="w-full p-2.5">
+          <label class="block text-[11px] font-medium uppercase tracking-wider text-[var(--text-secondary)] mb-1.5">Password (min 6 chars)</label>
+          <input type="password" id="signup-password" required class="w-full p-2">
         </div>
-        <button type="submit" id="signup-btn" class="btn btn-primary w-full py-2.5">Create Account</button>
-        <div class="text-center mt-4">
-            <button type="button" id="show-login-btn-from-signup" class="text-xs text-[var(--text-secondary)] hover:text-[var(--text-main)]">Back to Login</button>
+        <button type="submit" id="signup-btn" class="btn btn-primary w-full py-2 mt-2">Create Account</button>
+        <div class="text-center mt-6">
+            <button type="button" id="show-login-btn-from-signup" class="text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors">Back to Login</button>
         </div>
       </form>
       
       <form id="forgot-password-form" class="hidden space-y-4">
         <div>
-            <label class="block text-xs font-medium text-[var(--text-secondary)] mb-1">Email</label>
-            <input type="email" id="reset-email" required class="w-full p-2.5">
+            <label class="block text-[11px] font-medium uppercase tracking-wider text-[var(--text-secondary)] mb-1.5">Email</label>
+            <input type="email" id="reset-email" required class="w-full p-2">
         </div>
-        <button type="submit" id="reset-password-btn" class="btn btn-primary w-full py-2.5">Send Reset Link</button>
-        <div class="text-center mt-4">
-            <button type="button" id="show-login-btn-from-forgot" class="text-xs text-[var(--text-secondary)] hover:text-[var(--text-main)]">Back to Login</button>
+        <button type="submit" id="reset-password-btn" class="btn btn-primary w-full py-2 mt-2">Send Reset Link</button>
+        <div class="text-center mt-6">
+            <button type="button" id="show-login-btn-from-forgot" class="text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors">Back to Login</button>
         </div>
       </form>
     </div>
@@ -220,123 +256,121 @@
   <!-- Main Application Container -->
   <div id="main-app-container" class="hidden flex-1 flex flex-col">
     <!-- Compact Header -->
-    <header class="sticky top-0 z-40 w-full glass-effect h-14">
-      <div class="container mx-auto px-4 h-full flex items-center justify-between">
+    <header class="sticky top-0 z-40 w-full glass-effect h-12 border-b border-[var(--border-color)]">
+      <div class="max-w-[1600px] mx-auto px-4 h-full flex items-center justify-between">
         <!-- Logo -->
         <div class="flex items-center space-x-3">
-          <img src="https://i.imgur.com/U4WPjmA.png" alt="Logo" class="h-6 w-auto"/>
-          <span class="hidden sm:block text-sm font-bold tracking-tight">SUPPLIER DB</span>
+          <img src="https://i.imgur.com/U4WPjmA.png" alt="Logo" class="h-5 w-auto opacity-90"/>
+          <span class="hidden sm:block text-xs font-semibold tracking-tight">SUPPLIER DB</span>
         </div>
         
         <!-- Compact Nav -->
-        <nav class="hidden md:flex items-center space-x-1">
-          <button id="tab-database" class="nav-tab active px-4 py-1.5 text-xs">Database</button>
-          <button id="tab-inventory-nexus" class="nav-tab px-4 py-1.5 text-xs">Inventory Nexus</button>
-          <button id="tab-api-docs" class="nav-tab px-4 py-1.5 text-xs">API Docs</button>
-          <button id="tab-api-key" class="nav-tab px-4 py-1.5 text-xs">API Key</button>
+        <nav class="hidden md:flex items-center space-x-1 p-1 bg-[var(--bg-main)] border border-[var(--border-color)] rounded-md">
+          <button id="tab-database" class="nav-tab active px-3 py-1 text-[11px] tracking-wide">Database</button>
+          <button id="tab-inventory-nexus" class="nav-tab px-3 py-1 text-[11px] tracking-wide">Inventory Nexus</button>
+          <button id="tab-api-docs" class="nav-tab px-3 py-1 text-[11px] tracking-wide">API Docs</button>
+          <button id="tab-api-key" class="nav-tab px-3 py-1 text-[11px] tracking-wide">API Key</button>
         </nav>
 
         <!-- Tools -->
         <div class="flex items-center space-x-3">
-          <button id="theme-toggle-btn" class="p-1.5 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--border-color)] transition-colors">
-              <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-              <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+          <button id="theme-toggle-btn" class="p-1 rounded text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-secondary)] transition-colors">
+              <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+              <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
           </button>
-          <div class="h-4 w-px bg-[var(--border-color)] mx-2"></div>
-          <span id="user-email-display" class="hidden sm:block text-xs font-medium text-[var(--text-secondary)]"></span>
-          <button id="logout-btn" class="text-xs font-semibold text-red-400 hover:text-red-500 ml-2">Logout</button>
+          <div class="h-3 w-px bg-[var(--border-color)] mx-1"></div>
+          <span id="user-email-display" class="hidden sm:block text-[11px] text-[var(--text-secondary)] truncate max-w-[150px]"></span>
+          <button id="logout-btn" class="text-[11px] font-medium text-red-500 hover:text-red-400 ml-2 transition-colors">Logout</button>
         </div>
       </div>
       
       <!-- Mobile Nav -->
-      <div class="md:hidden border-t border-[var(--border-color)] flex justify-around p-1 bg-[var(--bg-main)]">
-          <button id="mobile-tab-database" class="nav-tab active flex-1 py-2 text-xs">Database</button>
-          <button id="mobile-tab-inventory-nexus" class="nav-tab flex-1 py-2 text-xs">Inv. Nexus</button>
-          <button id="mobile-tab-api-docs" class="nav-tab flex-1 py-2 text-xs">Docs</button>
-          <button id="mobile-tab-api-key" class="nav-tab flex-1 py-2 text-xs">Key</button>
+      <div class="md:hidden border-b border-[var(--border-color)] flex justify-around p-1 bg-[var(--bg-main)]">
+          <button id="mobile-tab-database" class="nav-tab active flex-1 py-1.5 text-[10px] uppercase tracking-wider">Database</button>
+          <button id="mobile-tab-inventory-nexus" class="nav-tab flex-1 py-1.5 text-[10px] uppercase tracking-wider">Nexus</button>
+          <button id="mobile-tab-api-docs" class="nav-tab flex-1 py-1.5 text-[10px] uppercase tracking-wider">Docs</button>
+          <button id="mobile-tab-api-key" class="nav-tab flex-1 py-1.5 text-[10px] uppercase tracking-wider">Key</button>
       </div>
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 container mx-auto p-4 lg:p-6">
+    <main class="flex-1 max-w-[1600px] w-full mx-auto p-4 md:p-6 lg:p-8">
       <div id="tab-content-container">
         
         <!-- Database Tab -->
         <div id="database-tab-content" class="tab-content">
           
           <!-- Compact Search Bar -->
-          <div class="bg-[var(--card-bg)] border border-[var(--border-color)] p-4 rounded-xl shadow-sm mb-6">
-            <div class="flex flex-col md:flex-row gap-3">
-                <div class="flex-grow relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-4 w-4 text-[var(--text-secondary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                    </div>
-                    <input type="text" id="search-input" placeholder="Search by UPC, Name, Brand..." class="w-full pl-9 py-2">
+          <div class="bg-[var(--bg-secondary)] border border-[var(--border-color)] p-3 rounded-lg shadow-sm mb-6 flex flex-col md:flex-row items-center gap-2">
+            <div class="flex-grow w-full relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-3.5 w-3.5 text-[var(--text-secondary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                 </div>
-                <div class="w-full md:w-40">
-                    <select id="search-type" class="w-full py-2">
-                        <option value="upc" selected>UPC</option>
-                        <option value="itemName_lowercase">Name</option>
-                        <option value="brand">Brand</option>
-                        <option value="sku">SKU</option>
-                    </select>
-                </div>
-                <div class="flex gap-2">
-                    <button id="search-btn" class="btn btn-primary px-6 py-2">Search</button>
-                    <button id="browse-all-btn" class="btn btn-secondary px-4 py-2 whitespace-nowrap">Browse All</button>
-                </div>
+                <input type="text" id="search-input" placeholder="Search by UPC, Name, Brand..." class="w-full pl-8 py-1.5 bg-transparent border-none focus:ring-0 text-[13px]">
             </div>
-            
-            <!-- Collapsible Filters/Tools -->
-            <div class="mt-4 pt-3 border-t border-[var(--border-color)] flex flex-wrap items-center justify-between gap-3">
-                <div class="flex items-center gap-2">
-                     <button id="filter-suppliers-btn" class="btn btn-secondary py-1.5 px-3 text-xs">
-                        <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-                        Filter Suppliers
-                     </button>
-                     <button id="export-csv-btn" class="btn btn-secondary py-1.5 px-3 text-xs text-green-600 hover:bg-green-50/10 border-green-600/30">
-                        <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        Export CSV
-                     </button>
-                </div>
-                <!-- Bulk Search Toggle (Could be expanded) -->
-                 <details class="w-full md:w-auto relative group">
-                    <summary class="list-none cursor-pointer text-xs font-medium text-[var(--accent-color)] hover:underline flex items-center">
-                        Advanced: Bulk Search
-                        <svg class="w-3 h-3 ml-1 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                    </summary>
-                    <div class="absolute right-0 mt-2 w-72 bg-[var(--card-bg)] border border-[var(--border-color)] rounded-lg shadow-xl p-3 z-20">
-                        <textarea id="upc-list-input" rows="4" class="w-full text-xs p-2 mb-2" placeholder="Paste UPCs (one per line)"></textarea>
-                        <button id="search-list-btn" class="btn btn-primary w-full py-1.5 text-xs">Search List</button>
-                    </div>
-                 </details>
+            <div class="h-6 w-px bg-[var(--border-color)] hidden md:block"></div>
+            <div class="w-full md:w-32">
+                <select id="search-type" class="w-full py-1.5 px-2 bg-transparent border-none focus:ring-0 text-[12px] text-[var(--text-secondary)] cursor-pointer">
+                    <option value="upc" selected>UPC</option>
+                    <option value="itemName_lowercase">Name</option>
+                    <option value="brand">Brand</option>
+                    <option value="sku">SKU</option>
+                </select>
             </div>
+            <div class="flex gap-2 w-full md:w-auto mt-2 md:mt-0">
+                <button id="search-btn" class="btn btn-primary px-4 py-1.5 flex-1 md:flex-none">Search</button>
+                <button id="browse-all-btn" class="btn btn-secondary px-3 py-1.5 whitespace-nowrap flex-1 md:flex-none">All</button>
+            </div>
+          </div>
+          
+          <!-- Tools Bar -->
+          <div class="mb-4 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div class="flex items-center gap-2">
+                   <button id="filter-suppliers-btn" class="btn btn-secondary py-1 px-2.5 text-[11px] bg-transparent border-dashed">
+                      <svg class="w-3 h-3 mr-1.5 text-[var(--text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                      Filter Suppliers
+                   </button>
+                   <button id="export-csv-btn" class="btn py-1 px-2.5 text-[11px] text-green-600 bg-green-500/10 hover:bg-green-500/20 transition-colors">
+                      <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                      Export CSV
+                   </button>
+              </div>
+              <details class="w-full md:w-auto relative group">
+                  <summary class="list-none cursor-pointer text-[11px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors flex items-center">
+                      Advanced Bulk Search
+                      <svg class="w-3 h-3 ml-1 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                  </summary>
+                  <div class="absolute right-0 mt-2 w-72 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg shadow-xl p-3 z-20">
+                      <textarea id="upc-list-input" rows="4" class="w-full text-[11px] p-2 mb-2 bg-[var(--input-bg)] border border-[var(--border-color)] rounded resize-none" placeholder="Paste UPCs (one per line)"></textarea>
+                      <button id="search-list-btn" class="btn btn-primary w-full py-1.5 text-[11px]">Search List</button>
+                  </div>
+              </details>
           </div>
 
           <!-- Loading State -->
-          <div id="loader-container" class="hidden grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
+          <div id="loader-container" class="hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4"></div>
           <div id="export-loader" class="flex justify-center items-center py-12 hidden">
              <div class="loader mr-3"></div>
-             <p class="text-sm text-[var(--text-secondary)]">Generating CSV...</p>
+             <p class="text-xs text-[var(--text-secondary)] font-medium">Generating Matrix CSV...</p>
           </div>
           
           <!-- Error State -->
-          <div id="error-display" class="hidden bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 rounded-lg mb-6 text-sm flex items-center">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <div id="error-display" class="hidden bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 rounded-lg mb-6 text-xs flex items-center">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <span id="error-message">Error</span>
           </div>
 
           <!-- Results Grid -->
-          <div id="results-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
+          <div id="results-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4"></div>
           
           <!-- No Results -->
-          <div id="no-results" class="text-center py-20 text-[var(--text-secondary)] hidden">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[var(--bg-secondary)] mb-4">
-              <svg class="h-8 w-8 text-[var(--text-secondary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          <div id="no-results" class="text-center py-24 text-[var(--text-secondary)] hidden">
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-full border border-[var(--border-color)] bg-[var(--bg-secondary)] mb-4">
+              <svg class="h-5 w-5 text-[var(--text-secondary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             </div>
-            <h3 id="no-results-title" class="text-lg font-bold text-[var(--text-main)]">No Products Found</h3>
-            <p id="no-results-subtitle" class="text-sm mb-4">Try adjusting your search terms.</p>
-            <button id="no-results-browse-btn" class="btn btn-secondary px-6 py-2">Clear Search</button>
+            <h3 id="no-results-title" class="text-sm font-semibold text-[var(--text-main)]">No Products Found</h3>
+            <p id="no-results-subtitle" class="text-xs mt-1 mb-5">Adjust your search terms or filters.</p>
+            <button id="no-results-browse-btn" class="btn btn-secondary px-5 py-1.5 text-xs">Clear Search</button>
           </div>
 
           <!-- Pagination -->
@@ -345,151 +379,166 @@
 
         <!-- Inventory Nexus Tab Content -->
         <div id="inventory-nexus-tab-content" class="tab-content hidden">
-            <div class="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl p-8 max-w-4xl mx-auto text-center">
-                <div class="inline-block p-4 rounded-full bg-[var(--bg-secondary)] mb-6">
-                   <!-- Icon -->
-                   <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-[var(--accent-color)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            <div class="border border-[var(--border-color)] bg-[var(--bg-secondary)] rounded-xl p-10 max-w-3xl mx-auto text-center shadow-sm">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[var(--bg-main)] border border-[var(--border-color)] mb-6 shadow-sm">
+                   <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[var(--text-main)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                    </svg>
                 </div>
-                <h2 class="text-3xl font-bold mb-4 text-[var(--text-main)]">Inventory Nexus</h2>
-                <p class="text-lg text-[var(--text-secondary)] mb-8 max-w-2xl mx-auto">
-                    A powerful extension tool designed to streamline your inventory management. Upload your own inventory files, map data columns, and consolidate information efficiently.
+                <h2 class="text-2xl font-bold tracking-tight mb-3 text-[var(--text-main)]">Inventory Nexus</h2>
+                <p class="text-sm text-[var(--text-secondary)] mb-10 max-w-xl mx-auto leading-relaxed">
+                    A powerful extension to streamline inventory management. Upload custom files, map data columns, and consolidate information efficiently.
                 </p>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 text-left max-w-3xl mx-auto">
-                    <div class="p-4 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--accent-color)] transition-colors duration-200">
-                        <h3 class="font-bold text-[var(--text-main)] mb-2 flex items-center">
-                            <svg class="w-5 h-5 mr-2 text-green-custom" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10 text-left max-w-2xl mx-auto">
+                    <div class="p-5 rounded-lg bg-[var(--bg-main)] border border-[var(--border-color)]">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-main)] mb-2 flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-green-custom" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                             Upload & Map
                         </h3>
-                        <p class="text-sm text-[var(--text-secondary)]">Seamlessly upload inventory files (CSV/Excel) and map columns to your specific needs.</p>
+                        <p class="text-[11px] text-[var(--text-secondary)] leading-relaxed">Seamlessly upload CSV/Excel files and dynamically map columns to specific fields.</p>
                     </div>
-                    <div class="p-4 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--accent-color)] transition-colors duration-200">
-                        <h3 class="font-bold text-[var(--text-main)] mb-2 flex items-center">
-                            <svg class="w-5 h-5 mr-2 text-[var(--accent-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                            Bulk Search & Extract
+                    <div class="p-5 rounded-lg bg-[var(--bg-main)] border border-[var(--border-color)]">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-main)] mb-2 flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-[var(--text-main)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            Bulk Extraction
                         </h3>
-                        <p class="text-sm text-[var(--text-secondary)]">Perform bulk UPC searches against your uploaded data and extract results instantly.</p>
+                        <p class="text-[11px] text-[var(--text-secondary)] leading-relaxed">Perform rapid bulk UPC searches against uploaded datasets instantly.</p>
                     </div>
                 </div>
 
-                <a href="https://inventorynexus.brnddirect.com/" target="_blank" class="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-200 bg-[var(--accent-color)] border border-transparent rounded-full shadow-lg hover:bg-[var(--accent-hover)] hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Launch Inventory Nexus
-                    <svg class="w-5 h-5 ml-2 -mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                <a href="https://inventorynexus.brnddirect.com/" target="_blank" class="inline-flex items-center justify-center px-6 py-3 text-xs font-medium transition-all duration-200 bg-[var(--accent-color)] text-[var(--accent-text)] rounded-md shadow-sm hover:opacity-90">
+                    Launch Nexus Environment
+                    <svg class="w-4 h-4 ml-2 -mr-1 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                 </a>
             </div>
         </div>
 
         <!-- API Docs Tab -->
         <div id="api-docs-tab-content" class="tab-content hidden">
-            <div class="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl p-6 md:p-10 max-w-4xl mx-auto prose prose-sm prose-slate dark:prose-invert">
-                <h2 class="text-2xl font-bold mb-4">API Documentation</h2>
-                <p>Integrate your system directly with our live inventory. Authenticate using your private key from the API Key tab.</p>
+            <div class="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl p-6 md:p-10 max-w-3xl mx-auto shadow-sm">
+                <h2 class="text-xl font-bold tracking-tight mb-2">API Documentation</h2>
+                <p class="text-xs text-[var(--text-secondary)] mb-8 pb-6 border-b border-[var(--border-color)]">Integrate your system directly with live inventory data via REST.</p>
                 
-                <h3 class="text-lg font-semibold mt-6 mb-2">Authentication</h3>
-                <pre class="rounded-lg p-4 bg-[var(--bg-main)] overflow-x-auto text-xs">Authorization: Bearer YOUR_API_KEY</pre>
+                <div class="space-y-8">
+                  <div>
+                    <h3 class="text-xs font-semibold uppercase tracking-wider mb-3">Authentication</h3>
+                    <pre class="rounded-md p-3 bg-[var(--bg-main)] border border-[var(--border-color)] overflow-x-auto text-[11px] font-mono text-[var(--text-main)]">Authorization: Bearer YOUR_API_KEY</pre>
+                  </div>
 
-                <h3 class="text-lg font-semibold mt-6 mb-2">Base URL</h3>
-                <pre class="rounded-lg p-4 bg-[var(--bg-main)] overflow-x-auto text-xs">https://supplier-api-977359606390.us-central1.run.app</pre>
+                  <div>
+                    <h3 class="text-xs font-semibold uppercase tracking-wider mb-3">Base URL</h3>
+                    <pre class="rounded-md p-3 bg-[var(--bg-main)] border border-[var(--border-color)] overflow-x-auto text-[11px] font-mono text-[var(--text-main)]">https://supplier-api-977359606390.us-central1.run.app</pre>
+                  </div>
 
-                <h3 class="text-lg font-semibold mt-6 mb-2">Endpoints</h3>
-                <p><strong>GET /</strong> - Retrieve products.</p>
-                <ul class="list-disc list-inside space-y-1">
-                    <li><code>limit</code> (max: 250)</li>
-                    <li><code>sku</code>, <code>upc</code> (Exact match)</li>
-                    <li><code>cursor</code> (Pagination)</li>
-                </ul>
-                
-                <h3 class="text-lg font-semibold mt-6 mb-2">Response Format</h3>
-                <p>All successful requests will return a JSON object with <code>meta</code> and <code>data</code> keys.</p>
+                  <div>
+                    <h3 class="text-xs font-semibold uppercase tracking-wider mb-3 flex items-center justify-between">
+                        Endpoints
+                        <span class="bg-[var(--bg-main)] border border-[var(--border-color)] px-2 py-0.5 rounded text-[10px] lowercase normal-case">GET /</span>
+                    </h3>
+                    <ul class="list-disc list-inside space-y-1.5 text-xs text-[var(--text-secondary)] ml-1">
+                        <li><code class="text-[var(--text-main)] bg-[var(--bg-main)] px-1 rounded">limit</code> (max: 250)</li>
+                        <li><code class="text-[var(--text-main)] bg-[var(--bg-main)] px-1 rounded">sku</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] px-1 rounded">upc</code> (Exact match filter)</li>
+                        <li><code class="text-[var(--text-main)] bg-[var(--bg-main)] px-1 rounded">cursor</code> (Pagination)</li>
+                    </ul>
+                  </div>
 
-                <p><strong>General Browsing:</strong></p>
-                <pre class="rounded-lg p-4 bg-[var(--bg-main)] overflow-x-auto text-xs">{
-    "meta": {
-        "rate_limit_remaining": 299,
-        "per_page": 250,
-        "next_page_cursor": "..." 
-    },
-    "data": [ ... ]
+                  <div>
+                    <h3 class="text-xs font-semibold uppercase tracking-wider mb-3">Response Format</h3>
+                    <div class="grid gap-4 md:grid-cols-2">
+                      <div>
+                        <p class="text-[11px] mb-2 text-[var(--text-secondary)]">General Browsing:</p>
+                        <pre class="rounded-md p-3 bg-[var(--bg-main)] border border-[var(--border-color)] overflow-x-auto text-[10px] font-mono text-[var(--text-secondary)]">{
+  "meta": {
+    "rate_limit_remaining": 299,
+    "per_page": 250,
+    "next_page_cursor": "..." 
+  },
+  "data": [ ... ]
 }</pre>
-
-                <p><strong>Filtered Queries (SKU/UPC):</strong></p>
-                <pre class="rounded-lg p-4 bg-[var(--bg-main)] overflow-x-auto text-xs">{
-    "meta": {
-        "rate_limit_remaining": 298,
-        "total": 1,
-        "per_page": 250
-    },
-    "data": [ ... ]
+                      </div>
+                      <div>
+                        <p class="text-[11px] mb-2 text-[var(--text-secondary)]">Filtered (SKU/UPC):</p>
+                        <pre class="rounded-md p-3 bg-[var(--bg-main)] border border-[var(--border-color)] overflow-x-auto text-[10px] font-mono text-[var(--text-secondary)]">{
+  "meta": {
+    "rate_limit_remaining": 298,
+    "total": 1,
+    "per_page": 250
+  },
+  "data": [ ... ]
 }</pre>
+                      </div>
+                    </div>
+                  </div>
 
-                <h3 class="text-lg font-semibold mt-6 mb-2">Data Fields</h3>
-                <ul class="list-disc list-inside space-y-1">
-                    <li><code>sku</code>, <code>upc</code>, <code>asin</code> (String) - Identifiers</li>
-                    <li><code>itemName</code>, <code>brand</code>, <code>size</code> (String) - Product details</li>
-                    <li><code>msrp</code> (Number) - Suggested retail price</li>
-                    <li><code>supplier_X_name</code>, <code>supplier_X_price</code>, <code>supplier_X_inventory</code> - Flattened supplier data (sorted by price)</li>
-                </ul>
+                  <div>
+                    <h3 class="text-xs font-semibold uppercase tracking-wider mb-3">Data Fields</h3>
+                    <ul class="list-disc list-inside space-y-1.5 text-xs text-[var(--text-secondary)] ml-1">
+                        <li><code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">sku</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">upc</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">asin</code> (String) - Identifiers</li>
+                        <li><code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">itemName</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">brand</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">size</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">category</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">description</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">imageUrl</code> (String) - Product details</li>
+                        <li><code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">msrp</code> (Number) - Suggested retail price</li>
+                        <li><code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">lastUpdate</code> (Timestamp/String) - Record last updated date</li>
+                        <li><code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">supplier_X_name</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">supplier_X_price</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">supplier_X_inventory</code> - Flattened supplier data (sorted by price)</li>
+                    </ul>
+                  </div>
 
-                <h3 class="text-lg font-semibold mt-6 mb-2">Rate Limit</h3>
-                <div class="bg-[var(--bg-secondary)] border border-[var(--border-color)] p-3 rounded-lg inline-block">
-                    <span class="font-mono text-[var(--accent-color)] font-bold">300</span> requests / 24 hours
+                  <div class="flex items-center justify-between pt-6 border-t border-[var(--border-color)]">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider">Rate Limit</h3>
+                    <div class="bg-[var(--bg-main)] border border-[var(--border-color)] px-3 py-1 rounded text-xs">
+                        <span class="font-mono text-[var(--text-main)] font-semibold">300</span> req / 24h
+                    </div>
+                  </div>
                 </div>
-                
-                <h3 class="text-lg font-semibold mt-6 mb-2">Errors</h3>
-                <ul class="list-disc list-inside space-y-1">
-                    <li><strong>401:</strong> Invalid API Key</li>
-                    <li><strong>429:</strong> Rate limit exceeded</li>
-                    <li><strong>500:</strong> Server error</li>
-                </ul>
             </div>
         </div>
 
         <!-- API Key Tab -->
         <div id="api-key-tab-content" class="tab-content hidden">
-             <div class="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl p-8 max-w-2xl mx-auto text-center">
-                  <h2 class="text-2xl font-bold mb-2">API Access</h2>
-                  <p class="text-sm text-[var(--text-secondary)] mb-8">Manage your secret key for external integrations.</p>
+             <div class="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl p-8 max-w-2xl mx-auto shadow-sm">
+                  <div class="text-center mb-8">
+                    <h2 class="text-xl font-bold tracking-tight mb-1 text-[var(--text-main)]">API Access</h2>
+                    <p class="text-xs text-[var(--text-secondary)]">Manage your secret key for automated integrations.</p>
+                  </div>
                   
-                  <div id="api-key-loader" class="hidden"><div class="loader inline-block"></div></div>
+                  <div id="api-key-loader" class="hidden text-center py-4"><div class="loader inline-block"></div></div>
                   
-                  <div id="api-key-content" class="hidden text-left">
-                      <div id="api-key-display-area" class="hidden">
-                          <label class="block text-xs font-bold uppercase text-[var(--text-secondary)] mb-1">Your Secret Key</label>
+                  <div id="api-key-content" class="hidden">
+                      <div id="api-key-display-area" class="hidden bg-[var(--bg-main)] border border-[var(--border-color)] rounded-lg p-5 mb-8">
+                          <label class="block text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-2">Secret Key</label>
                           <div class="flex items-center gap-2 mb-2">
                               <div class="relative flex-grow">
-                                  <input type="password" id="api-key-input" readonly class="w-full pr-10 font-mono text-sm bg-[var(--bg-secondary)]">
-                                  <button id="toggle-api-key-visibility" class="absolute right-2 top-2 text-[var(--text-secondary)] hover:text-[var(--text-main)]">
-                                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                  <input type="password" id="api-key-input" readonly class="w-full pr-10 pl-3 py-2 font-mono text-xs bg-[var(--input-bg)] border border-[var(--border-color)] rounded">
+                                  <button id="toggle-api-key-visibility" class="absolute right-2 top-2 text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors">
+                                      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                                   </button>
                               </div>
-                              <button id="copy-api-key-btn" class="btn btn-secondary px-4 py-2">Copy</button>
+                              <button id="copy-api-key-btn" class="btn btn-secondary px-4 py-2 text-xs">Copy</button>
                           </div>
-                          <p id="copy-feedback" class="text-xs text-green-500 font-bold hidden mb-6">Copied to clipboard!</p>
-                          
-                          <button id="revoke-and-generate-btn" class="text-xs text-red-400 hover:text-red-500 underline">Revoke & Generate New Key</button>
+                          <div class="flex justify-between items-center mt-3">
+                              <p id="copy-feedback" class="text-[10px] text-green-500 font-medium hidden">Copied to clipboard!</p>
+                              <button id="revoke-and-generate-btn" class="text-[10px] text-red-500 hover:text-red-400 transition-colors ml-auto">Revoke & Roll Key</button>
+                          </div>
                       </div>
 
-                      <div id="generate-key-area" class="hidden text-center py-8">
-                          <button id="generate-api-key-btn" class="btn btn-primary px-6 py-3 shadow-lg">Generate New API Key</button>
+                      <div id="generate-key-area" class="hidden text-center py-8 bg-[var(--bg-main)] border border-dashed border-[var(--border-color)] rounded-lg mb-8">
+                          <button id="generate-api-key-btn" class="btn btn-primary px-5 py-2.5 text-xs">Generate API Key</button>
                       </div>
                   </div>
                   
-                  <div class="mt-8 pt-8 border-t border-[var(--border-color)] text-left">
+                  <div class="text-left">
                       <div class="flex justify-between items-end mb-2">
-                          <h3 class="text-sm font-bold">Usage Quota</h3>
-                          <span id="api-usage-text" class="text-xs font-mono text-[var(--text-secondary)]">0 / 300</span>
+                          <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">Usage Quota</h3>
+                          <span id="api-usage-text" class="text-[11px] font-mono text-[var(--text-main)]">0 / 300</span>
                       </div>
-                      <div class="w-full bg-[var(--bg-secondary)] rounded-full h-1.5 overflow-hidden mb-6">
-                          <div id="api-usage-bar" class="bg-[var(--accent-color)] h-full transition-all duration-500" style="width: 0%"></div>
+                      <div class="w-full bg-[var(--bg-main)] border border-[var(--border-color)] rounded-full h-1.5 overflow-hidden mb-8">
+                          <div id="api-usage-bar" class="bg-[var(--text-main)] h-full transition-all duration-500" style="width: 0%"></div>
                       </div>
 
-                      <h3 class="text-sm font-bold mb-2">Recent Activity</h3>
-                      <div class="border border-[var(--border-color)] rounded-lg overflow-hidden text-xs">
+                      <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] mb-3">Recent Activity</h3>
+                      <div class="border border-[var(--border-color)] rounded-lg overflow-hidden text-[11px] bg-[var(--bg-main)]">
                           <table class="w-full">
-                              <thead class="bg-[var(--bg-secondary)] text-[var(--text-secondary)]">
-                                  <tr><th class="p-2 text-left font-normal">Time</th><th class="p-2 text-right font-normal">Status</th></tr>
+                              <thead class="bg-[var(--bg-secondary)] border-b border-[var(--border-color)] text-[var(--text-secondary)]">
+                                  <tr><th class="p-2.5 text-left font-medium">Timestamp</th><th class="p-2.5 text-right font-medium">Status</th></tr>
                               </thead>
                               <tbody id="recent-calls-tbody" class="divide-y divide-[var(--border-color)]">
                                   <!-- JS Populated -->
@@ -505,41 +554,41 @@
 
   <!-- --- MODALS --- -->
   
-  <!-- Item Details Modal (Updated Table) -->
-  <div id="item-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300 ease-in-out">
-    <div id="modal-overlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-    <div id="modal-content" class="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col relative transform transition-all duration-300 ease-in-out opacity-0 scale-95 overflow-hidden">
-        <div class="absolute top-0 right-0 p-4 z-10">
-             <button id="modal-close-btn" class="bg-[var(--bg-main)] p-1.5 rounded-full text-[var(--text-secondary)] hover:text-white hover:bg-red-500 transition-colors">
-                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+  <!-- Item Details Modal (Sleek Style) -->
+  <div id="item-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 ease-out">
+    <div id="modal-overlay" class="absolute inset-0 bg-[var(--bg-main)]/80 backdrop-blur-sm"></div>
+    <div id="modal-content" class="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col relative transform transition-all duration-200 ease-out opacity-0 scale-[0.98] overflow-hidden">
+        <div class="absolute top-0 right-0 p-3 z-10">
+             <button id="modal-close-btn" class="bg-[var(--bg-main)] border border-[var(--border-color)] p-1.5 rounded-md text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:border-[var(--text-secondary)] transition-all">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
         </div>
-        <div id="modal-loader" class="flex justify-center items-center p-20"><div class="loader"></div></div>
-        <div id="modal-body" class="hidden overflow-y-auto custom-scrollbar"></div>
+        <div id="modal-loader" class="flex justify-center items-center p-32"><div class="loader"></div></div>
+        <div id="modal-body" class="hidden overflow-y-auto custom-scrollbar flex-1"></div>
     </div>
   </div>
 
   <!-- Image Lightbox -->
-  <div id="image-lightbox" class="fixed inset-0 z-[60] bg-black/90 hidden items-center justify-center backdrop-blur-md">
-      <button id="lightbox-close-btn" class="absolute top-6 right-6 text-white/50 hover:text-white transition-colors">
-        <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+  <div id="image-lightbox" class="fixed inset-0 z-[60] bg-black/95 hidden items-center justify-center backdrop-blur-lg">
+      <button id="lightbox-close-btn" class="absolute top-6 right-6 text-white/50 hover:text-white transition-colors p-2">
+        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" /></svg>
       </button>
-      <img id="lightbox-img" src="" class="max-w-[95vw] max-h-[95vh] object-contain rounded-lg shadow-2xl">
+      <img id="lightbox-img" src="" class="max-w-[95vw] max-h-[95vh] object-contain rounded-md shadow-2xl border border-white/10">
   </div>
 
   <!-- Supplier Filter Modal -->
   <div id="supplier-filter-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
-    <div id="supplier-modal-overlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-    <div class="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl shadow-2xl w-full max-w-sm max-h-[80vh] flex flex-col relative">
+    <div id="supplier-modal-overlay" class="absolute inset-0 bg-[var(--bg-main)]/80 backdrop-blur-sm"></div>
+    <div class="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl shadow-xl w-full max-w-sm max-h-[80vh] flex flex-col relative">
         <div class="flex justify-between items-center p-4 border-b border-[var(--border-color)]">
-            <h3 class="text-sm font-bold">Filter Suppliers</h3>
-            <button id="supplier-modal-close-btn" class="text-[var(--text-secondary)] hover:text-[var(--text-main)]"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+            <h3 class="text-sm font-semibold tracking-tight">Filter Suppliers</h3>
+            <button id="supplier-modal-close-btn" class="text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" /></svg></button>
         </div>
-        <div id="supplier-list-container" class="p-4 overflow-y-auto flex-1"></div>
-        <div class="p-4 border-t border-[var(--border-color)] bg-[var(--bg-secondary)] flex justify-between gap-3">
-            <div class="flex gap-2">
-                <button id="select-all-suppliers-btn" class="text-xs text-[var(--text-secondary)] hover:underline">Select All</button>
-                <button id="deselect-all-suppliers-btn" class="text-xs text-[var(--text-secondary)] hover:underline">Clear</button>
+        <div id="supplier-list-container" class="p-4 overflow-y-auto flex-1 text-xs"></div>
+        <div class="p-3 border-t border-[var(--border-color)] bg-[var(--bg-main)] flex justify-between items-center gap-3 rounded-b-xl">
+            <div class="flex gap-3 px-1">
+                <button id="select-all-suppliers-btn" class="text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors">Select All</button>
+                <button id="deselect-all-suppliers-btn" class="text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors">Clear</button>
             </div>
             <button id="apply-supplier-filter-btn" class="btn btn-primary px-4 py-1.5 text-xs">Apply</button>
         </div>
@@ -651,9 +700,9 @@
     function showAuthMessage(message, type = 'error') {
         authMessageDiv.textContent = message;
         if (type === 'error') {
-            authMessageDiv.className = 'px-3 py-2 rounded-md mb-4 text-xs font-medium bg-red-500/10 text-red-500 border border-red-500/20';
+            authMessageDiv.className = 'px-3 py-2 rounded-md mb-5 text-[11px] font-medium bg-red-500/10 text-red-500 border border-red-500/20';
         } else if (type === 'success') {
-            authMessageDiv.className = 'px-3 py-2 rounded-md mb-4 text-xs font-medium bg-green-500/10 text-green-500 border border-green-500/20';
+            authMessageDiv.className = 'px-3 py-2 rounded-md mb-5 text-[11px] font-medium bg-green-500/10 text-green-500 border border-green-500/20';
         }
         authMessageDiv.classList.remove('hidden');
     }
@@ -664,7 +713,7 @@
 
     showSignupBtn.addEventListener('click', () => { hideAllForms(); signupForm.classList.remove('hidden'); authTitle.textContent = 'Create Account'; authSubtitle.textContent = 'Join the database'; authMessageDiv.classList.add('hidden');});
     showForgotPasswordBtn.addEventListener('click', () => { hideAllForms(); forgotPasswordForm.classList.remove('hidden'); authTitle.textContent = 'Reset Password'; authSubtitle.textContent = 'Recover your account'; authMessageDiv.classList.add('hidden');});
-    [showLoginBtnFromSignup, showLoginBtnFromForgot].forEach(btn => btn.addEventListener('click', () => { hideAllForms(); loginForm.classList.remove('hidden'); authTitle.textContent = 'Welcome Back'; authSubtitle.textContent = 'Sign in to access'; authMessageDiv.classList.add('hidden');}));
+    [showLoginBtnFromSignup, showLoginBtnFromForgot].forEach(btn => btn.addEventListener('click', () => { hideAllForms(); loginForm.classList.remove('hidden'); authTitle.textContent = 'Welcome Back'; authSubtitle.textContent = 'Sign in to access the database'; authMessageDiv.classList.add('hidden');}));
 
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -796,16 +845,16 @@
                     const log = doc.data();
                     const date = log.timestamp.toDate();
                     const row = `
-                        <tr class="border-b border-[var(--border-color)] last:border-0">
-                            <td class="p-2 text-left">${date.toLocaleString()}</td>
-                            <td class="p-2 text-right text-green-custom">Success</td>
+                        <tr class="hover:bg-[var(--bg-main)] transition-colors">
+                            <td class="p-2.5 text-left border-b border-[var(--border-color)]">${date.toLocaleString()}</td>
+                            <td class="p-2.5 text-right text-green-custom border-b border-[var(--border-color)]">Success</td>
                         </tr>
                     `;
                     recentCallsTbody.innerHTML += row;
                 }
             });
             if (count === 0) {
-                recentCallsTbody.innerHTML = '<tr><td colspan="2" class="p-3 text-center text-[var(--text-secondary)] italic">No recent activity</td></tr>';
+                recentCallsTbody.innerHTML = '<tr><td colspan="2" class="p-4 text-center text-[var(--text-secondary)] italic border-b border-[var(--border-color)]">No recent activity</td></tr>';
             }
 
         } catch (error) {
@@ -851,8 +900,6 @@
     toggleApiKeyVisibilityBtn.addEventListener('click', () => {
         const isPassword = apiKeyInput.type === 'password';
         apiKeyInput.type = isPassword ? 'text' : 'password';
-        eyeIcon.classList.toggle('hidden', isPassword);
-        eyeOffIcon.classList.toggle('hidden', !isPassword);
     });
 
     // --- Main Application Logic ---
@@ -867,8 +914,6 @@
     const noResultsDiv = document.getElementById('no-results');
     const errorDisplay = document.getElementById('error-display');
     const errorMessage = document.getElementById('error-message');
-    const searchControls = document.getElementById('search-controls');
-    const controlsBar = document.getElementById('controls-bar');
     const exportCsvBtn = document.getElementById('export-csv-btn');
     const filterSuppliersBtn = document.getElementById('filter-suppliers-btn');
     const supplierFilterModal = document.getElementById('supplier-filter-modal');
@@ -945,30 +990,21 @@
         resultsContainer.innerHTML = '';
         
         const processedDocs = docs.reduce((acc, item) => {
-            // 1. Get ALL suppliers that are NOT strictly excluded by the checkbox UI
-            // This is our baseline "viewable" list for this user session
             const allowedSuppliers = item.suppliers ? item.suppliers.filter(sup => !excludedSuppliers.has(sup.name)) : [];
-
-            // 2. Determine "Active Filtering" Mode
             const isFilteringActive = excludedSuppliers.size > 0;
-
             let shouldShowItem = true;
 
             if (isFilteringActive) {
-                 // Requirement: If filtering is active, only show items where at least one 
-                 // of the SELECTED suppliers has actual inventory (stock > 0).
                  const hasInventoryInSelected = allowedSuppliers.some(sup => {
                      const stock = parseFloat(String(sup.inventory).replace(/,/g, ''));
                      return !isNaN(stock) && stock > 0;
                  });
-                 
                  if (!hasInventoryInSelected) {
                      shouldShowItem = false;
                  }
             }
 
             if (shouldShowItem) {
-                 // Calculate lowest price from ALLOWED suppliers only
                  const newLowestPrice = allowedSuppliers.reduce((min, sup) => {
                     const price = parseFloat(sup.price);
                     const stock = parseFloat(String(sup.inventory).replace(/,/g, ''));
@@ -982,8 +1018,6 @@
 
                 acc.push({
                     ...item,
-                    // Pass ALL suppliers to the card so user can compare, 
-                    // even if they filtered for specific ones to find the item.
                     suppliers: item.suppliers, 
                     lowestPrice: newLowestPrice === Infinity ? -1 : newLowestPrice
                 });
@@ -993,7 +1027,7 @@
 
         processedDocs.forEach((item, index) => {
             const card = createItemCard(item);
-            card.style.animationDelay = `${index * 30}ms`; // Staggered animation
+            card.style.animationDelay = `${index * 20}ms`; // Sleek staggered animation
             resultsContainer.appendChild(card);
         });
 
@@ -1001,10 +1035,6 @@
             showNoResults();
         } else {
             if(noResultsDiv) noResultsDiv.classList.add('hidden');
-            if(controlsBar) {
-                controlsBar.classList.remove('hidden');
-                controlsBar.classList.add('flex');
-            }
             renderPagination();
         }
     }
@@ -1076,7 +1106,6 @@
             snapshot.forEach(doc => allDocs.push(doc.data()));
         });
         
-        // Sort results based on the order of UPCs in the input list
         return allDocs.sort((a, b) => upcList.indexOf(a.upc) - upcList.indexOf(b.upc));
     }
 
@@ -1099,14 +1128,9 @@
                     docsToExport = await fetchAllBulkDocs(upcList);
                 }
             } else {
-                // EXPORT LOGIC: Only export CURRENT PAGE data when in browse mode
-                // This saves massive amounts of reads.
                 if (lastFetchedDocs && lastFetchedDocs.length > 0) {
                      docsToExport = [...lastFetchedDocs];
                 } else {
-                     // Fallback: If for some reason lastFetchedDocs is empty (shouldn't happen if user sees data)
-                     // Re-fetch current page logic - but to be safe, let's just abort if empty
-                     // to prevent accidental full reads.
                      docsToExport = [];
                 }
             }
@@ -1128,7 +1152,6 @@
     }
 
     function generateMatrixCsv(items) {
-        // 1. Identify all unique suppliers in this dataset to create columns
         const supplierSet = new Set();
         const supplierLastUpdates = {};
 
@@ -1136,7 +1159,6 @@
             if (item.suppliers) {
                 item.suppliers.forEach(s => {
                     supplierSet.add(s.name);
-                    // Capture last update if available
                     if (s.lastUpdate && !supplierLastUpdates[s.name]) {
                          let dateStr = '';
                          try {
@@ -1151,21 +1173,17 @@
 
         const sortedSuppliers = Array.from(supplierSet).sort();
 
-        // 2. Build Rows
-        // Row 1: Last Updates (aligned with supplier columns)
-        let row1 = ["", "", "", "", "", ""]; // Skip basic info cols (UPC, Item Name, Brand, Size, Gender, Category)
+        let row1 = ["", "", "", "", "", ""]; 
         sortedSuppliers.forEach(name => {
              const date = supplierLastUpdates[name] || "";
-             row1.push(date, ""); // Two columns per supplier (Price, Inv)
+             row1.push(date, ""); 
         });
 
-        // Row 2: Supplier Names
         let row2 = ["", "", "", "", "", ""];
         sortedSuppliers.forEach(name => {
             row2.push(name, "");
         });
 
-        // Row 3: Headers
         let row3 = ["UPC", "Item Name", "Brand", "Size", "Gender", "Category"];
         sortedSuppliers.forEach(() => {
             row3.push("Price", "Inventory");
@@ -1184,7 +1202,6 @@
         csvContent += row2.map(escapeCell).join(",") + "\n";
         csvContent += row3.map(escapeCell).join(",") + "\n";
 
-        // Data Rows
         items.forEach(item => {
             let row = [
                 item.upc, 
@@ -1219,22 +1236,19 @@
 
     function createItemCard(item) {
         var card = document.createElement('div');
-        card.className = 'result-card rounded-lg overflow-hidden flex flex-col cursor-pointer hover:border-[var(--accent-color)]';
+        card.className = 'result-card rounded-xl overflow-hidden flex flex-col cursor-pointer bg-[var(--card-bg)] shadow-sm';
         card.dataset.sku = item.sku;
         
         var placeholderImg = 'https://i.imgur.com/IUBzxFv.jpeg';
         var imgUrl = (item.imageUrl && String(item.imageUrl).trim() !== "") ? item.imageUrl : placeholderImg;
 
-        // Calculate lowest price for display (using pre-filtered suppliers from renderFilteredResults)
         const priceDisplay = item.lowestPrice !== -1 ? `$${item.lowestPrice.toFixed(2)}` : 'N/A';
 
-        // Compact Supplier List (Vertical, Clean)
         let supplierGridHtml = '';
         if (item.suppliers && item.suppliers.length > 0) {
-            // Sort by price and take top 3
             const topSuppliers = [...item.suppliers].sort((a,b) => (parseFloat(a.price)||Infinity) - (parseFloat(b.price)||Infinity)).slice(0, 3);
             
-            supplierGridHtml = `<div class="mt-auto pt-3 border-t border-[var(--border-color)] flex flex-col gap-1.5">`;
+            supplierGridHtml = `<div class="mt-auto pt-2.5 border-t border-[var(--border-color)] flex flex-col gap-1.5">`;
             
             topSuppliers.forEach(s => {
                 const p = parseFloat(s.price);
@@ -1243,36 +1257,36 @@
                 const stock = s.inventory || 0;
                 
                 supplierGridHtml += `
-                    <div class="flex justify-between items-center text-xs">
-                        <div class="flex items-center gap-2 overflow-hidden">
-                             <span class="truncate text-[var(--text-secondary)] font-medium max-w-[80px]" title="${s.name}">${s.name}</span>
-                             <span class="text-[10px] text-[var(--text-secondary)]/70 bg-[var(--bg-secondary)] px-1 rounded">Qty: ${stock}</span>
+                    <div class="flex justify-between items-center text-[11px]">
+                        <div class="flex items-center gap-1.5 overflow-hidden">
+                             <span class="truncate text-[var(--text-secondary)] font-medium max-w-[70px]" title="${s.name}">${s.name}</span>
+                             <span class="text-[9px] text-[var(--text-secondary)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 py-0.5 rounded">Qty: ${stock}</span>
                         </div>
-                        <span class="font-mono ${isLowest ? 'text-green-custom font-bold' : 'text-[var(--text-main)]'}">${pStr}</span>
+                        <span class="font-mono tracking-tight ${isLowest ? 'text-green-custom font-semibold' : 'text-[var(--text-main)]'}">${pStr}</span>
                     </div>`;
             });
             
             if (item.suppliers.length > 3) {
-                 supplierGridHtml += `<div class="text-[10px] text-[var(--text-secondary)] text-center pt-1 italic">+${item.suppliers.length - 3} more</div>`;
+                 supplierGridHtml += `<div class="text-[9px] text-[var(--text-secondary)] text-center pt-1 italic opacity-70">+${item.suppliers.length - 3} more</div>`;
             }
             supplierGridHtml += `</div>`;
         } else {
-             supplierGridHtml = `<div class="mt-auto pt-3 border-t border-[var(--border-color)] text-xs text-[var(--text-secondary)] text-center italic">No active suppliers</div>`;
+             supplierGridHtml = `<div class="mt-auto pt-2.5 border-t border-[var(--border-color)] text-[11px] text-[var(--text-secondary)] text-center italic">No active suppliers</div>`;
         }
 
         card.innerHTML = `
-            <div class="w-full h-40 bg-white flex items-center justify-center p-4 relative border-b border-[var(--border-color)]">
-                <img src="${imgUrl}" alt="${item.itemName}" class="w-full h-full object-contain" onerror="this.src='${placeholderImg}'">
-                <div class="absolute top-2 right-2 bg-black/80 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+            <div class="w-full h-36 bg-[#ffffff] dark:bg-white flex items-center justify-center p-3 relative border-b border-[var(--border-color)]">
+                <img src="${imgUrl}" alt="${item.itemName}" class="w-full h-full object-contain mix-blend-multiply" onerror="this.src='${placeholderImg}'">
+                <div class="absolute top-2 right-2 bg-black/90 backdrop-blur-sm text-white text-[10px] font-semibold px-2 py-1 rounded-md shadow-sm tracking-wide">
                     ${priceDisplay}
                 </div>
             </div>
-            <div class="p-3 flex-grow flex flex-col">
-                <div class="mb-2">
-                    <h3 class="text-sm font-bold leading-snug text-[var(--text-main)] line-clamp-2" title="${item.itemName}">${item.itemName}</h3>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border-color)] truncate max-w-[80px]">${item.brand || 'No Brand'}</span>
-                         ${item.size ? `<span class="text-[10px] font-mono text-[var(--text-secondary)]">${item.size}</span>` : ''}
+            <div class="p-3.5 flex-grow flex flex-col">
+                <div class="mb-3">
+                    <h3 class="text-[13px] font-semibold leading-snug text-[var(--text-main)] line-clamp-2" title="${item.itemName}">${item.itemName}</h3>
+                    <div class="flex items-center gap-1.5 mt-1.5">
+                        <span class="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[var(--bg-main)] text-[var(--text-secondary)] border border-[var(--border-color)] truncate max-w-[80px]">${item.brand || 'No Brand'}</span>
+                         ${item.size ? `<span class="text-[10px] font-mono text-[var(--text-secondary)] truncate">${item.size}</span>` : ''}
                     </div>
                 </div>
                 ${supplierGridHtml}
@@ -1284,10 +1298,10 @@
     function showLoader() {
         if(loaderContainer) {
             loaderContainer.innerHTML = '';
-            for(let i = 0; i < 15; i++) {
+            for(let i = 0; i < 12; i++) {
                 const skeleton = document.createElement('div');
-                skeleton.className = 'skeleton-card';
-                skeleton.innerHTML = '<div class="skeleton-image h-40"></div><div class="p-3"><div class="skeleton-text w-3/4 mb-2"></div><div class="skeleton-text w-1/2"></div></div>';
+                skeleton.className = 'skeleton-card shadow-sm border border-[var(--border-color)]';
+                skeleton.innerHTML = '<div class="skeleton-image h-36"></div><div class="p-3.5"><div class="skeleton-text w-3/4 mb-3"></div><div class="skeleton-text w-1/2 h-2 mb-4"></div><div class="border-t border-[var(--border-color)] pt-3"><div class="skeleton-text w-full h-2 mb-2"></div><div class="skeleton-text w-5/6 h-2"></div></div></div>';
                 loaderContainer.appendChild(skeleton);
             }
             loaderContainer.classList.remove('hidden');
@@ -1295,7 +1309,6 @@
         if(resultsContainer) resultsContainer.innerHTML = '';
         if(noResultsDiv) noResultsDiv.classList.add('hidden');
         if(errorDisplay) errorDisplay.classList.add('hidden');
-        if(controlsBar) controlsBar.classList.add('hidden');
     }
     
     function hideLoader() { if(loaderContainer) loaderContainer.classList.add('hidden'); }
@@ -1303,7 +1316,6 @@
     function showNoResults() {
         if(resultsContainer) resultsContainer.innerHTML = '';
         if(noResultsDiv) noResultsDiv.classList.remove('hidden');
-        if(controlsBar) controlsBar.classList.add('hidden');
     }
     
     function showError(error) {
@@ -1316,19 +1328,19 @@
         if(!paginationContainer) return;
         paginationContainer.innerHTML = '';
         const prevBtn = document.createElement('button');
-        prevBtn.innerHTML = '&laquo;';
-        prevBtn.className = 'btn btn-secondary px-3 py-1 disabled:opacity-50';
+        prevBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>';
+        prevBtn.className = 'btn btn-secondary p-1 disabled:opacity-30 disabled:cursor-not-allowed';
         prevBtn.disabled = currentPage === 1;
         prevBtn.onclick = () => {
             currentPage--;
             fetchData(currentQueryConstraints, 'prev');
         };
         const pageInfo = document.createElement('span');
-        pageInfo.className = 'text-xs text-[var(--text-secondary)] font-mono';
-        pageInfo.textContent = 'Pg ' + currentPage;
+        pageInfo.className = 'text-xs text-[var(--text-secondary)] font-mono mx-3';
+        pageInfo.textContent = `Page ${currentPage}`;
         const nextBtn = document.createElement('button');
-        nextBtn.innerHTML = '&raquo;';
-        nextBtn.className = 'btn btn-secondary px-3 py-1';
+        nextBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
+        nextBtn.className = 'btn btn-secondary p-1';
         nextBtn.onclick = () => {
             currentPage++;
             fetchData(currentQueryConstraints, 'next');
@@ -1351,17 +1363,19 @@
         const sortedSuppliers = Array.from(allSuppliers).sort();
         sortedSuppliers.forEach(name => {
             const div = document.createElement('div');
-            div.className = 'flex items-center mb-2';
+            div.className = 'flex items-center p-2 hover:bg-[var(--bg-main)] rounded-md transition-colors cursor-pointer mb-1';
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.id = `supplier-cb-${name}`;
             checkbox.value = name;
             checkbox.checked = !excludedSuppliers.has(name);
-            checkbox.className = 'w-4 h-4 rounded border-[var(--border-color)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]';
+            checkbox.className = 'w-4 h-4 rounded border-[var(--border-color)] text-[var(--accent-color)] focus:ring-0 bg-[var(--input-bg)] cursor-pointer';
             const label = document.createElement('label');
             label.htmlFor = checkbox.id;
             label.textContent = name;
-            label.className = 'ml-3 block text-sm text-[var(--text-secondary)]';
+            label.className = 'ml-3 block text-sm text-[var(--text-main)] w-full cursor-pointer';
+            
+            div.onclick = (e) => { if(e.target !== checkbox) checkbox.checked = !checkbox.checked; };
             div.appendChild(checkbox);
             div.appendChild(label);
             supplierListContainer.appendChild(div);
@@ -1420,7 +1434,7 @@
         
         setTimeout(() => {
             itemModal.classList.remove('opacity-0');
-            modalContent.classList.remove('opacity-0', 'scale-95');
+            modalContent.classList.remove('opacity-0', 'scale-[0.98]');
             modalLoader.classList.add('hidden');
             modalBody.classList.remove('hidden');
         }, 10);
@@ -1431,10 +1445,8 @@
         const placeholderImg = 'https://i.imgur.com/IUBzxFv.jpeg';
         const imageUrl = (item.imageUrl && String(item.imageUrl).trim() !== "") ? item.imageUrl : placeholderImg;
 
-        // Filter based on excluded suppliers
         const visibleSuppliers = item.suppliers ? item.suppliers.filter(s => !excludedSuppliers.has(s.name)) : [];
 
-        // Calculate lowest price among visible suppliers for highlighting
         const lowestVisiblePrice = visibleSuppliers.reduce((min, sup) => {
             const price = parseFloat(sup.price);
             return !isNaN(price) && price > 0 && price < min ? price : min;
@@ -1453,7 +1465,6 @@
                 const priceText = !isNaN(price) ? `$${price.toFixed(2)}` : 'N/A';
                 const inventoryText = supplier.inventory || 'N/A';
                 
-                // Format Last Update
                 let lastUpdateText = 'N/A';
                 if (supplier.lastUpdate) {
                     try {
@@ -1469,93 +1480,94 @@
                 }
 
                 const isLowest = (price === lowestVisiblePrice && price < Infinity);
-                const priceClass = isLowest ? 'text-green-custom font-bold' : 'text-[var(--text-secondary)]';
+                const priceClass = isLowest ? 'text-green-custom font-semibold' : 'text-[var(--text-main)]';
                 return `
-                    <tr class="border-b border-[var(--border-color)] hover:bg-[var(--bg-secondary)] transition-colors">
-                        <td class="p-3 text-sm text-[var(--text-main)]">${supplier.name}</td>
-                        <td class="p-3 text-sm text-center font-mono ${priceClass}">${priceText}</td>
-                        <td class="p-3 text-sm text-center font-mono text-[var(--text-secondary)]">${inventoryText}</td>
-                        <td class="p-3 text-sm text-center text-[var(--text-secondary)] text-xs">${lastUpdateText}</td>
+                    <tr class="hover:bg-[var(--bg-main)] transition-colors border-b border-[var(--border-color)] last:border-0">
+                        <td class="px-4 lg:px-8 py-3 text-xs text-[var(--text-main)] font-medium">${supplier.name}</td>
+                        <td class="px-4 lg:px-8 py-3 text-xs text-right font-mono ${priceClass}">${priceText}</td>
+                        <td class="px-4 lg:px-8 py-3 text-xs text-right font-mono text-[var(--text-secondary)]">${inventoryText}</td>
+                        <td class="px-4 lg:px-8 py-3 text-xs text-right text-[var(--text-secondary)]">${lastUpdateText}</td>
                     </tr>
                 `;
             }).join('');
         } else {
-            suppliersHtml = '<tr><td colspan="4" class="p-4 text-center text-[var(--text-secondary)] text-sm italic">No suppliers available for the selected criteria.</td></tr>';
+            suppliersHtml = '<tr><td colspan="4" class="p-6 text-center text-[var(--text-secondary)] text-xs italic">No suppliers match the current filters.</td></tr>';
         }
 
         const msrpText = (typeof item.msrp === 'number') ? `$${item.msrp.toFixed(2)}` : (item.msrp || 'N/A');
 
         modalBody.innerHTML = `
-          <div class="flex flex-col md:flex-row gap-6 p-6">
-            <!-- Image Column -->
-            <div class="w-full md:w-1/3 flex-shrink-0">
-                <div class="aspect-square bg-white rounded-lg flex items-center justify-center p-4 border border-[var(--border-color)] overflow-hidden relative group">
-                    <img id="modal-item-image" src="${imageUrl}" alt="${item.itemName}" class="max-w-full max-h-full object-contain cursor-pointer transition-transform duration-300 group-hover:scale-105" onerror="this.src='${placeholderImg}'">
-                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none"></div>
-                </div>
-            </div>
-            
-            <!-- Details Column -->
-            <div class="w-full md:w-2/3 flex flex-col">
-                <div class="mb-4">
-                    <h2 class="text-xl md:text-2xl font-bold text-[var(--text-main)] mb-1 leading-tight">${item.itemName || 'N/A'}</h2>
-                    <p class="text-sm text-[var(--text-secondary)]">by <span class="font-medium text-[var(--text-main)]">${item.brand || 'Unknown Brand'}</span></p>
+          <div class="flex flex-col h-full">
+            <!-- Top Info Section -->
+            <div class="w-full p-6 lg:p-8 flex flex-col md:flex-row gap-6 lg:gap-8 border-b border-[var(--border-color)] bg-[var(--bg-main)]">
+                <!-- Image -->
+                <div class="w-full md:w-1/3 lg:w-1/4 flex-shrink-0">
+                    <div class="aspect-square bg-white dark:bg-[#ffffff] rounded-xl flex items-center justify-center p-6 border border-[var(--border-color)] overflow-hidden relative group shadow-sm">
+                        <img id="modal-item-image" src="${imageUrl}" alt="${item.itemName}" class="max-w-full max-h-full object-contain cursor-pointer transition-transform duration-500 group-hover:scale-105 mix-blend-multiply" onerror="this.src='${placeholderImg}'">
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors pointer-events-none rounded-xl"></div>
+                    </div>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-4 mb-6 bg-[var(--bg-secondary)] p-4 rounded-lg border border-[var(--border-color)]">
-                     <div>
-                        <span class="block text-xs text-[var(--text-secondary)] uppercase tracking-wider mb-0.5">SKU</span>
-                        <span class="font-mono text-sm text-[var(--text-main)] select-all">${item.sku || 'N/A'}</span>
-                     </div>
-                     <div>
-                        <span class="block text-xs text-[var(--text-secondary)] uppercase tracking-wider mb-0.5">UPC</span>
-                        <span class="font-mono text-sm text-[var(--text-main)] select-all">${item.upc || 'N/A'}</span>
-                     </div>
-                     <div>
-                        <span class="block text-xs text-[var(--text-secondary)] uppercase tracking-wider mb-0.5">MSRP</span>
-                        <span class="font-mono text-sm text-[var(--text-main)]">${msrpText}</span>
-                     </div>
-                     <div>
-                        <span class="block text-xs text-[var(--text-secondary)] uppercase tracking-wider mb-0.5">Size / Type</span>
-                        <span class="text-sm text-[var(--text-main)]">${item.size || '-'} / ${item.type || '-'}</span>
-                     </div>
-                     <div>
-                        <span class="block text-xs text-[var(--text-secondary)] uppercase tracking-wider mb-0.5">Gender</span>
-                        <span class="text-sm text-[var(--text-main)]">${item.gender || '-'}</span>
-                     </div>
-                     <div>
-                        <span class="block text-xs text-[var(--text-secondary)] uppercase tracking-wider mb-0.5">Category</span>
-                        <span class="text-sm text-[var(--text-main)]">${item.category || '-'}</span>
-                     </div>
-                </div>
-                
-                <div class="flex-grow">
-                    <h3 class="text-sm font-bold text-[var(--text-main)] mb-2">Description</h3>
-                    <div class="text-sm text-[var(--text-secondary)] leading-relaxed max-h-32 overflow-y-auto pr-2 custom-scrollbar">
-                        ${item.description || 'No description provided.'}
+                <!-- Info -->
+                <div class="w-full md:w-2/3 lg:w-3/4 flex flex-col">
+                    <h2 class="text-xl font-bold text-[var(--text-main)] mb-1.5 leading-tight tracking-tight">${item.itemName || 'N/A'}</h2>
+                    <p class="text-xs text-[var(--text-secondary)] mb-6">by <span class="font-semibold text-[var(--text-main)]">${item.brand || 'Unknown Brand'}</span></p>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-y-4 gap-x-2 text-xs mb-6 border-y border-[var(--border-color)] py-4">
+                         <div>
+                            <span class="block text-[10px] text-[var(--text-secondary)] uppercase tracking-wider mb-1">SKU</span>
+                            <span class="font-mono text-[var(--text-main)] select-all">${item.sku || 'N/A'}</span>
+                         </div>
+                         <div>
+                            <span class="block text-[10px] text-[var(--text-secondary)] uppercase tracking-wider mb-1">UPC</span>
+                            <span class="font-mono text-[var(--text-main)] select-all">${item.upc || 'N/A'}</span>
+                         </div>
+                         <div>
+                            <span class="block text-[10px] text-[var(--text-secondary)] uppercase tracking-wider mb-1">Size / Type</span>
+                            <span class="text-[var(--text-main)]">${item.size || '-'} / ${item.type || '-'}</span>
+                         </div>
+                         <div>
+                            <span class="block text-[10px] text-[var(--text-secondary)] uppercase tracking-wider mb-1">Gender</span>
+                            <span class="text-[var(--text-main)]">${item.gender || '-'}</span>
+                         </div>
+                         <div>
+                            <span class="block text-[10px] text-[var(--text-secondary)] uppercase tracking-wider mb-1">Category</span>
+                            <span class="text-[var(--text-main)]">${item.category || '-'}</span>
+                         </div>
+                         <div>
+                            <span class="block text-[10px] text-[var(--text-secondary)] uppercase tracking-wider mb-1">MSRP</span>
+                            <span class="font-mono text-[var(--text-main)]">${msrpText}</span>
+                         </div>
+                    </div>
+                    
+                    <div class="flex-grow">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] mb-2">Description</h3>
+                        <div class="text-[11px] text-[var(--text-secondary)] leading-relaxed max-h-32 overflow-y-auto pr-2 custom-scrollbar">
+                            ${item.description || '<span class="italic opacity-50">No description provided.</span>'}
+                        </div>
                     </div>
                 </div>
             </div>
-          </div>
-          
-          <!-- Table Section -->
-          <div class="border-t border-[var(--border-color)] bg-[var(--bg-secondary)]/30">
-            <div class="p-4 md:p-6">
-                <h3 class="text-sm font-bold text-[var(--text-main)] mb-3 flex items-center">
-                    <svg class="w-4 h-4 mr-2 text-[var(--accent-color)]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
-                    Supplier Pricing & Stock
-                </h3>
-                <div class="border border-[var(--border-color)] rounded-lg overflow-hidden">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="bg-[var(--bg-secondary)] text-[var(--text-secondary)] text-xs uppercase tracking-wider">
-                                <th class="p-3 text-left font-medium">Supplier</th>
-                                <th class="p-3 text-center font-medium">Price</th>
-                                <th class="p-3 text-center font-medium">Stock</th>
-                                <th class="p-3 text-center font-medium">Updated</th>
+            
+            <!-- Bottom Table Section -->
+            <div class="w-full flex flex-col bg-[var(--bg-secondary)] flex-1 min-h-[250px]">
+                <div class="p-4 lg:px-8 lg:py-5 border-b border-[var(--border-color)] bg-[var(--bg-main)]">
+                    <h3 class="text-sm font-semibold tracking-tight text-[var(--text-main)] flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+                        Supplier Matrix
+                    </h3>
+                </div>
+                <div class="flex-1 overflow-auto bg-[var(--bg-secondary)] custom-scrollbar">
+                    <table class="w-full text-left">
+                        <thead class="sticky top-0 bg-[var(--bg-main)] backdrop-blur-md z-10 border-b border-[var(--border-color)]">
+                            <tr>
+                                <th class="px-4 lg:px-8 py-3 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider">Supplier</th>
+                                <th class="px-4 lg:px-8 py-3 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider text-right">Price</th>
+                                <th class="px-4 lg:px-8 py-3 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider text-right">Stock</th>
+                                <th class="px-4 lg:px-8 py-3 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider text-right">Updated</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-[var(--border-color)] bg-[var(--card-bg)]">
+                        <tbody class="divide-y divide-[var(--border-color)] bg-[var(--bg-secondary)]">
                             ${suppliersHtml}
                         </tbody>
                     </table>
@@ -1573,10 +1585,10 @@
     
     function closeModal() {
         itemModal.classList.add('opacity-0');
-        modalContent.classList.add('opacity-0', 'scale-95');
+        modalContent.classList.add('opacity-0', 'scale-[0.98]');
         setTimeout(() => {
             itemModal.classList.add('hidden');
-        }, 300);
+        }, 200);
     }
 
     resultsContainer.addEventListener('click', handleItemClick);
