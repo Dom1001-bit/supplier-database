@@ -1,1603 +1,653 @@
 <!DOCTYPE html>
-<html class="dark">
+<html lang="en" class="dark">
 <head>
-  <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Supplier Database</title>
   <link rel="icon" type="image/png" href="https://i.imgur.com/U4WPjmA.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Libraries for Inventory Tool -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <!-- Auth styles -->
   <style>
-    :root {
-        /* Dark Mode (Default) - Sleek Zinc Palette */
-        --bg-main: #09090b;       /* zinc-950 */
-        --bg-secondary: #18181b;  /* zinc-900 */
-        --bg-glass: rgba(9, 9, 11, 0.75);
-        --text-main: #fafafa;     /* zinc-50 */
-        --text-secondary: #a1a1aa; /* zinc-400 */
-        --border-color: #27272a;  /* zinc-800 */
-        --accent-color: #ffffff;  /* High contrast white */
-        --accent-hover: #e4e4e7;  /* zinc-200 */
-        --accent-text: #09090b;   /* For text inside accent buttons */
-        --card-bg: #09090b;       /* zinc-950 */
-        --input-bg: #18181b;      /* zinc-900 */
-        --ring-color: rgba(255, 255, 255, 0.15);
+    /* ── Messages ───────────────────────────────────────────── */
+    .auth-msg { padding:.5rem .875rem; border-radius:var(--radius-sm); font-size:.75rem; font-weight:500; margin-bottom:1rem; }
+    .auth-msg.error  { background:var(--red-bg);   color:var(--red);   border:1px solid rgba(239,68,68,.2); }
+    .auth-msg.success{ background:var(--green-bg); color:var(--green); border:1px solid rgba(16,185,129,.2); }
+
+    /* ── Full-screen split layout ───────────────────────────── */
+    #auth-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      background: var(--bg-main);
     }
 
-    html.light-mode {
-        /* Light Mode - Sleek Monochromatic */
-        --bg-main: #fbfbfb;       /* Very light gray/white */
-        --bg-secondary: #ffffff;  /* white */
-        --bg-glass: rgba(255, 255, 255, 0.85);
-        --text-main: #09090b;     /* zinc-950 */
-        --text-secondary: #71717a; /* zinc-500 */
-        --border-color: #e4e4e7;  /* zinc-200 */
-        --accent-color: #09090b;  /* True black */
-        --accent-hover: #27272a;  /* zinc-800 */
-        --accent-text: #ffffff;   /* For text inside accent buttons */
-        --card-bg: #ffffff;       /* white */
-        --input-bg: #ffffff;      /* white */
-        --ring-color: rgba(0, 0, 0, 0.1);
+    /* ── Left panel — branding ──────────────────────────────── */
+    .auth-left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 3rem;
+      background: linear-gradient(145deg, #080e1a 0%, #0d1628 45%, #0f1e3a 100%);
+      border-right: 1px solid rgba(79,142,247,0.12);
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-left::before {
+      content: '';
+      position: absolute;
+      top: -140px; left: -140px;
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, rgba(79,142,247,.1) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .auth-left::after {
+      content: '';
+      position: absolute;
+      bottom: -100px; right: -80px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(79,142,247,.06) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .auth-brand-logo {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      position: relative;
+      z-index: 1;
+    }
+    .auth-brand-logo img {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: var(--radius-md);
+    }
+    .auth-brand-logo-text {
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: .04em;
+      color: #fff;
+      text-transform: uppercase;
+    }
+    .auth-left-body {
+      position: relative;
+      z-index: 1;
+    }
+    .auth-left-headline {
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -.03em;
+      color: #e6edf3;
+      margin-bottom: 1rem;
+    }
+    .auth-left-headline span {
+      background: linear-gradient(90deg, #7ab3ff 0%, #4f8ef7 50%, rgba(79,142,247,.5));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .auth-left-sub {
+      font-size: .9375rem;
+      color: rgba(180,200,230,.55);
+      line-height: 1.6;
+      margin-bottom: 2rem;
+      max-width: 380px;
+    }
+    .auth-feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: .875rem;
+    }
+    .auth-feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+    }
+    .auth-feature-icon {
+      flex-shrink: 0;
+      width: 2rem;
+      height: 2rem;
+      border-radius: var(--radius-md);
+      background: rgba(79,142,247,.12);
+      border: 1px solid rgba(79,142,247,.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: .0625rem;
+    }
+    .auth-feature-icon svg {
+      width: 1rem;
+      height: 1rem;
+      color: #7ab3ff;
+    }
+    .auth-feature-text strong {
+      display: block;
+      font-size: .875rem;
+      font-weight: 600;
+      color: rgba(220,235,255,.9);
+      margin-bottom: .125rem;
+    }
+    .auth-feature-text span {
+      font-size: .8125rem;
+      color: rgba(150,180,220,.45);
+      line-height: 1.4;
+    }
+    .auth-left-footer {
+      position: relative;
+      z-index: 1;
+      font-size: .75rem;
+      color: rgba(79,142,247,.35);
+    }
+    .auth-brand-logo-text {
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: .04em;
+      color: #e6edf3;
+      text-transform: uppercase;
     }
 
-    body { 
-        font-family: 'Inter', sans-serif; 
-        background-color: var(--bg-main);
-        color: var(--text-main);
-        transition: background-color 0.3s ease, color 0.3s ease;
-        font-size: 0.875rem;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
+    .auth-right {
+      width: 480px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2.5rem;
+      background: var(--bg-main);
+      overflow-y: auto;
     }
-    
-    .glass-effect {
-        background-color: var(--bg-glass);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
+    .auth-form-wrap {
+      width: 100%;
+      max-width: 380px;
+    }
+    .auth-form-logo {
+      display: flex;
+      align-items: center;
+      gap: .625rem;
+      margin-bottom: 2rem;
+    }
+    .auth-form-logo img {
+      width: 2rem;
+      height: 2rem;
+      border-radius: var(--radius-sm);
+    }
+    .auth-form-logo-text {
+      font-size: .875rem;
+      font-weight: 700;
+      letter-spacing: .03em;
+      color: var(--text-main);
+      text-transform: uppercase;
+    }
+    .auth-form-heading {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -.025em;
+      color: var(--text-main);
+      margin-bottom: .375rem;
+    }
+    .auth-form-sub {
+      font-size: .875rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.75rem;
+      line-height: 1.5;
+    }
+    /* ── Divider ─────────────────────────────────────────── */
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      margin: 1.25rem 0;
+      color: var(--text-muted);
+      font-size: .75rem;
+    }
+    .auth-divider::before,
+    .auth-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-color);
+    }
+    /* ── Access note ───────────────────────────────────── */
+    .auth-access-note {
+      margin-top: 1.5rem;
+      padding: .875rem 1rem;
+      background: rgba(79,142,247,.05);
+      border: 1px solid rgba(79,142,247,.15);
+      border-radius: var(--radius-md);
+      font-size: .75rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .auth-access-note strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ── Responsive: stack on small screens ─────────────────── */
+    @media (max-width: 768px) {
+      #auth-screen { flex-direction: column; }
+      .auth-left {
+        flex: none;
+        padding: 2rem 1.5rem 1.75rem;
+        border-right: none;
         border-bottom: 1px solid var(--border-color);
-    }
-
-    /* Clean Abstract Background for Login */
-    .auth-bg {
-        background-color: var(--bg-main);
-        background-image: 
-            radial-gradient(circle at 0% 0%, rgba(255,255,255,0.03) 0%, transparent 50%), 
-            radial-gradient(circle at 100% 100%, rgba(255,255,255,0.03) 0%, transparent 50%);
-    }
-    
-    html.light-mode .auth-bg {
-        background-image: 
-            radial-gradient(circle at 0% 0%, rgba(0,0,0,0.02) 0%, transparent 50%), 
-            radial-gradient(circle at 100% 100%, rgba(0,0,0,0.02) 0%, transparent 50%);
-    }
-
-    .loader { 
-        border: 2px solid var(--border-color); 
-        border-top: 2px solid var(--text-main); 
-        border-radius: 50%; 
-        width: 20px; 
-        height: 20px; 
-        animation: spin 0.6s linear infinite; 
-    }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    
-    .skeleton-card { 
-        background-color: var(--card-bg); 
-        border-radius: 0.5rem; 
-        overflow: hidden; 
-        border: 1px solid var(--border-color); 
-    }
-    .skeleton-image { background-color: var(--border-color); opacity: 0.3; height: 10rem; }
-    .skeleton-text { background-color: var(--border-color); opacity: 0.3; height: 0.75rem; margin-bottom: 0.5rem; border-radius: 0.25rem; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
-    .skeleton-card, .skeleton-image, .skeleton-text { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-
-    .result-card { 
-        opacity: 0; 
-        transform: translateY(8px); 
-        animation: card-fade-in 0.4s ease-out forwards; 
-        background-color: var(--card-bg);
-        border: 1px solid var(--border-color);
-        display: flex;
-        flex-direction: column;
-        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-    .result-card:hover { 
-        transform: translateY(-2px); 
-        border-color: var(--text-secondary);
-        box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.15);
-    }
-    @keyframes card-fade-in { to { opacity: 1; transform: translateY(0); } }
-    
-    .nav-tab {
-        position: relative;
-        color: var(--text-secondary);
-        transition: all 0.2s ease;
-        border-radius: 0.375rem;
-    }
-    .nav-tab:hover { color: var(--text-main); background-color: var(--bg-secondary); }
-    .nav-tab.active { 
-        color: var(--text-main); 
-        background-color: var(--bg-secondary); 
-        font-weight: 500;
-        border: 1px solid var(--border-color);
-    }
-    
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 0.375rem;
-        font-size: 0.8125rem; /* Sleeker 13px */
-        font-weight: 500;
-        transition: all 0.15s ease;
-    }
-    .btn:active { transform: scale(0.98); }
-    
-    .btn-primary {
-        background-color: var(--accent-color);
-        color: var(--accent-text);
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    .btn-primary:hover { 
-        background-color: var(--accent-hover); 
-    }
-
-    .btn-secondary {
-        background-color: var(--bg-secondary);
-        color: var(--text-main);
-        border: 1px solid var(--border-color);
-    }
-    .btn-secondary:hover {
-        border-color: var(--text-secondary);
-    }
-    
-    input, select, textarea { 
-        background-color: var(--input-bg); 
-        color: var(--text-main); 
-        border: 1px solid var(--border-color);
-        border-radius: 0.375rem;
-        font-size: 0.8125rem; /* Compact 13px */
-        transition: all 0.15s ease;
-    }
-    input:focus, select:focus, textarea:focus {
-        outline: none;
-        border-color: var(--text-secondary);
-        box-shadow: 0 0 0 2px var(--ring-color);
-    }
-    
-    /* Sleek Scrollbar */
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
-
-    .text-green-custom { color: #10b981; }
-    html.light-mode .text-green-custom { color: #059669; }
-
-    /* Custom highlight color for search inputs */
-    ::selection {
-        background-color: var(--text-secondary);
-        color: var(--bg-main);
+      }
+      .auth-left-headline { font-size: 1.375rem; }
+      .auth-feature-list { display: none; }
+      .auth-left-footer { display: none; }
+      .auth-right {
+        width: 100%;
+        padding: 2rem 1.5rem;
+      }
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
 
-  <!-- Authentication Container -->
-  <div id="auth-container" class="fixed inset-0 z-50 flex items-center justify-center p-4 auth-bg">
-    <div class="max-w-sm w-full bg-[var(--bg-secondary)]/80 backdrop-blur-xl border border-[var(--border-color)] p-8 rounded-xl shadow-2xl">
-      <div class="text-center mb-8">
-          <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--bg-main)] border border-[var(--border-color)] shadow-sm mb-4">
-              <img src="https://i.imgur.com/U4WPjmA.png" alt="Logo" class="h-6 w-auto"/>
+<!-- ─── Auth Screen ─────────────────────────────────────────────── -->
+<div id="auth-screen">
+
+  <!-- LEFT PANEL — Branding -->
+  <div class="auth-left">
+    <!-- Top: Logo -->
+    <div class="auth-brand-logo">
+      <img src="https://i.imgur.com/U4WPjmA.png" alt="Logo">
+      <span class="auth-brand-logo-text">Supplier DB</span>
+    </div>
+
+    <!-- Middle: Headline + features -->
+    <div class="auth-left-body">
+      <h1 class="auth-left-headline">
+        <span>One platform for</span><br>
+        your entire supply chain.
+      </h1>
+      <p class="auth-left-sub">
+        Access a centralized product database across all your suppliers — search by UPC, brand, or category, compare pricing, and build quotes in seconds.
+      </p>
+
+      <div class="auth-feature-list">
+        <div class="auth-feature-item">
+          <div class="auth-feature-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
           </div>
-          <h2 id="auth-title" class="text-xl font-semibold tracking-tight text-[var(--text-main)]">Welcome Back</h2>
-          <p id="auth-subtitle" class="text-xs text-[var(--text-secondary)] mt-1">Sign in to access the database</p>
+          <div class="auth-feature-text">
+            <strong>30,000+ SKUs in one place</strong>
+            <span>Browse the full catalog across all suppliers with instant filtering by brand, category, and stock status.</span>
+          </div>
+        </div>
+        <div class="auth-feature-item">
+          <div class="auth-feature-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          </div>
+          <div class="auth-feature-text">
+            <strong>Instant quote building</strong>
+            <span>Add products to your quote cart, adjust quantities, and submit directly — pre-filled with your company info.</span>
+          </div>
+        </div>
+        <div class="auth-feature-item">
+          <div class="auth-feature-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+          <div class="auth-feature-text">
+            <strong>UPC &amp; bulk search</strong>
+            <span>Look up individual items by UPC, SKU, or name — or paste up to 500 UPCs at once for bulk lookup.</span>
+          </div>
+        </div>
+        <div class="auth-feature-item">
+          <div class="auth-feature-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div class="auth-feature-text">
+            <strong>Real-time inventory &amp; pricing</strong>
+            <span>See live stock levels and supplier prices side-by-side so you always order from the best source.</span>
+          </div>
+        </div>
       </div>
-      
-      <div id="auth-message" class="hidden px-3 py-2 rounded-md mb-5 text-xs font-medium bg-red-500/10 text-red-500 border border-red-500/20"></div>
+    </div>
 
-      <!-- Login Forms -->
-      <form id="login-form" class="space-y-4">
-        <div>
-          <label class="block text-[11px] font-medium uppercase tracking-wider text-[var(--text-secondary)] mb-1.5">Email</label>
-          <input type="email" id="email" required class="w-full p-2">
-        </div>
-        <div>
-          <label class="block text-[11px] font-medium uppercase tracking-wider text-[var(--text-secondary)] mb-1.5">Password</label>
-          <input type="password" id="password" required class="w-full p-2">
-        </div>
-        <div class="flex justify-end pt-1">
-            <button type="button" id="show-forgot-password-btn" class="text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors">Forgot Password?</button>
-        </div>
-        <button type="submit" id="login-btn" class="btn btn-primary w-full py-2 mt-2">Sign In</button>
-        <div class="text-center mt-6">
-            <button type="button" id="show-signup-btn" class="text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors">Create an account</button>
-        </div>
-      </form>
-
-      <form id="signup-form" class="hidden space-y-4">
-        <div>
-          <label class="block text-[11px] font-medium uppercase tracking-wider text-[var(--text-secondary)] mb-1.5">Email</label>
-          <input type="email" id="signup-email" required class="w-full p-2">
-        </div>
-        <div>
-          <label class="block text-[11px] font-medium uppercase tracking-wider text-[var(--text-secondary)] mb-1.5">Password (min 6 chars)</label>
-          <input type="password" id="signup-password" required class="w-full p-2">
-        </div>
-        <button type="submit" id="signup-btn" class="btn btn-primary w-full py-2 mt-2">Create Account</button>
-        <div class="text-center mt-6">
-            <button type="button" id="show-login-btn-from-signup" class="text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors">Back to Login</button>
-        </div>
-      </form>
-      
-      <form id="forgot-password-form" class="hidden space-y-4">
-        <div>
-            <label class="block text-[11px] font-medium uppercase tracking-wider text-[var(--text-secondary)] mb-1.5">Email</label>
-            <input type="email" id="reset-email" required class="w-full p-2">
-        </div>
-        <button type="submit" id="reset-password-btn" class="btn btn-primary w-full py-2 mt-2">Send Reset Link</button>
-        <div class="text-center mt-6">
-            <button type="button" id="show-login-btn-from-forgot" class="text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors">Back to Login</button>
-        </div>
-      </form>
+    <!-- Bottom: Footer note -->
+    <div class="auth-left-footer">
+      &copy; 2025 Supplier Database &mdash; Authorized access only
     </div>
   </div>
 
-  <!-- Main Application Container -->
-  <div id="main-app-container" class="hidden flex-1 flex flex-col">
-    <!-- Compact Header -->
-    <header class="sticky top-0 z-40 w-full glass-effect h-12 border-b border-[var(--border-color)]">
-      <div class="max-w-[1600px] mx-auto px-4 h-full flex items-center justify-between">
-        <!-- Logo -->
-        <div class="flex items-center space-x-3">
-          <img src="https://i.imgur.com/U4WPjmA.png" alt="Logo" class="h-5 w-auto opacity-90"/>
-          <span class="hidden sm:block text-xs font-semibold tracking-tight">SUPPLIER DB</span>
-        </div>
-        
-        <!-- Compact Nav -->
-        <nav class="hidden md:flex items-center space-x-1 p-1 bg-[var(--bg-main)] border border-[var(--border-color)] rounded-md">
-          <button id="tab-database" class="nav-tab active px-3 py-1 text-[11px] tracking-wide">Database</button>
-          <button id="tab-inventory-nexus" class="nav-tab px-3 py-1 text-[11px] tracking-wide">Inventory Nexus</button>
-          <button id="tab-api-docs" class="nav-tab px-3 py-1 text-[11px] tracking-wide">API Docs</button>
-          <button id="tab-api-key" class="nav-tab px-3 py-1 text-[11px] tracking-wide">API Key</button>
-        </nav>
+  <!-- RIGHT PANEL — Auth forms -->
+  <div class="auth-right">
+    <div class="auth-form-wrap">
 
-        <!-- Tools -->
-        <div class="flex items-center space-x-3">
-          <button id="theme-toggle-btn" class="p-1 rounded text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:bg-[var(--bg-secondary)] transition-colors">
-              <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-              <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-          </button>
-          <div class="h-3 w-px bg-[var(--border-color)] mx-1"></div>
-          <span id="user-email-display" class="hidden sm:block text-[11px] text-[var(--text-secondary)] truncate max-w-[150px]"></span>
-          <button id="logout-btn" class="text-[11px] font-medium text-red-500 hover:text-red-400 ml-2 transition-colors">Logout</button>
-        </div>
+      <!-- Mobile-only mini logo (hidden on desktop, shown on mobile) -->
+      <div class="auth-form-logo" style="display:none" id="auth-mobile-logo">
+        <img src="https://i.imgur.com/U4WPjmA.png" alt="Logo">
+        <span class="auth-form-logo-text">Supplier DB</span>
       </div>
-      
-      <!-- Mobile Nav -->
-      <div class="md:hidden border-b border-[var(--border-color)] flex justify-around p-1 bg-[var(--bg-main)]">
-          <button id="mobile-tab-database" class="nav-tab active flex-1 py-1.5 text-[10px] uppercase tracking-wider">Database</button>
-          <button id="mobile-tab-inventory-nexus" class="nav-tab flex-1 py-1.5 text-[10px] uppercase tracking-wider">Nexus</button>
-          <button id="mobile-tab-api-docs" class="nav-tab flex-1 py-1.5 text-[10px] uppercase tracking-wider">Docs</button>
-          <button id="mobile-tab-api-key" class="nav-tab flex-1 py-1.5 text-[10px] uppercase tracking-wider">Key</button>
-      </div>
-    </header>
 
-    <!-- Main Content -->
-    <main class="flex-1 max-w-[1600px] w-full mx-auto p-4 md:p-6 lg:p-8">
-      <div id="tab-content-container">
-        
-        <!-- Database Tab -->
-        <div id="database-tab-content" class="tab-content">
-          
-          <!-- Compact Search Bar -->
-          <div class="bg-[var(--bg-secondary)] border border-[var(--border-color)] p-3 rounded-lg shadow-sm mb-6 flex flex-col md:flex-row items-center gap-2">
-            <div class="flex-grow w-full relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-3.5 w-3.5 text-[var(--text-secondary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                </div>
-                <input type="text" id="search-input" placeholder="Search by UPC, Name, Brand..." class="w-full pl-8 py-1.5 bg-transparent border-none focus:ring-0 text-[13px]">
-            </div>
-            <div class="h-6 w-px bg-[var(--border-color)] hidden md:block"></div>
-            <div class="w-full md:w-32">
-                <select id="search-type" class="w-full py-1.5 px-2 bg-transparent border-none focus:ring-0 text-[12px] text-[var(--text-secondary)] cursor-pointer">
-                    <option value="upc" selected>UPC</option>
-                    <option value="itemName_lowercase">Name</option>
-                    <option value="brand">Brand</option>
-                    <option value="sku">SKU</option>
-                </select>
-            </div>
-            <div class="flex gap-2 w-full md:w-auto mt-2 md:mt-0">
-                <button id="search-btn" class="btn btn-primary px-4 py-1.5 flex-1 md:flex-none">Search</button>
-                <button id="browse-all-btn" class="btn btn-secondary px-3 py-1.5 whitespace-nowrap flex-1 md:flex-none">All</button>
-            </div>
-          </div>
-          
-          <!-- Tools Bar -->
-          <div class="mb-4 flex flex-wrap items-center justify-between gap-3 text-xs">
-              <div class="flex items-center gap-2">
-                   <button id="filter-suppliers-btn" class="btn btn-secondary py-1 px-2.5 text-[11px] bg-transparent border-dashed">
-                      <svg class="w-3 h-3 mr-1.5 text-[var(--text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-                      Filter Suppliers
-                   </button>
-                   <button id="export-csv-btn" class="btn py-1 px-2.5 text-[11px] text-green-600 bg-green-500/10 hover:bg-green-500/20 transition-colors">
-                      <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                      Export CSV
-                   </button>
-              </div>
-              <details class="w-full md:w-auto relative group">
-                  <summary class="list-none cursor-pointer text-[11px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors flex items-center">
-                      Advanced Bulk Search
-                      <svg class="w-3 h-3 ml-1 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                  </summary>
-                  <div class="absolute right-0 mt-2 w-72 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg shadow-xl p-3 z-20">
-                      <textarea id="upc-list-input" rows="4" class="w-full text-[11px] p-2 mb-2 bg-[var(--input-bg)] border border-[var(--border-color)] rounded resize-none" placeholder="Paste UPCs (one per line)"></textarea>
-                      <button id="search-list-btn" class="btn btn-primary w-full py-1.5 text-[11px]">Search List</button>
-                  </div>
-              </details>
-          </div>
+      <!-- Dynamic heading -->
+      <div id="auth-title" class="auth-form-heading">Welcome back</div>
+      <div id="auth-subtitle" class="auth-form-sub">Sign in to access your supplier database.</div>
 
-          <!-- Loading State -->
-          <div id="loader-container" class="hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4"></div>
-          <div id="export-loader" class="flex justify-center items-center py-12 hidden">
-             <div class="loader mr-3"></div>
-             <p class="text-xs text-[var(--text-secondary)] font-medium">Generating Matrix CSV...</p>
-          </div>
-          
-          <!-- Error State -->
-          <div id="error-display" class="hidden bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 rounded-lg mb-6 text-xs flex items-center">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            <span id="error-message">Error</span>
-          </div>
+      <div id="auth-message" class="auth-msg error hidden"></div>
 
-          <!-- Results Grid -->
-          <div id="results-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4"></div>
-          
-          <!-- No Results -->
-          <div id="no-results" class="text-center py-24 text-[var(--text-secondary)] hidden">
-            <div class="inline-flex items-center justify-center w-12 h-12 rounded-full border border-[var(--border-color)] bg-[var(--bg-secondary)] mb-4">
-              <svg class="h-5 w-5 text-[var(--text-secondary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-            </div>
-            <h3 id="no-results-title" class="text-sm font-semibold text-[var(--text-main)]">No Products Found</h3>
-            <p id="no-results-subtitle" class="text-xs mt-1 mb-5">Adjust your search terms or filters.</p>
-            <button id="no-results-browse-btn" class="btn btn-secondary px-5 py-1.5 text-xs">Clear Search</button>
-          </div>
+      <!-- ── Login form ── -->
+      <form id="login-form">
+        <div class="form-group">
+          <label>Email address</label>
+          <input type="email" id="auth-email" autocomplete="email" required placeholder="you@company.com">
+        </div>
+        <div class="form-group" style="margin-bottom:.5rem">
+          <label>Password</label>
+          <input type="password" id="auth-password" autocomplete="current-password" required placeholder="••••••••">
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-bottom:1.25rem">
+          <button type="button" id="show-forgot-btn" class="btn btn-ghost btn-sm" style="font-size:.75rem;padding:.25rem .375rem;color:var(--text-secondary)">Forgot password?</button>
+        </div>
+        <button type="submit" id="login-btn" class="btn btn-primary w-full" style="height:2.625rem;font-size:.9375rem;font-weight:600">Sign In</button>
 
-          <!-- Pagination -->
-          <div id="pagination-container" class="mt-8 flex justify-center items-center space-x-2"></div>
+        <div class="auth-divider">or</div>
+
+        <div style="text-align:center">
+          <span style="font-size:.8125rem;color:var(--text-secondary)">Don't have an account?</span>
+          <button type="button" id="show-signup-btn" class="btn btn-ghost btn-sm" style="font-size:.8125rem;font-weight:600;color:var(--text-main);padding:.25rem .375rem">Request access</button>
         </div>
 
-        <!-- Inventory Nexus Tab Content -->
-        <div id="inventory-nexus-tab-content" class="tab-content hidden">
-            <div class="border border-[var(--border-color)] bg-[var(--bg-secondary)] rounded-xl p-10 max-w-3xl mx-auto text-center shadow-sm">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[var(--bg-main)] border border-[var(--border-color)] mb-6 shadow-sm">
-                   <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[var(--text-main)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                   </svg>
-                </div>
-                <h2 class="text-2xl font-bold tracking-tight mb-3 text-[var(--text-main)]">Inventory Nexus</h2>
-                <p class="text-sm text-[var(--text-secondary)] mb-10 max-w-xl mx-auto leading-relaxed">
-                    A powerful extension to streamline inventory management. Upload custom files, map data columns, and consolidate information efficiently.
-                </p>
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10 text-left max-w-2xl mx-auto">
-                    <div class="p-5 rounded-lg bg-[var(--bg-main)] border border-[var(--border-color)]">
-                        <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-main)] mb-2 flex items-center">
-                            <svg class="w-4 h-4 mr-2 text-green-custom" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                            Upload & Map
-                        </h3>
-                        <p class="text-[11px] text-[var(--text-secondary)] leading-relaxed">Seamlessly upload CSV/Excel files and dynamically map columns to specific fields.</p>
-                    </div>
-                    <div class="p-5 rounded-lg bg-[var(--bg-main)] border border-[var(--border-color)]">
-                        <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-main)] mb-2 flex items-center">
-                            <svg class="w-4 h-4 mr-2 text-[var(--text-main)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                            Bulk Extraction
-                        </h3>
-                        <p class="text-[11px] text-[var(--text-secondary)] leading-relaxed">Perform rapid bulk UPC searches against uploaded datasets instantly.</p>
-                    </div>
-                </div>
-
-                <a href="https://inventorynexus.brnddirect.com/" target="_blank" class="inline-flex items-center justify-center px-6 py-3 text-xs font-medium transition-all duration-200 bg-[var(--accent-color)] text-[var(--accent-text)] rounded-md shadow-sm hover:opacity-90">
-                    Launch Nexus Environment
-                    <svg class="w-4 h-4 ml-2 -mr-1 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                </a>
-            </div>
+        <div class="auth-access-note">
+          <strong>🔒 Invite-only access</strong><br>
+          This platform is restricted to authorized users only. Contact your account manager to request access.
         </div>
+      </form>
 
-        <!-- API Docs Tab -->
-        <div id="api-docs-tab-content" class="tab-content hidden">
-            <div class="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl p-6 md:p-10 max-w-3xl mx-auto shadow-sm">
-                <h2 class="text-xl font-bold tracking-tight mb-2">API Documentation</h2>
-                <p class="text-xs text-[var(--text-secondary)] mb-8 pb-6 border-b border-[var(--border-color)]">Integrate your system directly with live inventory data via REST.</p>
-                
-                <div class="space-y-8">
-                  <div>
-                    <h3 class="text-xs font-semibold uppercase tracking-wider mb-3">Authentication</h3>
-                    <pre class="rounded-md p-3 bg-[var(--bg-main)] border border-[var(--border-color)] overflow-x-auto text-[11px] font-mono text-[var(--text-main)]">Authorization: Bearer YOUR_API_KEY</pre>
-                  </div>
-
-                  <div>
-                    <h3 class="text-xs font-semibold uppercase tracking-wider mb-3">Base URL</h3>
-                    <pre class="rounded-md p-3 bg-[var(--bg-main)] border border-[var(--border-color)] overflow-x-auto text-[11px] font-mono text-[var(--text-main)]">https://supplier-api-977359606390.us-central1.run.app</pre>
-                  </div>
-
-                  <div>
-                    <h3 class="text-xs font-semibold uppercase tracking-wider mb-3 flex items-center justify-between">
-                        Endpoints
-                        <span class="bg-[var(--bg-main)] border border-[var(--border-color)] px-2 py-0.5 rounded text-[10px] lowercase normal-case">GET /</span>
-                    </h3>
-                    <ul class="list-disc list-inside space-y-1.5 text-xs text-[var(--text-secondary)] ml-1">
-                        <li><code class="text-[var(--text-main)] bg-[var(--bg-main)] px-1 rounded">limit</code> (max: 250)</li>
-                        <li><code class="text-[var(--text-main)] bg-[var(--bg-main)] px-1 rounded">sku</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] px-1 rounded">upc</code> (Exact match filter)</li>
-                        <li><code class="text-[var(--text-main)] bg-[var(--bg-main)] px-1 rounded">cursor</code> (Pagination)</li>
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h3 class="text-xs font-semibold uppercase tracking-wider mb-3">Response Format</h3>
-                    <div class="grid gap-4 md:grid-cols-2">
-                      <div>
-                        <p class="text-[11px] mb-2 text-[var(--text-secondary)]">General Browsing:</p>
-                        <pre class="rounded-md p-3 bg-[var(--bg-main)] border border-[var(--border-color)] overflow-x-auto text-[10px] font-mono text-[var(--text-secondary)]">{
-  "meta": {
-    "rate_limit_remaining": 299,
-    "per_page": 250,
-    "next_page_cursor": "..." 
-  },
-  "data": [ ... ]
-}</pre>
-                      </div>
-                      <div>
-                        <p class="text-[11px] mb-2 text-[var(--text-secondary)]">Filtered (SKU/UPC):</p>
-                        <pre class="rounded-md p-3 bg-[var(--bg-main)] border border-[var(--border-color)] overflow-x-auto text-[10px] font-mono text-[var(--text-secondary)]">{
-  "meta": {
-    "rate_limit_remaining": 298,
-    "total": 1,
-    "per_page": 250
-  },
-  "data": [ ... ]
-}</pre>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 class="text-xs font-semibold uppercase tracking-wider mb-3">Data Fields</h3>
-                    <ul class="list-disc list-inside space-y-1.5 text-xs text-[var(--text-secondary)] ml-1">
-                        <li><code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">sku</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">upc</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">asin</code> (String) - Identifiers</li>
-                        <li><code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">itemName</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">brand</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">size</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">category</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">description</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">imageUrl</code> (String) - Product details</li>
-                        <li><code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">msrp</code> (Number) - Suggested retail price</li>
-                        <li><code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">lastUpdate</code> (Timestamp/String) - Record last updated date</li>
-                        <li><code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">supplier_X_name</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">supplier_X_price</code>, <code class="text-[var(--text-main)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 rounded">supplier_X_inventory</code> - Flattened supplier data (sorted by price)</li>
-                    </ul>
-                  </div>
-
-                  <div class="flex items-center justify-between pt-6 border-t border-[var(--border-color)]">
-                    <h3 class="text-xs font-semibold uppercase tracking-wider">Rate Limit</h3>
-                    <div class="bg-[var(--bg-main)] border border-[var(--border-color)] px-3 py-1 rounded text-xs">
-                        <span class="font-mono text-[var(--text-main)] font-semibold">300</span> req / 24h
-                    </div>
-                  </div>
-                </div>
-            </div>
+      <!-- ── Sign up form ── -->
+      <form id="signup-form" class="hidden">
+        <div class="form-group">
+          <label>Email address</label>
+          <input type="email" id="signup-email" autocomplete="email" required placeholder="you@company.com">
         </div>
-
-        <!-- API Key Tab -->
-        <div id="api-key-tab-content" class="tab-content hidden">
-             <div class="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl p-8 max-w-2xl mx-auto shadow-sm">
-                  <div class="text-center mb-8">
-                    <h2 class="text-xl font-bold tracking-tight mb-1 text-[var(--text-main)]">API Access</h2>
-                    <p class="text-xs text-[var(--text-secondary)]">Manage your secret key for automated integrations.</p>
-                  </div>
-                  
-                  <div id="api-key-loader" class="hidden text-center py-4"><div class="loader inline-block"></div></div>
-                  
-                  <div id="api-key-content" class="hidden">
-                      <div id="api-key-display-area" class="hidden bg-[var(--bg-main)] border border-[var(--border-color)] rounded-lg p-5 mb-8">
-                          <label class="block text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-2">Secret Key</label>
-                          <div class="flex items-center gap-2 mb-2">
-                              <div class="relative flex-grow">
-                                  <input type="password" id="api-key-input" readonly class="w-full pr-10 pl-3 py-2 font-mono text-xs bg-[var(--input-bg)] border border-[var(--border-color)] rounded">
-                                  <button id="toggle-api-key-visibility" class="absolute right-2 top-2 text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors">
-                                      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                  </button>
-                              </div>
-                              <button id="copy-api-key-btn" class="btn btn-secondary px-4 py-2 text-xs">Copy</button>
-                          </div>
-                          <div class="flex justify-between items-center mt-3">
-                              <p id="copy-feedback" class="text-[10px] text-green-500 font-medium hidden">Copied to clipboard!</p>
-                              <button id="revoke-and-generate-btn" class="text-[10px] text-red-500 hover:text-red-400 transition-colors ml-auto">Revoke & Roll Key</button>
-                          </div>
-                      </div>
-
-                      <div id="generate-key-area" class="hidden text-center py-8 bg-[var(--bg-main)] border border-dashed border-[var(--border-color)] rounded-lg mb-8">
-                          <button id="generate-api-key-btn" class="btn btn-primary px-5 py-2.5 text-xs">Generate API Key</button>
-                      </div>
-                  </div>
-                  
-                  <div class="text-left">
-                      <div class="flex justify-between items-end mb-2">
-                          <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">Usage Quota</h3>
-                          <span id="api-usage-text" class="text-[11px] font-mono text-[var(--text-main)]">0 / 300</span>
-                      </div>
-                      <div class="w-full bg-[var(--bg-main)] border border-[var(--border-color)] rounded-full h-1.5 overflow-hidden mb-8">
-                          <div id="api-usage-bar" class="bg-[var(--text-main)] h-full transition-all duration-500" style="width: 0%"></div>
-                      </div>
-
-                      <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] mb-3">Recent Activity</h3>
-                      <div class="border border-[var(--border-color)] rounded-lg overflow-hidden text-[11px] bg-[var(--bg-main)]">
-                          <table class="w-full">
-                              <thead class="bg-[var(--bg-secondary)] border-b border-[var(--border-color)] text-[var(--text-secondary)]">
-                                  <tr><th class="p-2.5 text-left font-medium">Timestamp</th><th class="p-2.5 text-right font-medium">Status</th></tr>
-                              </thead>
-                              <tbody id="recent-calls-tbody" class="divide-y divide-[var(--border-color)]">
-                                  <!-- JS Populated -->
-                              </tbody>
-                          </table>
-                      </div>
-                  </div>
-             </div>
+        <div class="form-group">
+          <label>Password <span style="color:var(--text-muted);font-weight:400">(min 6 characters)</span></label>
+          <input type="password" id="signup-password" autocomplete="new-password" required placeholder="••••••••">
         </div>
-      </div>
-    </main>
-  </div>
-
-  <!-- --- MODALS --- -->
-  
-  <!-- Item Details Modal (Sleek Style) -->
-  <div id="item-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200 ease-out">
-    <div id="modal-overlay" class="absolute inset-0 bg-[var(--bg-main)]/80 backdrop-blur-sm"></div>
-    <div id="modal-content" class="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col relative transform transition-all duration-200 ease-out opacity-0 scale-[0.98] overflow-hidden">
-        <div class="absolute top-0 right-0 p-3 z-10">
-             <button id="modal-close-btn" class="bg-[var(--bg-main)] border border-[var(--border-color)] p-1.5 rounded-md text-[var(--text-secondary)] hover:text-[var(--text-main)] hover:border-[var(--text-secondary)] transition-all">
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
+        <button type="submit" id="signup-btn" class="btn btn-primary w-full" style="height:2.625rem;font-size:.9375rem;font-weight:600">Create Account</button>
+        <div style="text-align:center;margin-top:1.25rem">
+          <button type="button" id="back-login-from-signup" class="btn btn-ghost btn-sm" style="font-size:.8125rem;color:var(--text-secondary)">← Back to Sign In</button>
         </div>
-        <div id="modal-loader" class="flex justify-center items-center p-32"><div class="loader"></div></div>
-        <div id="modal-body" class="hidden overflow-y-auto custom-scrollbar flex-1"></div>
+        <div class="auth-access-note">
+          <strong>🔒 Invite-only</strong><br>
+          Your email must be on the approved list. Contact your account manager if you need access.
+        </div>
+      </form>
+
+      <!-- ── Forgot password form ── -->
+      <form id="forgot-form" class="hidden">
+        <p style="font-size:.875rem;color:var(--text-secondary);margin-bottom:1.5rem;line-height:1.6">
+          Enter your email address and we'll send you a link to reset your password.
+        </p>
+        <div class="form-group">
+          <label>Email address</label>
+          <input type="email" id="reset-email" autocomplete="email" required placeholder="you@company.com">
+        </div>
+        <button type="submit" id="reset-btn" class="btn btn-primary w-full" style="height:2.625rem;font-size:.9375rem;font-weight:600">Send Reset Link</button>
+        <div style="text-align:center;margin-top:1.25rem">
+          <button type="button" id="back-login-from-forgot" class="btn btn-ghost btn-sm" style="font-size:.8125rem;color:var(--text-secondary)">← Back to Sign In</button>
+        </div>
+      </form>
+
     </div>
   </div>
+</div>
 
-  <!-- Image Lightbox -->
-  <div id="image-lightbox" class="fixed inset-0 z-[60] bg-black/95 hidden items-center justify-center backdrop-blur-lg">
-      <button id="lightbox-close-btn" class="absolute top-6 right-6 text-white/50 hover:text-white transition-colors p-2">
-        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" /></svg>
+<!-- ─── App Shell ────────────────────────────────────────────────── -->
+<div id="app" class="hidden">
+
+  <!-- Header -->
+  <header id="app-header">
+    <!-- Logo -->
+    <a href="#home" class="nav-logo">
+      <img src="https://i.imgur.com/U4WPjmA.png" alt="Logo">
+      <span class="nav-logo-text">SUPPLIER DB</span>
+    </a>
+
+    <!-- Desktop Nav -->
+    <nav class="nav-links" id="desktop-nav">
+      <button class="nav-link" data-route="home">Home</button>
+      <button class="nav-link" data-route="catalog">Catalog</button>
+      <button class="nav-link" data-route="favorites">Saved</button>
+      <button class="nav-link" data-route="nexus">Nexus</button>
+    </nav>
+
+    <!-- Header search -->
+    <div class="header-search" id="header-search-wrap">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <input type="text" id="header-search" placeholder="Search products…">
+    </div>
+
+    <!-- Right side tools -->
+    <div style="display:flex;align-items:center;gap:.5rem;margin-left:auto">
+      <!-- Theme toggle -->
+      <button id="theme-toggle-btn" class="icon-btn" title="Toggle theme">
+        <svg id="sun-icon" class="hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:1rem;height:1rem">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+        </svg>
+        <svg id="moon-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:1rem;height:1rem">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+        </svg>
       </button>
-      <img id="lightbox-img" src="" class="max-w-[95vw] max-h-[95vh] object-contain rounded-md shadow-2xl border border-white/10">
+
+      <!-- Cart button -->
+      <button id="cart-header-btn" class="cart-btn" title="Quote Cart" style="position:relative">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:.9375rem;height:.9375rem">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        <span class="hidden" style="display:none" id="cart-btn-label">Quote</span>
+        <span class="cart-badge hidden">0</span>
+      </button>
+
+      <!-- Divider -->
+      <div style="width:1px;height:1.25rem;background:var(--border-color)"></div>
+
+      <!-- Account dropdown button -->
+      <div style="position:relative">
+        <button id="account-menu-btn" class="account-btn" aria-label="Account menu">
+          <div class="account-avatar" id="header-avatar">U</div>
+          <div class="account-info" id="desktop-account-info">
+            <div class="account-name" id="account-btn-name" style="display:none" id="acct-name-display"></div>
+            <div class="account-email" id="header-user-email"></div>
+          </div>
+          <svg class="account-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+
+        <!-- Dropdown -->
+        <div id="account-dropdown" class="account-dropdown hidden">
+          <!-- User header -->
+          <div class="dropdown-header">
+            <div style="display:flex;align-items:center;gap:.75rem">
+              <div class="dropdown-avatar-lg" id="dropdown-avatar">U</div>
+              <div>
+                <div class="dropdown-user-name" id="dropdown-user-name">—</div>
+                <div class="dropdown-user-email" id="dropdown-user-email"></div>
+                <div class="dropdown-company-badge hidden" id="dropdown-company-badge">
+                  <svg style="width:.625rem;height:.625rem" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"/></svg>
+                  <span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Navigation -->
+          <div class="dropdown-section">
+            <div class="dropdown-section-label">Navigate</div>
+            <button id="dd-home" class="dropdown-item">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+              <span class="dropdown-item-label">Home</span>
+            </button>
+            <button id="dd-catalog" class="dropdown-item">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+              <span class="dropdown-item-label">Catalog</span>
+            </button>
+            <button id="dd-favorites" class="dropdown-item">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+              <span class="dropdown-item-label">Saved Products</span>
+            </button>
+            <button id="dd-cart" class="dropdown-item">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+              <span class="dropdown-item-label">Quote Cart</span>
+              <span class="cart-badge hidden" style="position:static;width:auto;height:auto;border-radius:1rem;padding:.125rem .375rem;font-size:.625rem;border:none">0</span>
+            </button>
+          </div>
+
+          <!-- Account -->
+          <div class="dropdown-section">
+            <div class="dropdown-section-label">Account</div>
+            <button id="dd-account" class="dropdown-item">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+              <span class="dropdown-item-label">Profile &amp; Company</span>
+            </button>
+            <button id="dd-apikeys" class="dropdown-item">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+              <span class="dropdown-item-label">API Keys</span>
+            </button>
+            <button id="dd-settings" class="dropdown-item">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span class="dropdown-item-label">Settings</span>
+            </button>
+          </div>
+
+          <!-- Admin (hidden unless admin) -->
+          <div class="dropdown-section hidden" id="dd-admin-wrap">
+            <div class="dropdown-section-label">Admin</div>
+            <button id="dd-admin" class="dropdown-item">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+              <span class="dropdown-item-label">Admin Panel</span>
+              <span class="dropdown-item-badge admin">Admin</span>
+            </button>
+          </div>
+
+          <!-- Logout -->
+          <div class="dropdown-section">
+            <button id="dd-logout" class="dropdown-item danger">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+              <span class="dropdown-item-label">Sign Out</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page content -->
+  <main id="page-view"></main>
+
+  <!-- Mobile bottom nav -->
+  <nav id="mobile-bottom-nav">
+    <button class="mobile-nav-item" data-route="home">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      Home
+    </button>
+    <button class="mobile-nav-item" data-route="catalog">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+      Catalog
+    </button>
+    <button class="mobile-nav-item" data-route="favorites">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+      Saved
+    </button>
+    <button class="mobile-nav-item" data-route="cart" style="position:relative">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      <span class="mobile-nav-badge hidden" id="mobile-cart-badge">0</span>
+      Quote
+    </button>
+    <button class="mobile-nav-item" data-route="account">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      Account
+    </button>
+  </nav>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="hidden">
+    <button id="lightbox-close-btn" style="position:absolute;top:1.25rem;right:1.25rem;color:rgba(255,255,255,.6);background:none;border:none;cursor:pointer;font-size:1.5rem;line-height:1;padding:.5rem" aria-label="Close">&#x2715;</button>
+    <img id="lightbox-img" src="" alt="Full size" style="max-width:95vw;max-height:95vh;object-fit:contain;border-radius:var(--radius-md)">
   </div>
 
-  <!-- Supplier Filter Modal -->
-  <div id="supplier-filter-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
-    <div id="supplier-modal-overlay" class="absolute inset-0 bg-[var(--bg-main)]/80 backdrop-blur-sm"></div>
-    <div class="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl shadow-xl w-full max-w-sm max-h-[80vh] flex flex-col relative">
-        <div class="flex justify-between items-center p-4 border-b border-[var(--border-color)]">
-            <h3 class="text-sm font-semibold tracking-tight">Filter Suppliers</h3>
-            <button id="supplier-modal-close-btn" class="text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" /></svg></button>
-        </div>
-        <div id="supplier-list-container" class="p-4 overflow-y-auto flex-1 text-xs"></div>
-        <div class="p-3 border-t border-[var(--border-color)] bg-[var(--bg-main)] flex justify-between items-center gap-3 rounded-b-xl">
-            <div class="flex gap-3 px-1">
-                <button id="select-all-suppliers-btn" class="text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors">Select All</button>
-                <button id="deselect-all-suppliers-btn" class="text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors">Clear</button>
-            </div>
-            <button id="apply-supplier-filter-btn" class="btn btn-primary px-4 py-1.5 text-xs">Apply</button>
-        </div>
+  <!-- #8 Cart Drawer (slide-in) -->
+  <div id="cart-drawer-overlay" class="cart-drawer-overlay hidden"></div>
+  <div id="cart-drawer" class="cart-drawer" aria-label="Quote Cart">
+    <div class="cart-drawer-header">
+      <div style="display:flex;align-items:center;gap:.625rem">
+        <svg style="width:1.125rem;height:1.125rem;color:var(--accent)" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        <span style="font-size:.9375rem;font-weight:700">Quote Cart</span>
+        <span class="cart-drawer-count" id="drawer-count"></span>
+      </div>
+      <button id="cart-drawer-close" class="icon-btn" aria-label="Close cart">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div id="cart-drawer-body" class="cart-drawer-body"></div>
+    <div class="cart-drawer-footer">
+      <button id="cart-drawer-view-btn" class="btn btn-primary" style="flex:1">View Full Quote</button>
+      <button id="cart-drawer-clear-btn" class="btn btn-ghost btn-sm" style="color:var(--text-secondary)">Clear</button>
     </div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+</div><!-- /#app -->
 
-  <script>
-    // --- Firebase Configuration ---
-    const firebaseConfig = {
-      apiKey: "AIzaSyDHhEnfIz2evfEH-Vfpujqnu_MrE57p7v4",
-      authDomain: "supplier-database-45001.firebaseapp.com",
-      projectId: "supplier-database-45001",
-      storageBucket: "supplier-database-45001.appspot.com",
-      messagingSenderId: "977359606390",
-      appId: "1:977359606390:web:03be683a1e7c7d71bc4557"
-    };
+<!-- Toast container -->
+<div id="toast-container"></div>
 
-    // --- Initialize Firebase ---
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
-    const productsCollection = db.collection("products");
-    const invitedUsersCollection = db.collection("invitedUsers");
-    const apiKeysCollection = db.collection("apiKeys");
-    const apiLogsCollection = db.collection("apiLogs");
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
-    // --- UI Elements ---
-    const authContainer = document.getElementById('auth-container');
-    const mainAppContainer = document.getElementById('main-app-container');
-    const loginForm = document.getElementById('login-form');
-    const signupForm = document.getElementById('signup-form');
-    const forgotPasswordForm = document.getElementById('forgot-password-form');
-    const showSignupBtn = document.getElementById('show-signup-btn');
-    const showLoginBtnFromSignup = document.getElementById('show-login-btn-from-signup');
-    const showLoginBtnFromForgot = document.getElementById('show-login-btn-from-forgot');
-    const showForgotPasswordBtn = document.getElementById('show-forgot-password-btn');
-    const authMessageDiv = document.getElementById('auth-message');
-    const userEmailDisplay = document.getElementById('user-email-display');
-    const logoutBtn = document.getElementById('logout-btn');
-    const tabButtons = document.querySelectorAll('.nav-tab');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const apiKeyDisplayArea = document.getElementById('api-key-display-area');
-    const apiKeyInput = document.getElementById('api-key-input');
-    const generateKeyArea = document.getElementById('generate-key-area');
-    const generateApiKeyBtn = document.getElementById('generate-api-key-btn');
-    const copyApiKeyBtn = document.getElementById('copy-api-key-btn');
-    const copyFeedback = document.getElementById('copy-feedback');
-    const apiKeyLoader = document.getElementById('api-key-loader');
-    const apiKeyContent = document.getElementById('api-key-content');
-    const toggleApiKeyVisibilityBtn = document.getElementById('toggle-api-key-visibility');
-    const eyeIcon = document.getElementById('eye-icon');
-    const eyeOffIcon = document.getElementById('eye-off-icon');
-    const revokeAndGenerateBtn = document.getElementById('revoke-and-generate-btn');
-    const apiUsageBar = document.getElementById('api-usage-bar');
-    const apiUsageText = document.getElementById('api-usage-text');
-    const recentCallsTbody = document.getElementById('recent-calls-tbody');
-    const themeToggleBtn = document.getElementById('theme-toggle-btn');
-    const sunIcon = document.getElementById('sun-icon');
-    const moonIcon = document.getElementById('moon-icon');
-    const authTitle = document.getElementById('auth-title');
-    const authSubtitle = document.getElementById('auth-subtitle');
-    
-    // --- Theme Logic ---
-    const applyTheme = (isLight) => {
-        if (isLight) {
-            document.documentElement.classList.add('light-mode');
-            document.documentElement.classList.remove('dark');
-            sunIcon.classList.remove('hidden');
-            moonIcon.classList.add('hidden');
-        } else {
-            document.documentElement.classList.remove('light-mode');
-            document.documentElement.classList.add('dark');
-            sunIcon.classList.add('hidden');
-            moonIcon.classList.remove('hidden');
-        }
-    };
+<!-- Import libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-    themeToggleBtn.addEventListener('click', () => {
-        const isLight = document.documentElement.classList.toggle('light-mode');
-        document.documentElement.classList.toggle('dark', !isLight);
-        localStorage.setItem('theme', isLight ? 'light' : 'dark');
-        applyTheme(isLight);
-    });
-    
-    const savedTheme = localStorage.getItem('theme');
-    applyTheme(savedTheme === 'light');
+<!-- App modules -->
+<script src="js/firebase.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/store.js"></script>
+<script src="js/router.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/pages/home.js"></script>
+<script src="js/pages/catalog.js"></script>
+<script src="js/pages/product.js"></script>
+<script src="js/pages/cart.js"></script>
+<script src="js/pages/favorites.js"></script>
+<script src="js/pages/account.js"></script>
+<script src="js/pages/brand-category.js"></script>
+<script src="js/pages/admin.js"></script>
+<script src="js/main.js"></script>
 
-    // --- Authentication Logic ---
-    auth.onAuthStateChanged(user => {
+<script>
+  // Show nav elements after app loads (avoid flash on login screen)
+  document.addEventListener('DOMContentLoaded', function(){
+    // These are hidden by default to avoid showing during login screen
+    auth.onAuthStateChanged(function(user){
       if (user) {
-        authContainer.classList.add('hidden');
-        mainAppContainer.classList.remove('hidden');
-        userEmailDisplay.textContent = user.email;
-        handleBrowseAll();
-        loadApiKey(); 
-        loadApiUsage();
-      } else {
-        authContainer.classList.remove('hidden');
-        mainAppContainer.classList.add('hidden');
-        userEmailDisplay.textContent = '';
+        // Set dropdown email
+        var emailEl = document.getElementById('dropdown-user-email');
+        if (emailEl) emailEl.textContent = user.email;
+        var headerEmail = document.getElementById('header-user-email');
+        if (headerEmail) headerEmail.textContent = user.email;
+        var dropAvatar = document.getElementById('dropdown-avatar');
+        if (dropAvatar) dropAvatar.textContent = (user.email||'U').slice(0,2).toUpperCase();
+        var headerAvatar = document.getElementById('header-avatar');
+        if (headerAvatar) headerAvatar.textContent = (user.email||'U').slice(0,2).toUpperCase();
+        // User name display (before profile loads)
+        var nameEl = document.getElementById('dropdown-user-name');
+        if (nameEl) nameEl.textContent = user.email;
       }
     });
+  });
+</script>
 
-    function showAuthMessage(message, type = 'error') {
-        authMessageDiv.textContent = message;
-        if (type === 'error') {
-            authMessageDiv.className = 'px-3 py-2 rounded-md mb-5 text-[11px] font-medium bg-red-500/10 text-red-500 border border-red-500/20';
-        } else if (type === 'success') {
-            authMessageDiv.className = 'px-3 py-2 rounded-md mb-5 text-[11px] font-medium bg-green-500/10 text-green-500 border border-green-500/20';
-        }
-        authMessageDiv.classList.remove('hidden');
-    }
-
-    // Auth Form Toggling
-    const forms = [loginForm, signupForm, forgotPasswordForm];
-    const hideAllForms = () => forms.forEach(f => f.classList.add('hidden'));
-
-    showSignupBtn.addEventListener('click', () => { hideAllForms(); signupForm.classList.remove('hidden'); authTitle.textContent = 'Create Account'; authSubtitle.textContent = 'Join the database'; authMessageDiv.classList.add('hidden');});
-    showForgotPasswordBtn.addEventListener('click', () => { hideAllForms(); forgotPasswordForm.classList.remove('hidden'); authTitle.textContent = 'Reset Password'; authSubtitle.textContent = 'Recover your account'; authMessageDiv.classList.add('hidden');});
-    [showLoginBtnFromSignup, showLoginBtnFromForgot].forEach(btn => btn.addEventListener('click', () => { hideAllForms(); loginForm.classList.remove('hidden'); authTitle.textContent = 'Welcome Back'; authSubtitle.textContent = 'Sign in to access the database'; authMessageDiv.classList.add('hidden');}));
-
-    loginForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value)
-        .catch(error => {
-          showAuthMessage(error.message, 'error');
-        });
-    });
-
-    signupForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('signup-email').value;
-      const password = document.getElementById('signup-password').value;
-      const normalizedEmail = email.toLowerCase();
-      try {
-        const docRef = invitedUsersCollection.doc(normalizedEmail);
-        const docSnap = await docRef.get();
-        if (!docSnap.exists) {
-          showAuthMessage("Access denied. Email not invited.", 'error');
-          return;
-        }
-        await auth.createUserWithEmailAndPassword(email, password);
-      } catch (error) {
-        showAuthMessage(error.message, 'error');
-      }
-    });
-    
-    forgotPasswordForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const email = document.getElementById('reset-email').value;
-        auth.sendPasswordResetEmail(email)
-            .then(() => {
-                showAuthMessage('Reset link sent!', 'success');
-            })
-            .catch(error => {
-                showAuthMessage(error.message, 'error');
-            });
-    });
-
-    logoutBtn.addEventListener('click', () => {
-      auth.signOut();
-    });
-    
-    // --- Tab Navigation Logic ---
-    function switchTab(tabId) {
-        tabButtons.forEach(btn => {
-            const btnId = btn.id.replace('mobile-','');
-            if (btnId === tabId) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        });
-        tabContents.forEach(content => {
-            if (content.id === tabId.replace('tab-','') + '-tab-content') {
-                content.classList.remove('hidden');
-            } else {
-                content.classList.add('hidden');
-            }
-        });
-    }
-
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const tabId = button.id.replace('mobile-','');
-            switchTab(tabId);
-        });
-    });
-    
-    // --- API Key Management ---
-    function generateRandomKey() {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let result = 'sk_';
-        for (let i = 0; i < 32; i++) {
-            result += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return result;
-    }
-
-    async function loadApiKey() {
-        const user = auth.currentUser;
-        if (!user) return;
-
-        apiKeyLoader.classList.remove('hidden');
-        apiKeyContent.classList.add('hidden');
-
-        try {
-            const docRef = apiKeysCollection.doc(user.uid);
-            const docSnap = await docRef.get();
-
-            if (docSnap.exists) {
-                apiKeyInput.value = docSnap.data().key;
-                apiKeyDisplayArea.classList.remove('hidden');
-                generateKeyArea.classList.add('hidden');
-            } else {
-                apiKeyDisplayArea.classList.add('hidden');
-                generateKeyArea.classList.remove('hidden');
-            }
-        } catch (error) {
-            console.error("Error loading API key:", error);
-        } finally {
-            apiKeyLoader.classList.add('hidden');
-            apiKeyContent.classList.remove('hidden');
-        }
-    }
-    
-    async function loadApiUsage() {
-        const user = auth.currentUser;
-        if (!user) return;
-        
-        const twentyFourHoursAgo = firebase.firestore.Timestamp.fromMillis(Date.now() - 24 * 60 * 60 * 1000);
-        
-        try {
-            const querySnapshot = await apiLogsCollection
-                .where("userId", "==", user.uid)
-                .where("timestamp", ">=", twentyFourHoursAgo)
-                .get();
-
-            const usageCount = querySnapshot.size;
-            const usagePercentage = (usageCount / 300) * 100; // Limit updated to 300
-            
-            apiUsageText.textContent = `${usageCount} / 300 calls`;
-            apiUsageBar.style.width = `${usagePercentage}%`;
-            
-            recentCallsTbody.innerHTML = '';
-            let count = 0;
-            querySnapshot.docs.sort((a, b) => b.data().timestamp - a.data().timestamp).forEach(doc => {
-                if (count++ < 10) {
-                    const log = doc.data();
-                    const date = log.timestamp.toDate();
-                    const row = `
-                        <tr class="hover:bg-[var(--bg-main)] transition-colors">
-                            <td class="p-2.5 text-left border-b border-[var(--border-color)]">${date.toLocaleString()}</td>
-                            <td class="p-2.5 text-right text-green-custom border-b border-[var(--border-color)]">Success</td>
-                        </tr>
-                    `;
-                    recentCallsTbody.innerHTML += row;
-                }
-            });
-            if (count === 0) {
-                recentCallsTbody.innerHTML = '<tr><td colspan="2" class="p-4 text-center text-[var(--text-secondary)] italic border-b border-[var(--border-color)]">No recent activity</td></tr>';
-            }
-
-        } catch (error) {
-            console.error("Error loading API usage:", error);
-        }
-    }
-
-    async function handleGenerateKey() {
-        const user = auth.currentUser;
-        if (!user) return;
-
-        const newKey = generateRandomKey();
-        apiKeyLoader.classList.remove('hidden');
-        apiKeyContent.classList.add('hidden');
-
-        try {
-            await apiKeysCollection.doc(user.uid).set({
-                key: newKey,
-                userId: user.uid,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            await loadApiKey();
-        } catch (error) {
-            console.error("Error generating API key:", error);
-            apiKeyContent.classList.remove('hidden');
-        } finally {
-            apiKeyLoader.classList.add('hidden');
-        }
-    }
-    
-    generateApiKeyBtn.addEventListener('click', handleGenerateKey);
-    revokeAndGenerateBtn.addEventListener('click', handleGenerateKey);
-
-    copyApiKeyBtn.addEventListener('click', () => {
-        apiKeyInput.select();
-        document.execCommand('copy');
-        copyFeedback.classList.remove('hidden');
-        setTimeout(() => {
-            copyFeedback.classList.add('hidden');
-        }, 2000);
-    });
-    
-    toggleApiKeyVisibilityBtn.addEventListener('click', () => {
-        const isPassword = apiKeyInput.type === 'password';
-        apiKeyInput.type = isPassword ? 'text' : 'password';
-    });
-
-    // --- Main Application Logic ---
-    const searchInput = document.getElementById('search-input');
-    const searchTypeSelect = document.getElementById('search-type');
-    const searchBtn = document.getElementById('search-btn');
-    const browseAllBtn = document.getElementById('browse-all-btn');
-    const loaderContainer = document.getElementById('loader-container');
-    const exportLoader = document.getElementById('export-loader');
-    const resultsContainer = document.getElementById('results-container');
-    const paginationContainer = document.getElementById('pagination-container');
-    const noResultsDiv = document.getElementById('no-results');
-    const errorDisplay = document.getElementById('error-display');
-    const errorMessage = document.getElementById('error-message');
-    const exportCsvBtn = document.getElementById('export-csv-btn');
-    const filterSuppliersBtn = document.getElementById('filter-suppliers-btn');
-    const supplierFilterModal = document.getElementById('supplier-filter-modal');
-    const supplierModalOverlay = document.getElementById('supplier-modal-overlay');
-    const supplierModalCloseBtn = document.getElementById('supplier-modal-close-btn');
-    const supplierListContainer = document.getElementById('supplier-list-container');
-    const selectAllSuppliersBtn = document.getElementById('select-all-suppliers-btn');
-    const deselectAllSuppliersBtn = document.getElementById('deselect-all-suppliers-btn');
-    const applySupplierFilterBtn = document.getElementById('apply-supplier-filter-btn');
-    const itemModal = document.getElementById('item-modal');
-    const modalOverlay = document.getElementById('modal-overlay');
-    const modalContent = document.getElementById('modal-content');
-    const modalCloseBtn = document.getElementById('modal-close-btn');
-    const modalLoader = document.getElementById('modal-loader');
-    const modalBody = document.getElementById('modal-body');
-    const imageLightbox = document.getElementById('image-lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    const lightboxCloseBtn = document.getElementById('lightbox-close-btn');
-    const upcListInput = document.getElementById('upc-list-input');
-    const searchListBtn = document.getElementById('search-list-btn');
-    const noResultsBrowseBtn = document.getElementById('no-results-browse-btn');
-    
-    let lastVisibleDoc = null;
-    let firstVisibleDoc = null;
-    let currentPage = 1;
-    let currentQueryConstraints = [];
-    let currentSearchType = 'browse';
-    const ITEMS_PER_PAGE = 100;
-    let allSuppliers = new Set();
-    let excludedSuppliers = new Set();
-    let lastFetchedDocs = [];
-
-    async function fetchData(queryConstraints = [], direction = 'next') {
-      showLoader();
-      currentQueryConstraints = queryConstraints;
-
-      let query = productsCollection.orderBy('sku').limit(ITEMS_PER_PAGE);
-      queryConstraints.forEach(constraint => {
-        query = query.where(constraint.field, constraint.op, constraint.value);
-      });
-
-      if (direction === 'next' && lastVisibleDoc) {
-        query = query.startAfter(lastVisibleDoc);
-      } else if (direction === 'prev' && firstVisibleDoc) {
-        query = query.endBefore(firstVisibleDoc).limitToLast(ITEMS_PER_PAGE);
-      }
-      
-      try {
-        const snapshot = await query.get();
-        hideLoader();
-        if (snapshot.empty) {
-          showNoResults();
-          return;
-        }
-        
-        lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1];
-        firstVisibleDoc = snapshot.docs[0];
-        lastFetchedDocs = snapshot.docs.map(doc => doc.data());
-
-        if (allSuppliers.size === 0) {
-            populateAllSuppliersList(lastFetchedDocs);
-        }
-        
-        renderFilteredResults(lastFetchedDocs);
-
-      } catch (err) {
-        console.error("Firestore query failed:", err);
-        showError({ message: "Could not fetch data from the database. " + err.message });
-      }
-    }
-
-    function renderFilteredResults(docs) {
-        if(!resultsContainer) return;
-        resultsContainer.innerHTML = '';
-        
-        const processedDocs = docs.reduce((acc, item) => {
-            const allowedSuppliers = item.suppliers ? item.suppliers.filter(sup => !excludedSuppliers.has(sup.name)) : [];
-            const isFilteringActive = excludedSuppliers.size > 0;
-            let shouldShowItem = true;
-
-            if (isFilteringActive) {
-                 const hasInventoryInSelected = allowedSuppliers.some(sup => {
-                     const stock = parseFloat(String(sup.inventory).replace(/,/g, ''));
-                     return !isNaN(stock) && stock > 0;
-                 });
-                 if (!hasInventoryInSelected) {
-                     shouldShowItem = false;
-                 }
-            }
-
-            if (shouldShowItem) {
-                 const newLowestPrice = allowedSuppliers.reduce((min, sup) => {
-                    const price = parseFloat(sup.price);
-                    const stock = parseFloat(String(sup.inventory).replace(/,/g, ''));
-                    const hasStock = !isNaN(stock) && stock > 0;
-
-                    if (hasStock && !isNaN(price) && price > 0 && price < min) {
-                        return price;
-                    }
-                    return min;
-                }, Infinity);
-
-                acc.push({
-                    ...item,
-                    suppliers: item.suppliers, 
-                    lowestPrice: newLowestPrice === Infinity ? -1 : newLowestPrice
-                });
-            }
-            return acc;
-        }, []);
-
-        processedDocs.forEach((item, index) => {
-            const card = createItemCard(item);
-            card.style.animationDelay = `${index * 20}ms`; // Sleek staggered animation
-            resultsContainer.appendChild(card);
-        });
-
-        if (processedDocs.length === 0) {
-            showNoResults();
-        } else {
-            if(noResultsDiv) noResultsDiv.classList.add('hidden');
-            renderPagination();
-        }
-    }
-
-    function handleSearch() {
-      currentSearchType = 'search';
-      const searchTerm = searchInput.value.trim();
-      const searchType = searchTypeSelect.value;
-      if (!searchTerm) {
-        alert("Please enter a search term.");
-        return;
-      }
-      currentPage = 1;
-      lastVisibleDoc = null;
-      firstVisibleDoc = null;
-      let constraints = [];
-      if (searchType === 'itemName_lowercase') {
-          constraints.push({ field: 'itemName_lowercase', op: '>=', value: searchTerm.toLowerCase() });
-          constraints.push({ field: 'itemName_lowercase', op: '<=', value: searchTerm.toLowerCase() + '\uf8ff' });
-      } else {
-          constraints.push({ field: searchType, op: '==', value: searchTerm });
-      }
-      fetchData(constraints);
-    }
-    
-    async function handleBulkSearch() {
-        currentSearchType = 'bulk';
-        const upcList = [...new Set(upcListInput.value.split(/[\n,]/).map(upc => upc.trim()).filter(upc => upc))];
-        if (upcList.length === 0) {
-            alert("Please paste a list of UPCs.");
-            return;
-        }
-        if (upcList.length > 500) {
-            alert("Bulk search is limited to 500 UPCs at a time.");
-            return;
-        }
-
-        showLoader();
-        try {
-            const allDocs = await fetchAllBulkDocs(upcList);
-            hideLoader();
-            resultsContainer.innerHTML = '';
-            paginationContainer.innerHTML = '';
-
-            if (allDocs.length === 0) {
-                showNoResults();
-                return;
-            }
-            lastFetchedDocs = allDocs;
-            renderFilteredResults(lastFetchedDocs);
-
-        } catch (err) {
-            console.error("Firestore bulk query failed:", err);
-            showError({ message: "Bulk search failed. " + err.message });
-        }
-    }
-
-    async function fetchAllBulkDocs(upcList) {
-        const chunks = [];
-        for (let i = 0; i < upcList.length; i += 10) {
-            chunks.push(upcList.slice(i, i + 10));
-        }
-        const queryPromises = chunks.map(chunk => 
-            productsCollection.where('upc', 'in', chunk).get()
-        );
-        const querySnapshots = await Promise.all(queryPromises);
-        const allDocs = [];
-        querySnapshots.forEach(snapshot => {
-            snapshot.forEach(doc => allDocs.push(doc.data()));
-        });
-        
-        return allDocs.sort((a, b) => upcList.indexOf(a.upc) - upcList.indexOf(b.upc));
-    }
-
-    function handleBrowseAll() {
-      currentSearchType = 'browse';
-      currentPage = 1;
-      lastVisibleDoc = null;
-      firstVisibleDoc = null;
-      fetchData([]);
-    }
-
-    async function handleExport() {
-        exportLoader.classList.remove('hidden');
-        let docsToExport = [];
-
-        try {
-            if (currentSearchType === 'bulk') {
-                const upcList = [...new Set(upcListInput.value.split(/[\n,]/).map(upc => upc.trim()).filter(upc => upc))];
-                if (upcList.length > 0) {
-                    docsToExport = await fetchAllBulkDocs(upcList);
-                }
-            } else {
-                if (lastFetchedDocs && lastFetchedDocs.length > 0) {
-                     docsToExport = [...lastFetchedDocs];
-                } else {
-                     docsToExport = [];
-                }
-            }
-
-            if (docsToExport.length === 0) {
-                alert("No data to export. Please perform a search or load data first.");
-                exportLoader.classList.add('hidden');
-                return;
-            }
-
-            generateMatrixCsv(docsToExport);
-
-        } catch (err) {
-            console.error("Export failed:", err);
-            showError({ message: "Export failed. " + err.message });
-        } finally {
-            exportLoader.classList.add('hidden');
-        }
-    }
-
-    function generateMatrixCsv(items) {
-        const supplierSet = new Set();
-        const supplierLastUpdates = {};
-
-        items.forEach(item => {
-            if (item.suppliers) {
-                item.suppliers.forEach(s => {
-                    supplierSet.add(s.name);
-                    if (s.lastUpdate && !supplierLastUpdates[s.name]) {
-                         let dateStr = '';
-                         try {
-                            const dateObj = s.lastUpdate.toDate ? s.lastUpdate.toDate() : new Date(s.lastUpdate);
-                            if (!isNaN(dateObj)) dateStr = dateObj.toLocaleDateString();
-                         } catch(e) { dateStr = s.lastUpdate; }
-                         supplierLastUpdates[s.name] = dateStr;
-                    }
-                });
-            }
-        });
-
-        const sortedSuppliers = Array.from(supplierSet).sort();
-
-        let row1 = ["", "", "", "", "", ""]; 
-        sortedSuppliers.forEach(name => {
-             const date = supplierLastUpdates[name] || "";
-             row1.push(date, ""); 
-        });
-
-        let row2 = ["", "", "", "", "", ""];
-        sortedSuppliers.forEach(name => {
-            row2.push(name, "");
-        });
-
-        let row3 = ["UPC", "Item Name", "Brand", "Size", "Gender", "Category"];
-        sortedSuppliers.forEach(() => {
-            row3.push("Price", "Inventory");
-        });
-
-        const escapeCell = (cell) => {
-            const strCell = String(cell === null || cell === undefined ? "" : cell);
-            if (strCell.includes(',') || strCell.includes('"') || strCell.includes('\n')) {
-                return `"${strCell.replace(/"/g, '""')}"`;
-            }
-            return strCell;
-        };
-
-        let csvContent = "";
-        csvContent += row1.map(escapeCell).join(",") + "\n";
-        csvContent += row2.map(escapeCell).join(",") + "\n";
-        csvContent += row3.map(escapeCell).join(",") + "\n";
-
-        items.forEach(item => {
-            let row = [
-                item.upc, 
-                item.itemName, 
-                item.brand, 
-                item.size,
-                item.gender,
-                item.category
-            ];
-
-            sortedSuppliers.forEach(supName => {
-                const supData = item.suppliers ? item.suppliers.find(s => s.name === supName) : null;
-                if (supData) {
-                    row.push(supData.price, supData.inventory);
-                } else {
-                    row.push("", "");
-                }
-            });
-            csvContent += row.map(escapeCell).join(",") + "\n";
-        });
-
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", "supplier_matrix_report.csv");
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    function createItemCard(item) {
-        var card = document.createElement('div');
-        card.className = 'result-card rounded-xl overflow-hidden flex flex-col cursor-pointer bg-[var(--card-bg)] shadow-sm';
-        card.dataset.sku = item.sku;
-        
-        var placeholderImg = 'https://i.imgur.com/IUBzxFv.jpeg';
-        var imgUrl = (item.imageUrl && String(item.imageUrl).trim() !== "") ? item.imageUrl : placeholderImg;
-
-        const priceDisplay = item.lowestPrice !== -1 ? `$${item.lowestPrice.toFixed(2)}` : 'N/A';
-
-        let supplierGridHtml = '';
-        if (item.suppliers && item.suppliers.length > 0) {
-            const topSuppliers = [...item.suppliers].sort((a,b) => (parseFloat(a.price)||Infinity) - (parseFloat(b.price)||Infinity)).slice(0, 3);
-            
-            supplierGridHtml = `<div class="mt-auto pt-2.5 border-t border-[var(--border-color)] flex flex-col gap-1.5">`;
-            
-            topSuppliers.forEach(s => {
-                const p = parseFloat(s.price);
-                const pStr = !isNaN(p) ? `$${p.toFixed(2)}` : '-';
-                const isLowest = p === item.lowestPrice;
-                const stock = s.inventory || 0;
-                
-                supplierGridHtml += `
-                    <div class="flex justify-between items-center text-[11px]">
-                        <div class="flex items-center gap-1.5 overflow-hidden">
-                             <span class="truncate text-[var(--text-secondary)] font-medium max-w-[70px]" title="${s.name}">${s.name}</span>
-                             <span class="text-[9px] text-[var(--text-secondary)] bg-[var(--bg-main)] border border-[var(--border-color)] px-1 py-0.5 rounded">Qty: ${stock}</span>
-                        </div>
-                        <span class="font-mono tracking-tight ${isLowest ? 'text-green-custom font-semibold' : 'text-[var(--text-main)]'}">${pStr}</span>
-                    </div>`;
-            });
-            
-            if (item.suppliers.length > 3) {
-                 supplierGridHtml += `<div class="text-[9px] text-[var(--text-secondary)] text-center pt-1 italic opacity-70">+${item.suppliers.length - 3} more</div>`;
-            }
-            supplierGridHtml += `</div>`;
-        } else {
-             supplierGridHtml = `<div class="mt-auto pt-2.5 border-t border-[var(--border-color)] text-[11px] text-[var(--text-secondary)] text-center italic">No active suppliers</div>`;
-        }
-
-        card.innerHTML = `
-            <div class="w-full h-36 bg-[#ffffff] dark:bg-white flex items-center justify-center p-3 relative border-b border-[var(--border-color)]">
-                <img src="${imgUrl}" alt="${item.itemName}" class="w-full h-full object-contain mix-blend-multiply" onerror="this.src='${placeholderImg}'">
-                <div class="absolute top-2 right-2 bg-black/90 backdrop-blur-sm text-white text-[10px] font-semibold px-2 py-1 rounded-md shadow-sm tracking-wide">
-                    ${priceDisplay}
-                </div>
-            </div>
-            <div class="p-3.5 flex-grow flex flex-col">
-                <div class="mb-3">
-                    <h3 class="text-[13px] font-semibold leading-snug text-[var(--text-main)] line-clamp-2" title="${item.itemName}">${item.itemName}</h3>
-                    <div class="flex items-center gap-1.5 mt-1.5">
-                        <span class="text-[9px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-[var(--bg-main)] text-[var(--text-secondary)] border border-[var(--border-color)] truncate max-w-[80px]">${item.brand || 'No Brand'}</span>
-                         ${item.size ? `<span class="text-[10px] font-mono text-[var(--text-secondary)] truncate">${item.size}</span>` : ''}
-                    </div>
-                </div>
-                ${supplierGridHtml}
-            </div>
-        `;
-        return card;
-    }
-
-    function showLoader() {
-        if(loaderContainer) {
-            loaderContainer.innerHTML = '';
-            for(let i = 0; i < 12; i++) {
-                const skeleton = document.createElement('div');
-                skeleton.className = 'skeleton-card shadow-sm border border-[var(--border-color)]';
-                skeleton.innerHTML = '<div class="skeleton-image h-36"></div><div class="p-3.5"><div class="skeleton-text w-3/4 mb-3"></div><div class="skeleton-text w-1/2 h-2 mb-4"></div><div class="border-t border-[var(--border-color)] pt-3"><div class="skeleton-text w-full h-2 mb-2"></div><div class="skeleton-text w-5/6 h-2"></div></div></div>';
-                loaderContainer.appendChild(skeleton);
-            }
-            loaderContainer.classList.remove('hidden');
-        }
-        if(resultsContainer) resultsContainer.innerHTML = '';
-        if(noResultsDiv) noResultsDiv.classList.add('hidden');
-        if(errorDisplay) errorDisplay.classList.add('hidden');
-    }
-    
-    function hideLoader() { if(loaderContainer) loaderContainer.classList.add('hidden'); }
-    
-    function showNoResults() {
-        if(resultsContainer) resultsContainer.innerHTML = '';
-        if(noResultsDiv) noResultsDiv.classList.remove('hidden');
-    }
-    
-    function showError(error) {
-        hideLoader();
-        if(errorMessage) errorMessage.textContent = error.message || "An unknown error occurred.";
-        if(errorDisplay) errorDisplay.classList.remove('hidden');
-    }
-
-    function renderPagination() {
-        if(!paginationContainer) return;
-        paginationContainer.innerHTML = '';
-        const prevBtn = document.createElement('button');
-        prevBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>';
-        prevBtn.className = 'btn btn-secondary p-1 disabled:opacity-30 disabled:cursor-not-allowed';
-        prevBtn.disabled = currentPage === 1;
-        prevBtn.onclick = () => {
-            currentPage--;
-            fetchData(currentQueryConstraints, 'prev');
-        };
-        const pageInfo = document.createElement('span');
-        pageInfo.className = 'text-xs text-[var(--text-secondary)] font-mono mx-3';
-        pageInfo.textContent = `Page ${currentPage}`;
-        const nextBtn = document.createElement('button');
-        nextBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>';
-        nextBtn.className = 'btn btn-secondary p-1';
-        nextBtn.onclick = () => {
-            currentPage++;
-            fetchData(currentQueryConstraints, 'next');
-        };
-        paginationContainer.appendChild(prevBtn);
-        paginationContainer.appendChild(pageInfo);
-        paginationContainer.appendChild(nextBtn);
-    }
-    
-    function populateAllSuppliersList(docs) {
-        docs.forEach(item => {
-            if(item.suppliers) {
-                item.suppliers.forEach(sup => allSuppliers.add(sup.name));
-            }
-        });
-    }
-
-    function populateSupplierFilterModal() {
-        supplierListContainer.innerHTML = '';
-        const sortedSuppliers = Array.from(allSuppliers).sort();
-        sortedSuppliers.forEach(name => {
-            const div = document.createElement('div');
-            div.className = 'flex items-center p-2 hover:bg-[var(--bg-main)] rounded-md transition-colors cursor-pointer mb-1';
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.id = `supplier-cb-${name}`;
-            checkbox.value = name;
-            checkbox.checked = !excludedSuppliers.has(name);
-            checkbox.className = 'w-4 h-4 rounded border-[var(--border-color)] text-[var(--accent-color)] focus:ring-0 bg-[var(--input-bg)] cursor-pointer';
-            const label = document.createElement('label');
-            label.htmlFor = checkbox.id;
-            label.textContent = name;
-            label.className = 'ml-3 block text-sm text-[var(--text-main)] w-full cursor-pointer';
-            
-            div.onclick = (e) => { if(e.target !== checkbox) checkbox.checked = !checkbox.checked; };
-            div.appendChild(checkbox);
-            div.appendChild(label);
-            supplierListContainer.appendChild(div);
-        });
-    }
-
-    searchBtn.addEventListener('click', handleSearch);
-    browseAllBtn.addEventListener('click', handleBrowseAll);
-    searchListBtn.addEventListener('click', handleBulkSearch);
-    exportCsvBtn.addEventListener('click', handleExport);
-    searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') searchBtn.click(); });
-    noResultsBrowseBtn.addEventListener('click', handleBrowseAll);
-    
-    filterSuppliersBtn.addEventListener('click', () => {
-        populateSupplierFilterModal();
-        supplierFilterModal.classList.remove('hidden');
-    });
-
-    supplierModalCloseBtn.addEventListener('click', () => supplierFilterModal.classList.add('hidden'));
-    supplierModalOverlay.addEventListener('click', () => {
-        supplierFilterModal.classList.add('hidden');
-    });
-
-    selectAllSuppliersBtn.addEventListener('click', () => {
-        supplierListContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
-    });
-
-    deselectAllSuppliersBtn.addEventListener('click', () => {
-        supplierListContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-    });
-
-    applySupplierFilterBtn.addEventListener('click', () => {
-        excludedSuppliers.clear();
-        supplierListContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-            if (!cb.checked) {
-                excludedSuppliers.add(cb.value);
-            }
-        });
-        supplierFilterModal.classList.add('hidden');
-        renderFilteredResults(lastFetchedDocs);
-    });
-
-    function handleItemClick(event) {
-      const card = event.target.closest('.result-card');
-      if (!card) return;
-
-      const sku = card.dataset.sku;
-      const itemData = lastFetchedDocs.find(doc => doc.sku === sku);
-
-      if (itemData) {
-        itemModal.classList.remove('hidden');
-        modalLoader.classList.remove('hidden');
-        modalBody.classList.add('hidden');
-        
-        populateItemModal(itemData);
-        
-        setTimeout(() => {
-            itemModal.classList.remove('opacity-0');
-            modalContent.classList.remove('opacity-0', 'scale-[0.98]');
-            modalLoader.classList.add('hidden');
-            modalBody.classList.remove('hidden');
-        }, 10);
-      }
-    }
-
-    function populateItemModal(item) {
-        const placeholderImg = 'https://i.imgur.com/IUBzxFv.jpeg';
-        const imageUrl = (item.imageUrl && String(item.imageUrl).trim() !== "") ? item.imageUrl : placeholderImg;
-
-        const visibleSuppliers = item.suppliers ? item.suppliers.filter(s => !excludedSuppliers.has(s.name)) : [];
-
-        const lowestVisiblePrice = visibleSuppliers.reduce((min, sup) => {
-            const price = parseFloat(sup.price);
-            return !isNaN(price) && price > 0 && price < min ? price : min;
-        }, Infinity);
-
-        const sortedSuppliers = [...visibleSuppliers].sort((a, b) => {
-            const priceA = parseFloat(a.price) || Infinity;
-            const priceB = parseFloat(b.price) || Infinity;
-            return priceA - priceB;
-        });
-
-        let suppliersHtml = '';
-        if (sortedSuppliers.length > 0) {
-            suppliersHtml = sortedSuppliers.map(supplier => {
-                const price = parseFloat(supplier.price);
-                const priceText = !isNaN(price) ? `$${price.toFixed(2)}` : 'N/A';
-                const inventoryText = supplier.inventory || 'N/A';
-                
-                let lastUpdateText = 'N/A';
-                if (supplier.lastUpdate) {
-                    try {
-                        const dateObj = supplier.lastUpdate.toDate ? supplier.lastUpdate.toDate() : new Date(supplier.lastUpdate);
-                        if (!isNaN(dateObj)) {
-                            lastUpdateText = dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' });
-                        } else {
-                             lastUpdateText = supplier.lastUpdate;
-                        }
-                    } catch (e) {
-                        lastUpdateText = supplier.lastUpdate;
-                    }
-                }
-
-                const isLowest = (price === lowestVisiblePrice && price < Infinity);
-                const priceClass = isLowest ? 'text-green-custom font-semibold' : 'text-[var(--text-main)]';
-                return `
-                    <tr class="hover:bg-[var(--bg-main)] transition-colors border-b border-[var(--border-color)] last:border-0">
-                        <td class="px-4 lg:px-8 py-3 text-xs text-[var(--text-main)] font-medium">${supplier.name}</td>
-                        <td class="px-4 lg:px-8 py-3 text-xs text-right font-mono ${priceClass}">${priceText}</td>
-                        <td class="px-4 lg:px-8 py-3 text-xs text-right font-mono text-[var(--text-secondary)]">${inventoryText}</td>
-                        <td class="px-4 lg:px-8 py-3 text-xs text-right text-[var(--text-secondary)]">${lastUpdateText}</td>
-                    </tr>
-                `;
-            }).join('');
-        } else {
-            suppliersHtml = '<tr><td colspan="4" class="p-6 text-center text-[var(--text-secondary)] text-xs italic">No suppliers match the current filters.</td></tr>';
-        }
-
-        const msrpText = (typeof item.msrp === 'number') ? `$${item.msrp.toFixed(2)}` : (item.msrp || 'N/A');
-
-        modalBody.innerHTML = `
-          <div class="flex flex-col h-full">
-            <!-- Top Info Section -->
-            <div class="w-full p-6 lg:p-8 flex flex-col md:flex-row gap-6 lg:gap-8 border-b border-[var(--border-color)] bg-[var(--bg-main)]">
-                <!-- Image -->
-                <div class="w-full md:w-1/3 lg:w-1/4 flex-shrink-0">
-                    <div class="aspect-square bg-white dark:bg-[#ffffff] rounded-xl flex items-center justify-center p-6 border border-[var(--border-color)] overflow-hidden relative group shadow-sm">
-                        <img id="modal-item-image" src="${imageUrl}" alt="${item.itemName}" class="max-w-full max-h-full object-contain cursor-pointer transition-transform duration-500 group-hover:scale-105 mix-blend-multiply" onerror="this.src='${placeholderImg}'">
-                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors pointer-events-none rounded-xl"></div>
-                    </div>
-                </div>
-                
-                <!-- Info -->
-                <div class="w-full md:w-2/3 lg:w-3/4 flex flex-col">
-                    <h2 class="text-xl font-bold text-[var(--text-main)] mb-1.5 leading-tight tracking-tight">${item.itemName || 'N/A'}</h2>
-                    <p class="text-xs text-[var(--text-secondary)] mb-6">by <span class="font-semibold text-[var(--text-main)]">${item.brand || 'Unknown Brand'}</span></p>
-                    
-                    <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-y-4 gap-x-2 text-xs mb-6 border-y border-[var(--border-color)] py-4">
-                         <div>
-                            <span class="block text-[10px] text-[var(--text-secondary)] uppercase tracking-wider mb-1">SKU</span>
-                            <span class="font-mono text-[var(--text-main)] select-all">${item.sku || 'N/A'}</span>
-                         </div>
-                         <div>
-                            <span class="block text-[10px] text-[var(--text-secondary)] uppercase tracking-wider mb-1">UPC</span>
-                            <span class="font-mono text-[var(--text-main)] select-all">${item.upc || 'N/A'}</span>
-                         </div>
-                         <div>
-                            <span class="block text-[10px] text-[var(--text-secondary)] uppercase tracking-wider mb-1">Size / Type</span>
-                            <span class="text-[var(--text-main)]">${item.size || '-'} / ${item.type || '-'}</span>
-                         </div>
-                         <div>
-                            <span class="block text-[10px] text-[var(--text-secondary)] uppercase tracking-wider mb-1">Gender</span>
-                            <span class="text-[var(--text-main)]">${item.gender || '-'}</span>
-                         </div>
-                         <div>
-                            <span class="block text-[10px] text-[var(--text-secondary)] uppercase tracking-wider mb-1">Category</span>
-                            <span class="text-[var(--text-main)]">${item.category || '-'}</span>
-                         </div>
-                         <div>
-                            <span class="block text-[10px] text-[var(--text-secondary)] uppercase tracking-wider mb-1">MSRP</span>
-                            <span class="font-mono text-[var(--text-main)]">${msrpText}</span>
-                         </div>
-                    </div>
-                    
-                    <div class="flex-grow">
-                        <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)] mb-2">Description</h3>
-                        <div class="text-[11px] text-[var(--text-secondary)] leading-relaxed max-h-32 overflow-y-auto pr-2 custom-scrollbar">
-                            ${item.description || '<span class="italic opacity-50">No description provided.</span>'}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Bottom Table Section -->
-            <div class="w-full flex flex-col bg-[var(--bg-secondary)] flex-1 min-h-[250px]">
-                <div class="p-4 lg:px-8 lg:py-5 border-b border-[var(--border-color)] bg-[var(--bg-main)]">
-                    <h3 class="text-sm font-semibold tracking-tight text-[var(--text-main)] flex items-center">
-                        <svg class="w-4 h-4 mr-2 text-[var(--text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
-                        Supplier Matrix
-                    </h3>
-                </div>
-                <div class="flex-1 overflow-auto bg-[var(--bg-secondary)] custom-scrollbar">
-                    <table class="w-full text-left">
-                        <thead class="sticky top-0 bg-[var(--bg-main)] backdrop-blur-md z-10 border-b border-[var(--border-color)]">
-                            <tr>
-                                <th class="px-4 lg:px-8 py-3 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider">Supplier</th>
-                                <th class="px-4 lg:px-8 py-3 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider text-right">Price</th>
-                                <th class="px-4 lg:px-8 py-3 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider text-right">Stock</th>
-                                <th class="px-4 lg:px-8 py-3 text-[10px] font-semibold text-[var(--text-secondary)] uppercase tracking-wider text-right">Updated</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-[var(--border-color)] bg-[var(--bg-secondary)]">
-                            ${suppliersHtml}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-          </div>
-        `;
-        
-        document.getElementById('modal-item-image').addEventListener('click', () => {
-            lightboxImg.src = imageUrl;
-            imageLightbox.classList.remove('hidden');
-            imageLightbox.classList.add('flex');
-        });
-    }
-    
-    function closeModal() {
-        itemModal.classList.add('opacity-0');
-        modalContent.classList.add('opacity-0', 'scale-[0.98]');
-        setTimeout(() => {
-            itemModal.classList.add('hidden');
-        }, 200);
-    }
-
-    resultsContainer.addEventListener('click', handleItemClick);
-    modalCloseBtn.addEventListener('click', closeModal);
-    modalOverlay.addEventListener('click', closeModal);
-    lightboxCloseBtn.addEventListener('click', () => {
-        imageLightbox.classList.add('hidden');
-        imageLightbox.classList.remove('flex');
-    });
-  </script>
 </body>
 </html>
